@@ -1,2 +1,1054 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--This biomodel was generated in VCML Version Rel_Version_7.4.0_build_34--><vcml xmlns="http://sourceforge.net/projects/vcell/vcml" Version="Rel_Version_7.4.0_build_34"><BioModel Name="SkelMuscleCa"><Model Name="model"><ModelParameters><Parameter Name="E_Ca" Role="user defined" Unit="mV">(log((c_EC / c_i)) * (_R_ * _T_) / (2.0 * _F_))</Parameter><Parameter Name="E_Na" Role="user defined" Unit="mV">(log((Na_EC / Na_i)) * _R_ * _T_ / _F_)</Parameter></ModelParameters><Compound Name="s0" /><Compound Name="s1" /><Compound Name="s3" /><Compound Name="s4" /><Compound Name="s2" /><Compound Name="s5" /><Compound Name="s6" /><Compound Name="s7" /><Compound Name="s8" /><Compound Name="s9" /><Compound Name="s10" /><Compound Name="s11" /><Compound Name="s12" /><Compound Name="s13" /><Compound Name="s14" /><Compound Name="s15" /><Feature Name="SR" KeyValue="245075464" /><Feature Name="EC" KeyValue="245075466" /><Feature Name="cyto" KeyValue="245075468" /><Membrane PositiveFeature="cyto" NegativeFeature="EC" MembraneVoltage="Voltage_PM" Name="PM" KeyValue="245075470" /><Membrane PositiveFeature="SR" NegativeFeature="cyto" MembraneVoltage="Voltage_SRM" Name="SRM" KeyValue="245075472" /><LocalizedCompound Name="c_i" CompoundRef="s0" Structure="cyto" OverrideName="true" KeyValue="245075474" /><LocalizedCompound Name="c_SR" CompoundRef="s1" Structure="SR" OverrideName="true" KeyValue="245075475" /><LocalizedCompound Name="Na_i" CompoundRef="s3" Structure="cyto" OverrideName="true" KeyValue="245075476" /><LocalizedCompound Name="K_i" CompoundRef="s4" Structure="cyto" OverrideName="true" KeyValue="245075477" /><LocalizedCompound Name="c_EC" CompoundRef="s2" Structure="EC" OverrideName="true" KeyValue="245075478" /><LocalizedCompound Name="K_EC" CompoundRef="s5" Structure="EC" OverrideName="true" KeyValue="245075479" /><LocalizedCompound Name="Na_EC" CompoundRef="s6" Structure="EC" OverrideName="true" KeyValue="245075480" /><LocalizedCompound Name="Cl_EC" CompoundRef="s7" Structure="EC" OverrideName="true" KeyValue="245075481" /><LocalizedCompound Name="Cl_i" CompoundRef="s8" Structure="cyto" OverrideName="true" KeyValue="245075482" /><LocalizedCompound Name="w_RyR" CompoundRef="s9" Structure="SRM" OverrideName="true" KeyValue="245075483" /><LocalizedCompound Name="m" CompoundRef="s10" Structure="PM" OverrideName="true" KeyValue="245075484" /><LocalizedCompound Name="h" CompoundRef="s11" Structure="PM" OverrideName="true" KeyValue="245075485" /><LocalizedCompound Name="S" CompoundRef="s12" Structure="PM" OverrideName="true" KeyValue="245075486" /><LocalizedCompound Name="n" CompoundRef="s13" Structure="PM" OverrideName="true" KeyValue="245075487" /><LocalizedCompound Name="h_K" CompoundRef="s14" Structure="PM" OverrideName="true" KeyValue="245075488" /><LocalizedCompound Name="SOCEProb" CompoundRef="s15" Structure="PM" OverrideName="true" KeyValue="245075489" /><SimpleReaction Structure="SRM" Name="r0" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075490"><Product LocalizedCompoundRef="w_RyR" Stoichiometry="1" KeyValue="245075491" /><Modifier LocalizedCompoundRef="c_i" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((wInf - w_RyR) / tau_w)</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="tau_w" Role="user defined" Unit="s">(wInf / kcm)</Parameter><Parameter Name="wInf" Role="user defined" Unit="molecules.um-2">(wUnit * ((1.0 + ((Ka_w / c_i) ^ 4.0) + ((c_i / Kb_w) ^ 3.0)) / (1.0 + (1.0 / Kc_w) + ((Ka_w / c_i) ^ 4.0) + ((c_i / Kb_w) ^ 3.0))))</Parameter><Parameter Name="kcm" Role="user defined" Unit="molecules.s-1.um-2">0.1</Parameter><Parameter Name="Kc_w" Role="user defined" Unit="1">(0.1 / 1.75)</Parameter><Parameter Name="Kb_w" Role="user defined" Unit="uM">((385.9 / 1500.0) ^ (1.0 / 3.0))</Parameter><Parameter Name="Ka_w" Role="user defined" Unit="uM">((28.8 / 1500.0) ^ (1.0 / 4.0))</Parameter><Parameter Name="wUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter></Kinetics></SimpleReaction><SimpleReaction Structure="PM" Name="r1" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075493"><Product LocalizedCompoundRef="h" Stoichiometry="1" KeyValue="245075494" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((alpha_h * (1.0 - h)) - (beta_h * h))</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="alpha_h" Role="user defined" Unit="s-1">(alpha_h0 * exp(( - (Voltage_PM - V_h) / K_alphah)))</Parameter><Parameter Name="beta_h" Role="user defined" Unit="s-1">(beta_h0 / (1.0 + exp(( - (Voltage_PM - V_h) / K_betah))))</Parameter><Parameter Name="alpha_h0" Role="user defined" Unit="s-1">8.1</Parameter><Parameter Name="K_alphah" Role="user defined" Unit="mV">14.7</Parameter><Parameter Name="V_h" Role="user defined" Unit="mV">-45.0</Parameter><Parameter Name="K_betah" Role="user defined" Unit="mV">9.0</Parameter><Parameter Name="beta_h0" Role="user defined" Unit="s-1">4380.0</Parameter></Kinetics></SimpleReaction><SimpleReaction Structure="PM" Name="r2" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075495"><Product LocalizedCompoundRef="m" Stoichiometry="1" KeyValue="245075496" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((alpha_m * (1.0 - m)) - (beta_m * m))</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="alpha_m" Role="user defined" Unit="s-1">(alpha_m0 * (Voltage_PM - V_m) / (1.0 - exp(( - (Voltage_PM - V_m) / K_alpham))))</Parameter><Parameter Name="beta_m" Role="user defined" Unit="s-1">(beta_m0 * exp(( - (Voltage_PM - V_m) / K_betam)))</Parameter><Parameter Name="V_m" Role="user defined" Unit="mV">-46.0</Parameter><Parameter Name="K_alpham" Role="user defined" Unit="mV">10.0</Parameter><Parameter Name="alpha_m0" Role="user defined" Unit="s-1.mV-1">288.0</Parameter><Parameter Name="K_betam" Role="user defined" Unit="mV">18.0</Parameter><Parameter Name="beta_m0" Role="user defined" Unit="s-1">1380.0</Parameter></Kinetics></SimpleReaction><SimpleReaction Structure="PM" Name="r3" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075497"><Product LocalizedCompoundRef="S" Stoichiometry="1" KeyValue="245075498" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((S_inf - S) / tau_S)</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="S_inf" Role="user defined" Unit="molecules.um-2">(1.0 / (1.0 + exp(((Voltage_PM - V_Sinf) / A_Sinf))))</Parameter><Parameter Name="tau_S" Role="user defined" Unit="s">(60.0 / (0.2 + (5.65 * (((Voltage_PM + V_tau) / 100.0) ^ 2.0))))</Parameter><Parameter Name="A_Sinf" Role="user defined" Unit="mV">5.8</Parameter><Parameter Name="V_Sinf" Role="user defined" Unit="mV">-78.0</Parameter><Parameter Name="V_tau" Role="user defined" Unit="mV">90.0</Parameter></Kinetics></SimpleReaction><SimpleReaction Structure="PM" Name="r4" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075499"><Product LocalizedCompoundRef="n" Stoichiometry="1" KeyValue="245075500" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((alpha_n * (1.0 - n)) - (beta_n * n))</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="alpha_n" Role="user defined" Unit="s-1">(alpha_n0 * (Voltage_PM - V_n) / (1.0 - exp(( - (Voltage_PM - V_n) / K_alphan))))</Parameter><Parameter Name="beta_n" Role="user defined" Unit="s-1">(beta_n0 * exp(( - (Voltage_PM - V_n) / K_betan)))</Parameter><Parameter Name="K_alphan" Role="user defined" Unit="mV">7.0</Parameter><Parameter Name="V_n" Role="user defined" Unit="mV">-40.0</Parameter><Parameter Name="alpha_n0" Role="user defined" Unit="s-1.mV-1">13.1</Parameter><Parameter Name="beta_n0" Role="user defined" Unit="s-1">67.0</Parameter><Parameter Name="K_betan" Role="user defined" Unit="mV">40.0</Parameter></Kinetics></SimpleReaction><SimpleReaction Structure="PM" Name="r5" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075501"><Product LocalizedCompoundRef="h_K" Stoichiometry="1" KeyValue="245075502" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((h_Kinf - h_K) / tau_hK)</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="tau_hK" Role="user defined" Unit="s">(exp(( - (Voltage_PM + 40.0) / 25.75)) * tauUnit)</Parameter><Parameter Name="h_Kinf" Role="user defined" Unit="molecules.um-2">(1.0 / (1.0 + exp(((Voltage_PM - V_hkinf) / A_hkinf))))</Parameter><Parameter Name="V_hkinf" Role="user defined" Unit="mV">-40.0</Parameter><Parameter Name="A_hkinf" Role="user defined" Unit="mV">7.5</Parameter><Parameter Name="tauUnit" Role="user defined" Unit="s">1.0</Parameter></Kinetics></SimpleReaction><SimpleReaction Structure="PM" Name="r6" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075503"><Product LocalizedCompoundRef="SOCEProb" Stoichiometry="1" KeyValue="245075504" /><Modifier LocalizedCompoundRef="c_SR" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((SOCEProb_inf - SOCEProb) / tau_SOCEProb)</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="SOCEProb_inf" Role="user defined" Unit="molecules.um-2">(1.0 / (1.0 + ((c_SR / c_ref) ^ 4.0)))</Parameter><Parameter Name="tau_SOCEProb" Role="user defined" Unit="s">0.01</Parameter><Parameter Name="c_ref" Role="user defined" Unit="uM">70.0</Parameter></Kinetics></SimpleReaction><FluxStep Name="RyR" Structure="SRM" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075506"><Reactant LocalizedCompoundRef="c_SR" Stoichiometry="1" KeyValue="245075507" /><Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245075508" /><Modifier LocalizedCompoundRef="w_RyR" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">(j0_RyR * openProb * (c_SR - c_i))</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="j0_RyR" Role="user defined" Unit="um.s-1">(300.0 / SRM)</Parameter><Parameter Name="openProb" Role="user defined" Unit="1">(voltProb * wProb)</Parameter><Parameter Name="voltProb" Role="user defined" Unit="1">(((exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0) * ((1.0 + (exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0))) ^ 3.0)) + (L * ((1.0 + exp(((Voltage_PM - VBar) / (4.0 * K)))) ^ 3.0))) / (((1.0 + (exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0))) ^ 4.0) + (L * ((1.0 + exp(((Voltage_PM - VBar) / (4.0 * K)))) ^ 4.0))))</Parameter><Parameter Name="wProb" Role="user defined" Unit="1">((w_RyR / wUnit) * (1.0 + ((c_i / Kb_w) ^ 3.0)) / (1.0 + ((Ka_w / c_i) ^ 4.0) + ((c_i / Kb_w) ^ 3.0)))</Parameter><Parameter Name="VBar" Role="user defined" Unit="mV">-20.0</Parameter><Parameter Name="f" Role="user defined" Unit="1">0.2</Parameter><Parameter Name="K" Role="user defined" Unit="mV">4.5</Parameter><Parameter Name="L" Role="user defined" Unit="1">(1000.0 / 0.002)</Parameter><Parameter Name="Kb_w" Role="user defined" Unit="uM">((385.9 / 1500.0) ^ (1.0 / 3.0))</Parameter><Parameter Name="Ka_w" Role="user defined" Unit="uM">((28.8 / 1500.0) ^ (1.0 / 4.0))</Parameter><Parameter Name="wUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter></Kinetics></FluxStep><FluxStep Name="DHPR" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075510"><Reactant LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245075511" /><Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245075512" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(g0_DHPR * openDHPR * (E_Ca - Voltage_PM))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">2.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="openDHPR" Role="user defined" Unit="1">(((1.0 + (exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0))) ^ 4.0) / (((1.0 + (exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0))) ^ 4.0) + (L * ((1.0 + exp(((Voltage_PM - VBar) / (4.0 * K)))) ^ 4.0))))</Parameter><Parameter Name="g0_DHPR" Role="user defined" Unit="pA.mV-1.um-2">0.0939</Parameter><Parameter Name="VBar" Role="user defined" Unit="mV">-20.0</Parameter><Parameter Name="f" Role="user defined" Unit="1">0.2</Parameter><Parameter Name="K" Role="user defined" Unit="mV">4.5</Parameter><Parameter Name="L" Role="user defined" Unit="1">(1000.0 / 0.002)</Parameter></Kinetics></FluxStep><FluxStep Name="PMCA" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075513"><Reactant LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245075514" /><Product LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245075515" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2"> - (g_PMCA * c_i / (K_PMCA + c_i))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1"> - ((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">2.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="g_PMCA" Role="user defined" Unit="pA.um-2">(5.37 / PM)</Parameter><Parameter Name="K_PMCA" Role="user defined" Unit="uM">0.17</Parameter></Kinetics></FluxStep><FluxStep Name="SERCA" Structure="SRM" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075516"><Reactant LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245075517" /><Product LocalizedCompoundRef="c_SR" Stoichiometry="1" KeyValue="245075518" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">(nu_SERCA * (c_i ^ 2.0) / ((K_SERCA ^ 2.0) + (c_i ^ 2.0)))</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="K_SERCA" Role="user defined" Unit="uM">1.0</Parameter><Parameter Name="nu_SERCA" Role="user defined" Unit="uM.um.s-1">(4875.0 / SRM)</Parameter></Kinetics></FluxStep><FluxStep Name="CaLeak_SR" Structure="SRM" Reversible="true" FluxOption="MolecularOnly" KeyValue="245075519"><Reactant LocalizedCompoundRef="c_SR" Stoichiometry="1" KeyValue="245075520" /><Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245075521" /><Kinetics KineticsType="GeneralKinetics"><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">(nu_leakSR * (c_SR - c_i))</Parameter><Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter><Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter><Parameter Name="nu_leakSR" Role="user defined" Unit="um.s-1">(0.02 / SRM)</Parameter></Kinetics></FluxStep><FluxStep Name="K_DR" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075522"><Reactant LocalizedCompoundRef="K_i" Stoichiometry="1" KeyValue="245075523" /><Product LocalizedCompoundRef="K_EC" Stoichiometry="1" KeyValue="245075524" /><Modifier LocalizedCompoundRef="n" /><Modifier LocalizedCompoundRef="h_K" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(g_K * ((n / nUnit) ^ 4.0) * (h_K / h_KUnit) * (E_K - Voltage_PM))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1"> - ((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="E_K" Role="user defined" Unit="mV">(log((K_EC / K_i)) * _R_ * _T_ / _F_)</Parameter><Parameter Name="g_K" Role="user defined" Unit="pA.mV-1.um-2">0.648</Parameter><Parameter Name="nUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter><Parameter Name="h_KUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter></Kinetics></FluxStep><FluxStep Name="K_IR" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075527"><Reactant LocalizedCompoundRef="K_EC" Stoichiometry="1" KeyValue="245075528" /><Product LocalizedCompoundRef="K_i" Stoichiometry="1" KeyValue="245075529" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(G_K * ((K_R ^ 2.0) / (K_K + (K_R ^ 2.0))) * (1.0 - ((1.0 + ((K_S / ((S_i ^ 2.0) * exp(((2.0 * (1.0 - delta) * Voltage_PM * _F_) / (_R_ * _T_))))) * (1.0 + ((K_R ^ 2.0) / K_K)))) ^  - 1.0)) * (E_K - Voltage_PM))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="E_K" Role="user defined" Unit="mV">(log((K_EC / K_i)) * _R_ * _T_ / _F_)</Parameter><Parameter Name="G_K" Role="user defined" Unit="pA.um-2.mV-1">0.111</Parameter><Parameter Name="K_K" Role="user defined" Unit="uM2">9.5E8</Parameter><Parameter Name="delta" Role="user defined" Unit="1">0.4</Parameter><Parameter Name="S_i" Role="user defined" Unit="uM">10000.0</Parameter><Parameter Name="K_S" Role="user defined" Unit="uM2">1000000.0</Parameter><Parameter Name="K_R" Role="user defined" Unit="uM">(K_EC * exp(( - delta * E_K * _F_ / (_R_ * _T_))))</Parameter></Kinetics></FluxStep><FluxStep Name="NKX_K" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075530"><Reactant LocalizedCompoundRef="K_EC" Stoichiometry="1" KeyValue="245075531" /><Product LocalizedCompoundRef="K_i" Stoichiometry="1" KeyValue="245075532" /><Modifier LocalizedCompoundRef="Na_i" /><Modifier LocalizedCompoundRef="Na_EC" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(2.0 * (fPump * _F_ * J_NaK / (((1.0 + (K_mK / K_EC)) ^ 2.0) * ((1.0 + (K_mNa / Na_i)) ^ 3.0))))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="K_mK" Role="user defined" Unit="uM">1000.0</Parameter><Parameter Name="K_mNa" Role="user defined" Unit="uM">13000.0</Parameter><Parameter Name="J_NaK" Role="user defined" Unit="pmol.s-1.um-2">6.21E-6</Parameter><Parameter Name="fPump" Role="user defined" Unit="1">((1.0 + (0.12 * exp(( - 0.1 * Voltage_PM * _F_ / (_R_ * _T_)))) + ((0.04 / 7.0) * (exp((Na_EC / 67.3)) - 1.0) * exp(( - Voltage_PM * _F_ / (_R_ * _T_))))) ^  - 1.0)</Parameter></Kinetics></FluxStep><FluxStep Name="Na" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075535"><Reactant LocalizedCompoundRef="Na_EC" Stoichiometry="1" KeyValue="245075536" /><Product LocalizedCompoundRef="Na_i" Stoichiometry="1" KeyValue="245075537" /><Modifier LocalizedCompoundRef="m" /><Modifier LocalizedCompoundRef="h" /><Modifier LocalizedCompoundRef="S" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(g_Na * ((m / mUnit) ^ 3.0) * (h / hUnit) * (S / SUnit) * (E_Na - Voltage_PM))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="mUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter><Parameter Name="g_Na" Role="user defined" Unit="pA.mV-1.um-2">8.04</Parameter><Parameter Name="hUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter><Parameter Name="SUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter></Kinetics></FluxStep><FluxStep Name="Cl" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075541"><Reactant LocalizedCompoundRef="Cl_EC" Stoichiometry="1" KeyValue="245075542" /><Product LocalizedCompoundRef="Cl_i" Stoichiometry="1" KeyValue="245075543" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(g_Cl * (A ^ 4.0) * (E_Cl - Voltage_PM))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">-1.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="g_Cl" Role="user defined" Unit="pA.mV-1.um-2">0.1965</Parameter><Parameter Name="A" Role="user defined" Unit="1">(1.0 / (1.0 + exp(((Voltage_PM - V_a) / A_a))))</Parameter><Parameter Name="E_Cl" Role="user defined" Unit="mV"> - (log((Cl_EC / Cl_i)) * _R_ * _T_ / _F_)</Parameter><Parameter Name="A_a" Role="user defined" Unit="mV">150.0</Parameter><Parameter Name="V_a" Role="user defined" Unit="mV">70.0</Parameter></Kinetics></FluxStep><FluxStep Name="NCX_C" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075544"><Reactant LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245075545" /><Product LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245075546" /><Modifier LocalizedCompoundRef="Na_EC" /><Modifier LocalizedCompoundRef="Na_i" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(2.0 * (g_NCX * (Q10NCX ^ Qcorr) * Ka * (s1 - s2) / s3 / (1.0 + (ksat * exp(((nu - 1.0) * Voltage_PM / (_R_ * _T_ / _F_)))))))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1"> - ((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">2.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="s3" Role="user defined" Unit="uM4">((Kmc_i * (Na_EC ^ 3.0) * (1.0 + ((Na_i / KmNa_i) ^ 3.0))) + ((KmNa_EC ^ 3.0) * c_i * (1.0 + (c_i / Kmc_i))) + (Kmc_EC * (Na_i ^ 3.0)) + ((Na_i ^ 3.0) * c_EC) + ((Na_EC ^ 3.0) * c_i))</Parameter><Parameter Name="nu" Role="user defined" Unit="1">0.27</Parameter><Parameter Name="ksat" Role="user defined" Unit="1">0.32</Parameter><Parameter Name="Q10NCX" Role="user defined" Unit="1">1.57</Parameter><Parameter Name="Ka" Role="user defined" Unit="1">(1.0 / (1.0 + ((Kdact / c_i) ^ 2.0)))</Parameter><Parameter Name="Qcorr" Role="user defined" Unit="1">((_T_ - 310.0) / 10.0)</Parameter><Parameter Name="g_NCX" Role="user defined" Unit="pA.um-2">0.129</Parameter><Parameter Name="s1" Role="user defined" Unit="uM4">(exp((nu * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_i ^ 3.0) * c_EC)</Parameter><Parameter Name="s2" Role="user defined" Unit="uM4">(exp(((nu - 1.0) * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_EC ^ 3.0) * c_i)</Parameter><Parameter Name="Kdact" Role="user defined" Unit="uM">0.05</Parameter><Parameter Name="KmNa_EC" Role="user defined" Unit="uM">(87.5 * 1000.0)</Parameter><Parameter Name="Kmc_EC" Role="user defined" Unit="uM">(1.3 * 1000.0)</Parameter><Parameter Name="Kmc_i" Role="user defined" Unit="uM">6.59</Parameter><Parameter Name="KmNa_i" Role="user defined" Unit="uM">(12.29 * 1000.0)</Parameter></Kinetics></FluxStep><FluxStep Name="NKX_N" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075549"><Reactant LocalizedCompoundRef="Na_i" Stoichiometry="1" KeyValue="245075550" /><Product LocalizedCompoundRef="Na_EC" Stoichiometry="1" KeyValue="245075551" /><Modifier LocalizedCompoundRef="K_EC" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2"> - (3.0 * (fPump * _F_ * J_NaK / (((1.0 + (K_mK / K_EC)) ^ 2.0) * ((1.0 + (K_mNa / Na_i)) ^ 3.0))))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1"> - ((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="K_mK" Role="user defined" Unit="uM">1000.0</Parameter><Parameter Name="K_mNa" Role="user defined" Unit="uM">13000.0</Parameter><Parameter Name="J_NaK" Role="user defined" Unit="pmol.s-1.um-2">6.21E-6</Parameter><Parameter Name="fPump" Role="user defined" Unit="1">((1.0 + (0.12 * exp(( - 0.1 * Voltage_PM * _F_ / (_R_ * _T_)))) + ((0.04 / 7.0) * (exp((Na_EC / 67.3)) - 1.0) * exp(( - Voltage_PM * _F_ / (_R_ * _T_))))) ^  - 1.0)</Parameter></Kinetics></FluxStep><FluxStep Name="NCX_N" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075553"><Reactant LocalizedCompoundRef="Na_EC" Stoichiometry="1" KeyValue="245075554" /><Product LocalizedCompoundRef="Na_i" Stoichiometry="1" KeyValue="245075555" /><Modifier LocalizedCompoundRef="c_i" /><Modifier LocalizedCompoundRef="c_EC" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2"> - (3.0 * (g_NCX * (Q10NCX ^ Qcorr) * Ka * (s1 - s2) / s3 / (1.0 + (ksat * exp(((nu - 1.0) * Voltage_PM / (_R_ * _T_ / _F_)))))))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="s3" Role="user defined" Unit="uM4">((Kmc_i * (Na_EC ^ 3.0) * (1.0 + ((Na_i / KmNa_i) ^ 3.0))) + ((KmNa_EC ^ 3.0) * c_i * (1.0 + (c_i / Kmc_i))) + (Kmc_EC * (Na_i ^ 3.0)) + ((Na_i ^ 3.0) * c_EC) + ((Na_EC ^ 3.0) * c_i))</Parameter><Parameter Name="nu" Role="user defined" Unit="1">0.27</Parameter><Parameter Name="ksat" Role="user defined" Unit="1">0.32</Parameter><Parameter Name="Q10NCX" Role="user defined" Unit="1">1.57</Parameter><Parameter Name="Ka" Role="user defined" Unit="1">(1.0 / (1.0 + ((Kdact / c_i) ^ 2.0)))</Parameter><Parameter Name="Qcorr" Role="user defined" Unit="1">((_T_ - 310.0) / 10.0)</Parameter><Parameter Name="g_NCX" Role="user defined" Unit="pA.mV-1.um-2">0.129</Parameter><Parameter Name="s1" Role="user defined" Unit="uM4">(exp((nu * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_i ^ 3.0) * c_EC)</Parameter><Parameter Name="s2" Role="user defined" Unit="uM4">(exp(((nu - 1.0) * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_EC ^ 3.0) * c_i)</Parameter><Parameter Name="Kdact" Role="user defined" Unit="uM">0.05</Parameter><Parameter Name="KmNa_EC" Role="user defined" Unit="uM">(87.5 * 1000.0)</Parameter><Parameter Name="Kmc_EC" Role="user defined" Unit="uM">(1.3 * 1000.0)</Parameter><Parameter Name="Kmc_i" Role="user defined" Unit="uM">6.59</Parameter><Parameter Name="KmNa_i" Role="user defined" Unit="uM">(12.29 * 1000.0)</Parameter></Kinetics></FluxStep><FluxStep Name="SOCE" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075558"><Reactant LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245075559" /><Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245075560" /><Modifier LocalizedCompoundRef="SOCEProb" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(g_SOCE * (E_Ca - Voltage_PM) * (SOCEProb / SOCEProbUnit))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">2.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="g_SOCE" Role="user defined" Unit="pA.um-2.mV-1">(1.0 / (200.0 * PM))</Parameter><Parameter Name="SOCEProbUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter></Kinetics></FluxStep><FluxStep Name="CaLeak_PM" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245075562"><Reactant LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245075563" /><Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245075564" /><Kinetics KineticsType="GeneralCurrentKinetics"><Parameter Name="I" Role="inward current density" Unit="pA.um-2">(g_PMLeak * (E_Ca - Voltage_PM))</Parameter><Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter><Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter><Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(8.388606999999999E15 / 8388607.0)</Parameter><Parameter Name="g_PMLeak" Role="user defined" Unit="pA.mV-1.um-2">0.001</Parameter></Kinetics></FluxStep><Diagram Name="c0" Structure="EC"><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="37" LocationY="472" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="46" LocationY="291" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" /></Diagram><Diagram Name="m0" Structure="PM"><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="37" LocationY="472" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="46" LocationY="291" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" /></Diagram><Diagram Name="c0" Structure="cyto"><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="37" LocationY="472" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="46" LocationY="291" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" /></Diagram><Diagram Name="m0" Structure="SRM"><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="37" LocationY="472" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="46" LocationY="291" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" /></Diagram><Diagram Name="c0" Structure="SR"><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="37" LocationY="472" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="46" LocationY="291" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" /><SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" /><FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" /><LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" /></Diagram><Version Name="model" KeyValue="245075446" BranchId="244356493" Archived="0" Date="14-Oct-2022 20:23:35" FromVersionable="false"><Owner Name="emmetf" Identifier="243268898" /><GroupAccess Type="1" /></Version><ModelUnitSystem VolumeSubstanceUnit="uM.um3" MembraneSubstanceUnit="molecules" LumpedReactionSubstanceUnit="molecules" VolumeUnit="um3" AreaUnit="um2" LengthUnit="um" TimeUnit="s" /></Model><SimulationSpec Name="Application0" Stochastic="false" UseConcentration="true" RuleBased="false" MassConservationModelReduction="false" InsufficientIterations="false" InsufficientMaxMolecules="false"><NetworkConstraints RbmMaxIteration="1" RbmMaxMoleculesPerSpecies="10" RbmSpeciesLimit="800" RbmReactionsLimit="2500" /><Annotation></Annotation><Geometry Name="non-spatial" Dimension="0"><Extent X="10.0" Y="10.0" Z="10.0" /><Origin X="0.0" Y="0.0" Z="0.0" /><SubVolume Name="Compartment" Handle="0" Type="Compartmental" KeyValue="244356488" /><Version Name="non-spatial" KeyValue="244356484" BranchId="244356485" Archived="0" Date="05-Oct-2022 01:01:34" FromVersionable="false"><Owner Name="emmetf" Identifier="243268898" /><GroupAccess Type="1" /></Version></Geometry><GeometryContext><FeatureMapping Feature="SR" GeometryClass="Compartment" SubVolume="Compartment" Size="6283.0"><BoundariesTypes Xm="Flux" Xp="Flux" Ym="Flux" Yp="Flux" Zm="Flux" Zp="Flux" /></FeatureMapping><FeatureMapping Feature="EC" GeometryClass="Compartment" SubVolume="Compartment" Size="1000000.0"><BoundariesTypes Xm="Flux" Xp="Flux" Ym="Flux" Yp="Flux" Zm="Flux" Zp="Flux" /></FeatureMapping><FeatureMapping Feature="cyto" GeometryClass="Compartment" SubVolume="Compartment" Size="119381.0"><BoundariesTypes Xm="Flux" Xp="Flux" Ym="Flux" Yp="Flux" Zm="Flux" Zp="Flux" /></FeatureMapping><MembraneMapping Membrane="PM" Size="12566.0" CalculateVoltage="true" SpecificCapacitance="0.01" InitialVoltage="-88.0" GeometryClass="Compartment" /><MembraneMapping Membrane="SRM" Size="37698.0" CalculateVoltage="false" SpecificCapacitance="1.0" InitialVoltage="0.0" GeometryClass="Compartment" /></GeometryContext><ReactionContext><LocalizedCompoundSpec LocalizedCompoundRef="c_SR" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>1500.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="c_EC" ForceConstant="true" WellMixed="false" ForceContinuous="false"><InitialConcentration>1300.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="K_EC" ForceConstant="true" WellMixed="false" ForceContinuous="false"><InitialConcentration>4000.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="Na_EC" ForceConstant="true" WellMixed="false" ForceContinuous="false"><InitialConcentration>147000.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="Cl_EC" ForceConstant="true" WellMixed="false" ForceContinuous="false"><InitialConcentration>128000.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="c_i" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>0.1</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="Na_i" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>14700.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="K_i" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>154500.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="Cl_i" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>5830.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="m" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>0.0128</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="h" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>0.8051</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="S" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>0.8487</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="n" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>0.003</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="h_K" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>0.9983</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="SOCEProb" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>0.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><LocalizedCompoundSpec LocalizedCompoundRef="w_RyR" ForceConstant="false" WellMixed="false" ForceContinuous="false"><InitialConcentration>0.0</InitialConcentration><Diffusion>0.0</Diffusion></LocalizedCompoundSpec><ReactionSpec ReactionStepRef="r0" ReactionMapping="included" /><ReactionSpec ReactionStepRef="r1" ReactionMapping="included" /><ReactionSpec ReactionStepRef="r2" ReactionMapping="included" /><ReactionSpec ReactionStepRef="r3" ReactionMapping="included" /><ReactionSpec ReactionStepRef="r4" ReactionMapping="included" /><ReactionSpec ReactionStepRef="r5" ReactionMapping="included" /><ReactionSpec ReactionStepRef="r6" ReactionMapping="included" /><ReactionSpec ReactionStepRef="RyR" ReactionMapping="included" /><ReactionSpec ReactionStepRef="DHPR" ReactionMapping="included" /><ReactionSpec ReactionStepRef="PMCA" ReactionMapping="included" /><ReactionSpec ReactionStepRef="SERCA" ReactionMapping="included" /><ReactionSpec ReactionStepRef="CaLeak_SR" ReactionMapping="included" /><ReactionSpec ReactionStepRef="K_DR" ReactionMapping="included" /><ReactionSpec ReactionStepRef="K_IR" ReactionMapping="included" /><ReactionSpec ReactionStepRef="NKX_K" ReactionMapping="included" /><ReactionSpec ReactionStepRef="Na" ReactionMapping="included" /><ReactionSpec ReactionStepRef="Cl" ReactionMapping="included" /><ReactionSpec ReactionStepRef="NCX_C" ReactionMapping="included" /><ReactionSpec ReactionStepRef="NKX_N" ReactionMapping="included" /><ReactionSpec ReactionStepRef="NCX_N" ReactionMapping="included" /><ReactionSpec ReactionStepRef="SOCE" ReactionMapping="included" /><ReactionSpec ReactionStepRef="CaLeak_PM" ReactionMapping="included" /></ReactionContext><MathDescription Name="Application0_generated"><Constant Name="_F_">96485.3321</Constant><Constant Name="_F_nmol_">9.64853321E-5</Constant><Constant Name="_K_GHK_">1.0E-9</Constant><Constant Name="_N_pmol_">6.02214179E11</Constant><Constant Name="_PI_">3.141592653589793</Constant><Constant Name="_R_">8314.46261815</Constant><Constant Name="_T_">300.0</Constant><Constant Name="A_a">150.0</Constant><Constant Name="A_hkinf">7.5</Constant><Constant Name="A_Sinf">5.8</Constant><Constant Name="alpha_h0">8.1</Constant><Constant Name="alpha_m0">288.0</Constant><Constant Name="alpha_n0">13.1</Constant><Constant Name="beta_h0">4380.0</Constant><Constant Name="beta_m0">1380.0</Constant><Constant Name="beta_n0">67.0</Constant><Constant Name="c_EC_init_uM">1300.0</Constant><Constant Name="c_i_init_uM">0.1</Constant><Constant Name="C_PM">0.01</Constant><Constant Name="c_ref">70.0</Constant><Constant Name="c_SR_init_uM">1500.0</Constant><Constant Name="C_SRM">1.0</Constant><Constant Name="carrierValence_CaLeak_PM">1.0</Constant><Constant Name="carrierValence_Cl">-1.0</Constant><Constant Name="carrierValence_DHPR">2.0</Constant><Constant Name="carrierValence_K_DR">1.0</Constant><Constant Name="carrierValence_K_IR">1.0</Constant><Constant Name="carrierValence_Na">1.0</Constant><Constant Name="carrierValence_NCX_C">2.0</Constant><Constant Name="carrierValence_NCX_N">1.0</Constant><Constant Name="carrierValence_NKX_K">1.0</Constant><Constant Name="carrierValence_NKX_N">1.0</Constant><Constant Name="carrierValence_PMCA">2.0</Constant><Constant Name="carrierValence_SOCE">2.0</Constant><Constant Name="Cl_EC_init_uM">128000.0</Constant><Constant Name="Cl_i_init_uM">5830.0</Constant><Constant Name="delta">0.4</Constant><Constant Name="f_DHPR">0.2</Constant><Constant Name="f_RyR">0.2</Constant><Constant Name="g0_DHPR">0.0939</Constant><Constant Name="g_Cl">0.1965</Constant><Constant Name="g_K">0.648</Constant><Constant Name="G_K">0.111</Constant><Constant Name="g_Na">8.04</Constant><Constant Name="g_NCX_NCX_C">0.129</Constant><Constant Name="g_NCX_NCX_N">0.129</Constant><Constant Name="g_PMLeak">0.001</Constant><Constant Name="h_init_molecules_um_2">0.8051</Constant><Constant Name="h_K_init_molecules_um_2">0.9983</Constant><Constant Name="h_KUnit">1.0</Constant><Constant Name="hUnit">1.0</Constant><Constant Name="I_PM">0.0</Constant><Constant Name="J_NaK_NKX_K">6.21E-6</Constant><Constant Name="J_NaK_NKX_N">6.21E-6</Constant><Constant Name="K_alphah">14.7</Constant><Constant Name="K_alpham">10.0</Constant><Constant Name="K_alphan">7.0</Constant><Constant Name="K_betah">9.0</Constant><Constant Name="K_betam">18.0</Constant><Constant Name="K_betan">40.0</Constant><Constant Name="K_DHPR">4.5</Constant><Constant Name="K_EC_init_uM">4000.0</Constant><Constant Name="K_i_init_uM">154500.0</Constant><Constant Name="K_K">9.5E8</Constant><Constant Name="K_millivolts_per_volt">1000.0</Constant><Constant Name="K_mK_NKX_K">1000.0</Constant><Constant Name="K_mK_NKX_N">1000.0</Constant><Constant Name="K_mNa_NKX_K">13000.0</Constant><Constant Name="K_mNa_NKX_N">13000.0</Constant><Constant Name="K_PMCA">0.17</Constant><Constant Name="K_RyR">4.5</Constant><Constant Name="K_S">1000000.0</Constant><Constant Name="K_SERCA">1.0</Constant><Constant Name="kcm">0.1</Constant><Constant Name="Kdact_NCX_C">0.05</Constant><Constant Name="Kdact_NCX_N">0.05</Constant><Constant Name="Kmc_i_NCX_C">6.59</Constant><Constant Name="Kmc_i_NCX_N">6.59</Constant><Constant Name="KMOLE">0.001660538783162726</Constant><Constant Name="ksat_NCX_C">0.32</Constant><Constant Name="ksat_NCX_N">0.32</Constant><Constant Name="m_init_molecules_um_2">0.0128</Constant><Constant Name="mUnit">1.0</Constant><Constant Name="n_init_molecules_um_2">0.003</Constant><Constant Name="Na_EC_init_uM">147000.0</Constant><Constant Name="Na_i_init_uM">14700.0</Constant><Constant Name="netValence_CaLeak_SR">1.0</Constant><Constant Name="netValence_r0">1.0</Constant><Constant Name="netValence_r1">1.0</Constant><Constant Name="netValence_r2">1.0</Constant><Constant Name="netValence_r3">1.0</Constant><Constant Name="netValence_r4">1.0</Constant><Constant Name="netValence_r5">1.0</Constant><Constant Name="netValence_r6">1.0</Constant><Constant Name="netValence_RyR">1.0</Constant><Constant Name="netValence_SERCA">1.0</Constant><Constant Name="nu_NCX_C">0.27</Constant><Constant Name="nu_NCX_N">0.27</Constant><Constant Name="nUnit">1.0</Constant><Constant Name="Q10NCX_NCX_C">1.57</Constant><Constant Name="Q10NCX_NCX_N">1.57</Constant><Constant Name="S_i">10000.0</Constant><Constant Name="S_init_molecules_um_2">0.8487</Constant><Constant Name="Size_cyto">119381.0</Constant><Constant Name="Size_EC">1000000.0</Constant><Constant Name="Size_PM">12566.0</Constant><Constant Name="Size_SR">6283.0</Constant><Constant Name="Size_SRM">37698.0</Constant><Constant Name="SOCEProb_init_molecules_um_2">0.0</Constant><Constant Name="SOCEProbUnit">1.0</Constant><Constant Name="SUnit">1.0</Constant><Constant Name="tau_SOCEProb">0.01</Constant><Constant Name="tauUnit">1.0</Constant><Constant Name="V_a">70.0</Constant><Constant Name="V_h">-45.0</Constant><Constant Name="V_hkinf">-40.0</Constant><Constant Name="V_m">-46.0</Constant><Constant Name="V_n">-40.0</Constant><Constant Name="V_Sinf">-78.0</Constant><Constant Name="V_tau">90.0</Constant><Constant Name="VBar_DHPR">-20.0</Constant><Constant Name="VBar_RyR">-20.0</Constant><Constant Name="Voltage_PM_init">-88.0</Constant><Constant Name="Voltage_SRM">0.0</Constant><Constant Name="Voltage_SRM_init">0.0</Constant><Constant Name="w_RyR_init_molecules_um_2">0.0</Constant><Constant Name="wUnit_r0">1.0</Constant><Constant Name="wUnit_RyR">1.0</Constant><VolumeVariable Name="c_i" Domain="Compartment" /><VolumeVariable Name="c_SR" Domain="Compartment" /><VolumeVariable Name="Cl_i" Domain="Compartment" /><VolumeVariable Name="h" Domain="Compartment" /><VolumeVariable Name="h_K" Domain="Compartment" /><VolumeVariable Name="K_i" Domain="Compartment" /><VolumeVariable Name="m" Domain="Compartment" /><VolumeVariable Name="n" Domain="Compartment" /><VolumeVariable Name="Na_i" Domain="Compartment" /><VolumeVariable Name="S" Domain="Compartment" /><VolumeVariable Name="SOCEProb" Domain="Compartment" /><VolumeVariable Name="Voltage_PM" Domain="Compartment" /><VolumeVariable Name="w_RyR" Domain="Compartment" /><Function Name="A" Domain="Compartment">(1.0 / (1.0 + exp(((Voltage_PM - V_a) / A_a))))</Function><Function Name="alpha_h" Domain="Compartment">(alpha_h0 * exp(( - (Voltage_PM - V_h) / K_alphah)))</Function><Function Name="alpha_m" Domain="Compartment">(alpha_m0 * (Voltage_PM - V_m) / (1.0 - exp(( - (Voltage_PM - V_m) / K_alpham))))</Function><Function Name="alpha_n" Domain="Compartment">(alpha_n0 * (Voltage_PM - V_n) / (1.0 - exp(( - (Voltage_PM - V_n) / K_alphan))))</Function><Function Name="beta_h" Domain="Compartment">(beta_h0 / (1.0 + exp(( - (Voltage_PM - V_h) / K_betah))))</Function><Function Name="beta_m" Domain="Compartment">(beta_m0 * exp(( - (Voltage_PM - V_m) / K_betam)))</Function><Function Name="beta_n" Domain="Compartment">(beta_n0 * exp(( - (Voltage_PM - V_n) / K_betan)))</Function><Function Name="c_EC" Domain="Compartment">c_EC_init_uM</Function><Function Name="Cl_EC" Domain="Compartment">Cl_EC_init_uM</Function><Function Name="device_PM.Capacitance" Domain="Compartment">(C_PM * Size_PM)</Function><Function Name="E_Ca">(log((c_EC / c_i)) * (_R_ * _T_) / (2.0 * _F_))</Function><Function Name="E_Cl" Domain="Compartment"> - (log((Cl_EC / Cl_i)) * _R_ * _T_ / _F_)</Function><Function Name="E_K_K_DR" Domain="Compartment">(log((K_EC / K_i)) * _R_ * _T_ / _F_)</Function><Function Name="E_K_K_IR" Domain="Compartment">(log((K_EC / K_i)) * _R_ * _T_ / _F_)</Function><Function Name="E_Na">(log((Na_EC / Na_i)) * _R_ * _T_ / _F_)</Function><Function Name="F_PM" Domain="Compartment">( - (I_DHPR * Size_PM) - (I_PMCA * Size_PM) - (I_K_DR * Size_PM) - (I_K_IR * Size_PM) - (I_NKX_K * Size_PM) - (I_Na * Size_PM) - (I_Cl * Size_PM) - (I_NCX_C * Size_PM) - (I_NKX_N * Size_PM) - (I_NCX_N * Size_PM) - (I_SOCE * Size_PM) - (I_CaLeak_PM * Size_PM))</Function><Function Name="fPump_NKX_K" Domain="Compartment">((1.0 + (0.12 * exp(( - 0.1 * Voltage_PM * _F_ / (_R_ * _T_)))) + ((0.04 / 7.0) * (exp((Na_EC / 67.3)) - 1.0) * exp(( - Voltage_PM * _F_ / (_R_ * _T_))))) ^  - 1.0)</Function><Function Name="fPump_NKX_N" Domain="Compartment">((1.0 + (0.12 * exp(( - 0.1 * Voltage_PM * _F_ / (_R_ * _T_)))) + ((0.04 / 7.0) * (exp((Na_EC / 67.3)) - 1.0) * exp(( - Voltage_PM * _F_ / (_R_ * _T_))))) ^  - 1.0)</Function><Function Name="g_PMCA" Domain="Compartment">(5.37 / Size_PM)</Function><Function Name="g_SOCE" Domain="Compartment">(1.0 / (200.0 * Size_PM))</Function><Function Name="h_Kinf" Domain="Compartment">(1.0 / (1.0 + exp(((Voltage_PM - V_hkinf) / A_hkinf))))</Function><Function Name="I_CaLeak_PM" Domain="Compartment">(g_PMLeak * (E_Ca - Voltage_PM))</Function><Function Name="I_Cl" Domain="Compartment">(g_Cl * (A ^ 4.0) * (E_Cl - Voltage_PM))</Function><Function Name="I_DHPR" Domain="Compartment">(g0_DHPR * openDHPR * (E_Ca - Voltage_PM))</Function><Function Name="I_K_DR" Domain="Compartment">(g_K * ((n / nUnit) ^ 4.0) * (h_K / h_KUnit) * (E_K_K_DR - Voltage_PM))</Function><Function Name="I_K_IR" Domain="Compartment">(G_K * ((K_R ^ 2.0) / (K_K + (K_R ^ 2.0))) * (1.0 - ((1.0 + ((K_S / ((S_i ^ 2.0) * exp(((2.0 * (1.0 - delta) * Voltage_PM * _F_) / (_R_ * _T_))))) * (1.0 + ((K_R ^ 2.0) / K_K)))) ^  - 1.0)) * (E_K_K_IR - Voltage_PM))</Function><Function Name="I_Na" Domain="Compartment">(g_Na * ((m / mUnit) ^ 3.0) * (h / hUnit) * (S / SUnit) * (E_Na - Voltage_PM))</Function><Function Name="I_NCX_C" Domain="Compartment">(2.0 * (g_NCX_NCX_C * (Q10NCX_NCX_C ^ Qcorr_NCX_C) * Ka_NCX_C * (s1_NCX_C - s2_NCX_C) / s3_NCX_C / (1.0 + (ksat_NCX_C * exp(((nu_NCX_C - 1.0) * Voltage_PM / (_R_ * _T_ / _F_)))))))</Function><Function Name="I_NCX_N" Domain="Compartment"> - (3.0 * (g_NCX_NCX_N * (Q10NCX_NCX_N ^ Qcorr_NCX_N) * Ka_NCX_N * (s1_NCX_N - s2_NCX_N) / s3_NCX_N / (1.0 + (ksat_NCX_N * exp(((nu_NCX_N - 1.0) * Voltage_PM / (_R_ * _T_ / _F_)))))))</Function><Function Name="I_NKX_K" Domain="Compartment">(2.0 * (fPump_NKX_K * _F_ * J_NaK_NKX_K / (((1.0 + (K_mK_NKX_K / K_EC)) ^ 2.0) * ((1.0 + (K_mNa_NKX_K / Na_i)) ^ 3.0))))</Function><Function Name="I_NKX_N" Domain="Compartment"> - (3.0 * (fPump_NKX_N * _F_ * J_NaK_NKX_N / (((1.0 + (K_mK_NKX_N / K_EC)) ^ 2.0) * ((1.0 + (K_mNa_NKX_N / Na_i)) ^ 3.0))))</Function><Function Name="I_PMCA" Domain="Compartment"> - (g_PMCA * c_i / (K_PMCA + c_i))</Function><Function Name="I_SOCE" Domain="Compartment">(g_SOCE * (E_Ca - Voltage_PM) * (SOCEProb / SOCEProbUnit))</Function><Function Name="j0_RyR" Domain="Compartment">(300.0 / Size_SRM)</Function><Function Name="J_CaLeak_PM" Domain="Compartment">((I_CaLeak_PM / (carrierValence_CaLeak_PM * _F_)) * unitFactor_CaLeak_PM)</Function><Function Name="J_CaLeak_SR" Domain="Compartment">(nu_leakSR * (c_SR - c_i))</Function><Function Name="J_Cl" Domain="Compartment">((I_Cl / (carrierValence_Cl * _F_)) * unitFactor_Cl)</Function><Function Name="J_DHPR" Domain="Compartment">((I_DHPR / (carrierValence_DHPR * _F_)) * unitFactor_DHPR)</Function><Function Name="J_K_DR" Domain="Compartment"> - ((I_K_DR / (carrierValence_K_DR * _F_)) * unitFactor_K_DR)</Function><Function Name="J_K_IR" Domain="Compartment">((I_K_IR / (carrierValence_K_IR * _F_)) * unitFactor_K_IR)</Function><Function Name="J_Na" Domain="Compartment">((I_Na / (carrierValence_Na * _F_)) * unitFactor_Na)</Function><Function Name="J_NCX_C" Domain="Compartment"> - ((I_NCX_C / (carrierValence_NCX_C * _F_)) * unitFactor_NCX_C)</Function><Function Name="J_NCX_N" Domain="Compartment">((I_NCX_N / (carrierValence_NCX_N * _F_)) * unitFactor_NCX_N)</Function><Function Name="J_NKX_K" Domain="Compartment">((I_NKX_K / (carrierValence_NKX_K * _F_)) * unitFactor_NKX_K)</Function><Function Name="J_NKX_N" Domain="Compartment"> - ((I_NKX_N / (carrierValence_NKX_N * _F_)) * unitFactor_NKX_N)</Function><Function Name="J_PMCA" Domain="Compartment"> - ((I_PMCA / (carrierValence_PMCA * _F_)) * unitFactor_PMCA)</Function><Function Name="J_r0" Domain="Compartment">((wInf - w_RyR) / tau_w)</Function><Function Name="J_r1" Domain="Compartment">((alpha_h * (1.0 - h)) - (beta_h * h))</Function><Function Name="J_r2" Domain="Compartment">((alpha_m * (1.0 - m)) - (beta_m * m))</Function><Function Name="J_r3" Domain="Compartment">((S_inf - S) / tau_S)</Function><Function Name="J_r4" Domain="Compartment">((alpha_n * (1.0 - n)) - (beta_n * n))</Function><Function Name="J_r5" Domain="Compartment">((h_Kinf - h_K) / tau_hK)</Function><Function Name="J_r6" Domain="Compartment">((SOCEProb_inf - SOCEProb) / tau_SOCEProb)</Function><Function Name="J_RyR" Domain="Compartment">(j0_RyR * openProb * (c_SR - c_i))</Function><Function Name="J_SERCA" Domain="Compartment">(nu_SERCA * (c_i ^ 2.0) / ((K_SERCA ^ 2.0) + (c_i ^ 2.0)))</Function><Function Name="J_SOCE" Domain="Compartment">((I_SOCE / (carrierValence_SOCE * _F_)) * unitFactor_SOCE)</Function><Function Name="K_EC" Domain="Compartment">K_EC_init_uM</Function><Function Name="K_R" Domain="Compartment">(K_EC * exp(( - delta * E_K_K_IR * _F_ / (_R_ * _T_))))</Function><Function Name="Ka_NCX_C" Domain="Compartment">(1.0 / (1.0 + ((Kdact_NCX_C / c_i) ^ 2.0)))</Function><Function Name="Ka_NCX_N" Domain="Compartment">(1.0 / (1.0 + ((Kdact_NCX_N / c_i) ^ 2.0)))</Function><Function Name="Ka_w_r0" Domain="Compartment">((28.8 / 1500.0) ^ (1.0 / 4.0))</Function><Function Name="Ka_w_RyR" Domain="Compartment">((28.8 / 1500.0) ^ (1.0 / 4.0))</Function><Function Name="Kb_w_r0" Domain="Compartment">((385.9 / 1500.0) ^ (1.0 / 3.0))</Function><Function Name="Kb_w_RyR" Domain="Compartment">((385.9 / 1500.0) ^ (1.0 / 3.0))</Function><Function Name="Kc_w" Domain="Compartment">(0.1 / 1.75)</Function><Function Name="KFlux_PM_cyto" Domain="Compartment">(Size_PM / Size_cyto)</Function><Function Name="KFlux_SRM_cyto" Domain="Compartment">(Size_SRM / Size_cyto)</Function><Function Name="KFlux_SRM_SR" Domain="Compartment">(Size_SRM / Size_SR)</Function><Function Name="Kmc_EC_NCX_C" Domain="Compartment">(1.3 * 1000.0)</Function><Function Name="Kmc_EC_NCX_N" Domain="Compartment">(1.3 * 1000.0)</Function><Function Name="KmNa_EC_NCX_C" Domain="Compartment">(87.5 * 1000.0)</Function><Function Name="KmNa_EC_NCX_N" Domain="Compartment">(87.5 * 1000.0)</Function><Function Name="KmNa_i_NCX_C" Domain="Compartment">(12.29 * 1000.0)</Function><Function Name="KmNa_i_NCX_N" Domain="Compartment">(12.29 * 1000.0)</Function><Function Name="L_DHPR" Domain="Compartment">(1000.0 / 0.002)</Function><Function Name="L_RyR" Domain="Compartment">(1000.0 / 0.002)</Function><Function Name="Na_EC" Domain="Compartment">Na_EC_init_uM</Function><Function Name="nu_leakSR" Domain="Compartment">(0.02 / Size_SRM)</Function><Function Name="nu_SERCA" Domain="Compartment">(4875.0 / Size_SRM)</Function><Function Name="openDHPR" Domain="Compartment">(((1.0 + (exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR))) * (f_DHPR ^  - 2.0))) ^ 4.0) / (((1.0 + (exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR))) * (f_DHPR ^  - 2.0))) ^ 4.0) + (L_DHPR * ((1.0 + exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR)))) ^ 4.0))))</Function><Function Name="openProb" Domain="Compartment">(voltProb * wProb)</Function><Function Name="Qcorr_NCX_C" Domain="Compartment">((_T_ - 310.0) / 10.0)</Function><Function Name="Qcorr_NCX_N" Domain="Compartment">((_T_ - 310.0) / 10.0)</Function><Function Name="s1_NCX_C" Domain="Compartment">(exp((nu_NCX_C * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_i ^ 3.0) * c_EC)</Function><Function Name="s1_NCX_N" Domain="Compartment">(exp((nu_NCX_N * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_i ^ 3.0) * c_EC)</Function><Function Name="s2_NCX_C" Domain="Compartment">(exp(((nu_NCX_C - 1.0) * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_EC ^ 3.0) * c_i)</Function><Function Name="s2_NCX_N" Domain="Compartment">(exp(((nu_NCX_N - 1.0) * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_EC ^ 3.0) * c_i)</Function><Function Name="s3_NCX_C" Domain="Compartment">((Kmc_i_NCX_C * (Na_EC ^ 3.0) * (1.0 + ((Na_i / KmNa_i_NCX_C) ^ 3.0))) + ((KmNa_EC_NCX_C ^ 3.0) * c_i * (1.0 + (c_i / Kmc_i_NCX_C))) + (Kmc_EC_NCX_C * (Na_i ^ 3.0)) + ((Na_i ^ 3.0) * c_EC) + ((Na_EC ^ 3.0) * c_i))</Function><Function Name="s3_NCX_N" Domain="Compartment">((Kmc_i_NCX_N * (Na_EC ^ 3.0) * (1.0 + ((Na_i / KmNa_i_NCX_N) ^ 3.0))) + ((KmNa_EC_NCX_N ^ 3.0) * c_i * (1.0 + (c_i / Kmc_i_NCX_N))) + (Kmc_EC_NCX_N * (Na_i ^ 3.0)) + ((Na_i ^ 3.0) * c_EC) + ((Na_EC ^ 3.0) * c_i))</Function><Function Name="S_inf" Domain="Compartment">(1.0 / (1.0 + exp(((Voltage_PM - V_Sinf) / A_Sinf))))</Function><Function Name="SOCEProb_inf" Domain="Compartment">(1.0 / (1.0 + ((c_SR / c_ref) ^ 4.0)))</Function><Function Name="tau_hK" Domain="Compartment">(exp(( - (Voltage_PM + 40.0) / 25.75)) * tauUnit)</Function><Function Name="tau_S" Domain="Compartment">(60.0 / (0.2 + (5.65 * (((Voltage_PM + V_tau) / 100.0) ^ 2.0))))</Function><Function Name="tau_w" Domain="Compartment">(wInf / kcm)</Function><Function Name="unitFactor_CaLeak_PM" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_Cl" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_DHPR" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_K_DR" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_K_IR" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="UnitFactor_mV_pF_s_neg_1_pA_neg_1">(1000.0 / 1.0)</Function><Function Name="unitFactor_Na" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_NCX_C" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_NCX_N" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_NKX_K" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_NKX_N" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_PMCA" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="unitFactor_SOCE" Domain="Compartment">(8.388606999999999E15 / 8388607.0)</Function><Function Name="voltProb" Domain="Compartment">(((exp(((Voltage_PM - VBar_RyR) / (4.0 * K_RyR))) * (f_RyR ^  - 2.0) * ((1.0 + (exp(((Voltage_PM - VBar_RyR) / (4.0 * K_RyR))) * (f_RyR ^  - 2.0))) ^ 3.0)) + (L_RyR * ((1.0 + exp(((Voltage_PM - VBar_RyR) / (4.0 * K_RyR)))) ^ 3.0))) / (((1.0 + (exp(((Voltage_PM - VBar_RyR) / (4.0 * K_RyR))) * (f_RyR ^  - 2.0))) ^ 4.0) + (L_RyR * ((1.0 + exp(((Voltage_PM - VBar_RyR) / (4.0 * K_RyR)))) ^ 4.0))))</Function><Function Name="wInf" Domain="Compartment">(wUnit_r0 * ((1.0 + ((Ka_w_r0 / c_i) ^ 4.0) + ((c_i / Kb_w_r0) ^ 3.0)) / (1.0 + (1.0 / Kc_w) + ((Ka_w_r0 / c_i) ^ 4.0) + ((c_i / Kb_w_r0) ^ 3.0))))</Function><Function Name="wProb" Domain="Compartment">((w_RyR / wUnit_RyR) * (1.0 + ((c_i / Kb_w_RyR) ^ 3.0)) / (1.0 + ((Ka_w_RyR / c_i) ^ 4.0) + ((c_i / Kb_w_RyR) ^ 3.0)))</Function><CompartmentSubDomain Name="Compartment"><BoundaryType Boundary="Xm" Type="Value" /><BoundaryType Boundary="Xp" Type="Value" /><BoundaryType Boundary="Ym" Type="Value" /><BoundaryType Boundary="Yp" Type="Value" /><BoundaryType Boundary="Zm" Type="Value" /><BoundaryType Boundary="Zp" Type="Value" /><OdeEquation Name="c_SR" SolutionType="Unknown"><Rate>( - (KFlux_SRM_SR * J_RyR) + (KFlux_SRM_SR * J_SERCA) - (KFlux_SRM_SR * J_CaLeak_SR))</Rate><Initial>c_SR_init_uM</Initial></OdeEquation><OdeEquation Name="c_i" SolutionType="Unknown"><Rate>((KFlux_SRM_cyto * J_RyR) + (KFlux_PM_cyto * J_DHPR) - (KFlux_PM_cyto * J_PMCA) - (KFlux_SRM_cyto * J_SERCA) + (KFlux_SRM_cyto * J_CaLeak_SR) - (KFlux_PM_cyto * J_NCX_C) + (KFlux_PM_cyto * J_SOCE) + (KFlux_PM_cyto * J_CaLeak_PM))</Rate><Initial>c_i_init_uM</Initial></OdeEquation><OdeEquation Name="Na_i" SolutionType="Unknown"><Rate>((KFlux_PM_cyto * J_Na) - (KFlux_PM_cyto * J_NKX_N) + (KFlux_PM_cyto * J_NCX_N))</Rate><Initial>Na_i_init_uM</Initial></OdeEquation><OdeEquation Name="K_i" SolutionType="Unknown"><Rate>( - (KFlux_PM_cyto * J_K_DR) + (KFlux_PM_cyto * J_K_IR) + (KFlux_PM_cyto * J_NKX_K))</Rate><Initial>K_i_init_uM</Initial></OdeEquation><OdeEquation Name="Cl_i" SolutionType="Unknown"><Rate>(KFlux_PM_cyto * J_Cl)</Rate><Initial>Cl_i_init_uM</Initial></OdeEquation><OdeEquation Name="m" SolutionType="Unknown"><Rate>J_r2</Rate><Initial>m_init_molecules_um_2</Initial></OdeEquation><OdeEquation Name="h" SolutionType="Unknown"><Rate>J_r1</Rate><Initial>h_init_molecules_um_2</Initial></OdeEquation><OdeEquation Name="S" SolutionType="Unknown"><Rate>J_r3</Rate><Initial>S_init_molecules_um_2</Initial></OdeEquation><OdeEquation Name="n" SolutionType="Unknown"><Rate>J_r4</Rate><Initial>n_init_molecules_um_2</Initial></OdeEquation><OdeEquation Name="h_K" SolutionType="Unknown"><Rate>J_r5</Rate><Initial>h_K_init_molecules_um_2</Initial></OdeEquation><OdeEquation Name="SOCEProb" SolutionType="Unknown"><Rate>J_r6</Rate><Initial>SOCEProb_init_molecules_um_2</Initial></OdeEquation><OdeEquation Name="w_RyR" SolutionType="Unknown"><Rate>J_r0</Rate><Initial>w_RyR_init_molecules_um_2</Initial></OdeEquation><OdeEquation Name="Voltage_PM" SolutionType="Unknown"><Rate>((UnitFactor_mV_pF_s_neg_1_pA_neg_1 / device_PM.Capacitance) * (I_PM - ( - (I_DHPR * Size_PM) - (I_PMCA * Size_PM) - (I_K_DR * Size_PM) - (I_K_IR * Size_PM) - (I_NKX_K * Size_PM) - (I_Na * Size_PM) - (I_Cl * Size_PM) - (I_NCX_C * Size_PM) - (I_NKX_N * Size_PM) - (I_NCX_N * Size_PM) - (I_SOCE * Size_PM) - (I_CaLeak_PM * Size_PM))))</Rate><Initial>Voltage_PM_init</Initial></OdeEquation></CompartmentSubDomain><Version Name="Application0_generated" KeyValue="245075444" BranchId="244356490" Archived="0" Date="14-Oct-2022 20:23:35" FromVersionable="false"><Owner Name="emmetf" Identifier="243268898" /><GroupAccess Type="1" /></Version></MathDescription><Version Name="Application0" KeyValue="245075571" BranchId="244356571" Archived="0" Date="14-Oct-2022 20:23:36" FromVersionable="false"><Owner Name="emmetf" Identifier="243268898" /><GroupAccess Type="1" /></Version><MicroscopeMeasurement Name="fluor"><ConvolutionKernel Type="ProjectionZKernel" /></MicroscopeMeasurement></SimulationSpec><Version Name="SkelMuscleCa" KeyValue="245075616" BranchId="244356602" Archived="0" Date="14-Oct-2022 20:23:36" FromVersionable="false"><Owner Name="emmetf" Identifier="243268898" /><GroupAccess Type="1" /></Version><pathwayModel><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#" version="3.0" /></pathwayModel><relationshipModel><RMNS version="3.0" /></relationshipModel><vcmetadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" /><nonrdfAnnotationList /><uriBindingList /></vcmetadata></BioModel></vcml>
+<!--This biomodel was generated in VCML Version Rel_Version_7.5.0_build_1-->
+<vcml xmlns="http://sourceforge.net/projects/vcell/vcml" Version="Rel_Version_7.5.0_build_1">
+  <BioModel Name="SkelMuscleCa">
+    <Model Name="model">
+      <ModelParameters>
+        <Parameter Name="E_Ca" Role="user defined" Unit="mV">(log((c_EC / c_i)) * (_R_ * _T_) / (2.0 * _F_))</Parameter>
+        <Parameter Name="E_Na" Role="user defined" Unit="mV">(log((Na_EC / Na_i)) * _R_ * _T_ / _F_)</Parameter>
+        <Parameter Name="volFactor" Role="user defined" Unit="1">(cyto / 0.26)</Parameter>
+        <Parameter Name="TTFrac" Role="user defined" Unit="1">3.75</Parameter>
+      </ModelParameters>
+      <Compound Name="s0" />
+      <Compound Name="s1" />
+      <Compound Name="s3" />
+      <Compound Name="s4" />
+      <Compound Name="s2" />
+      <Compound Name="s5" />
+      <Compound Name="s6" />
+      <Compound Name="s7" />
+      <Compound Name="s8" />
+      <Compound Name="s9" />
+      <Compound Name="s10" />
+      <Compound Name="s11" />
+      <Compound Name="s12" />
+      <Compound Name="s13" />
+      <Compound Name="s14" />
+      <Compound Name="s15" />
+      <Feature Name="cyto" KeyValue="245845784" />
+      <Feature Name="SR" KeyValue="245845786" />
+      <Feature Name="EC" KeyValue="245845788" />
+      <Membrane PositiveFeature="cyto" NegativeFeature="EC" MembraneVoltage="Voltage_PM" Name="PM" KeyValue="245845790" />
+      <Membrane PositiveFeature="SR" NegativeFeature="cyto" MembraneVoltage="Voltage_SRM" Name="SRM" KeyValue="245845792" />
+      <LocalizedCompound Name="c_i" CompoundRef="s0" Structure="cyto" OverrideName="true" KeyValue="245845794" />
+      <LocalizedCompound Name="c_SR" CompoundRef="s1" Structure="SR" OverrideName="true" KeyValue="245845795" />
+      <LocalizedCompound Name="Na_i" CompoundRef="s3" Structure="cyto" OverrideName="true" KeyValue="245845796" />
+      <LocalizedCompound Name="K_i" CompoundRef="s4" Structure="cyto" OverrideName="true" KeyValue="245845797" />
+      <LocalizedCompound Name="c_EC" CompoundRef="s2" Structure="EC" OverrideName="true" KeyValue="245845798" />
+      <LocalizedCompound Name="K_EC" CompoundRef="s5" Structure="EC" OverrideName="true" KeyValue="245845799" />
+      <LocalizedCompound Name="Na_EC" CompoundRef="s6" Structure="EC" OverrideName="true" KeyValue="245845800" />
+      <LocalizedCompound Name="Cl_EC" CompoundRef="s7" Structure="EC" OverrideName="true" KeyValue="245845801" />
+      <LocalizedCompound Name="Cl_i" CompoundRef="s8" Structure="cyto" OverrideName="true" KeyValue="245845802" />
+      <LocalizedCompound Name="w_RyR" CompoundRef="s9" Structure="SRM" OverrideName="true" KeyValue="245845803" />
+      <LocalizedCompound Name="m" CompoundRef="s10" Structure="PM" OverrideName="true" KeyValue="245845804" />
+      <LocalizedCompound Name="h" CompoundRef="s11" Structure="PM" OverrideName="true" KeyValue="245845805" />
+      <LocalizedCompound Name="S" CompoundRef="s12" Structure="PM" OverrideName="true" KeyValue="245845806" />
+      <LocalizedCompound Name="n" CompoundRef="s13" Structure="PM" OverrideName="true" KeyValue="245845807" />
+      <LocalizedCompound Name="h_K" CompoundRef="s14" Structure="PM" OverrideName="true" KeyValue="245845808" />
+      <LocalizedCompound Name="SOCEProb" CompoundRef="s15" Structure="PM" OverrideName="true" KeyValue="245845809" />
+      <SimpleReaction Structure="SRM" Name="r0" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845810">
+        <Product LocalizedCompoundRef="w_RyR" Stoichiometry="1" KeyValue="245845811" />
+        <Modifier LocalizedCompoundRef="c_i" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((wInf - w_RyR) / tau_w)</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="tau_w" Role="user defined" Unit="s">(1.0 / (100.0 * (1.0 + c_i)))</Parameter>
+          <Parameter Name="wInf" Role="user defined" Unit="molecules.um-2">(1.0 / (1.0 + c_i))</Parameter>
+        </Kinetics>
+      </SimpleReaction>
+      <SimpleReaction Structure="PM" Name="r1" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845813">
+        <Product LocalizedCompoundRef="h" Stoichiometry="1" KeyValue="245845814" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((alpha_h * (1.0 - h)) - (beta_h * h))</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="alpha_h" Role="user defined" Unit="s-1">(alpha_h0 * exp(( - (Voltage_PM - V_h) / K_alphah)))</Parameter>
+          <Parameter Name="beta_h" Role="user defined" Unit="s-1">(beta_h0 / (1.0 + exp(( - (Voltage_PM - V_h) / K_betah))))</Parameter>
+          <Parameter Name="alpha_h0" Role="user defined" Unit="s-1">8.1</Parameter>
+          <Parameter Name="K_alphah" Role="user defined" Unit="mV">14.7</Parameter>
+          <Parameter Name="V_h" Role="user defined" Unit="mV">-45.0</Parameter>
+          <Parameter Name="K_betah" Role="user defined" Unit="mV">9.0</Parameter>
+          <Parameter Name="beta_h0" Role="user defined" Unit="s-1">4380.0</Parameter>
+        </Kinetics>
+      </SimpleReaction>
+      <SimpleReaction Structure="PM" Name="r2" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845815">
+        <Product LocalizedCompoundRef="m" Stoichiometry="1" KeyValue="245845816" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((alpha_m * (1.0 - m)) - (beta_m * m))</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="alpha_m" Role="user defined" Unit="s-1">(alpha_m0 * (Voltage_PM - V_m) / (1.0 - exp(( - (Voltage_PM - V_m) / K_alpham))))</Parameter>
+          <Parameter Name="beta_m" Role="user defined" Unit="s-1">(beta_m0 * exp(( - (Voltage_PM - V_m) / K_betam)))</Parameter>
+          <Parameter Name="V_m" Role="user defined" Unit="mV">-46.0</Parameter>
+          <Parameter Name="K_alpham" Role="user defined" Unit="mV">10.0</Parameter>
+          <Parameter Name="alpha_m0" Role="user defined" Unit="s-1.mV-1">288.0</Parameter>
+          <Parameter Name="K_betam" Role="user defined" Unit="mV">18.0</Parameter>
+          <Parameter Name="beta_m0" Role="user defined" Unit="s-1">1380.0</Parameter>
+        </Kinetics>
+      </SimpleReaction>
+      <SimpleReaction Structure="PM" Name="r3" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845817">
+        <Product LocalizedCompoundRef="S" Stoichiometry="1" KeyValue="245845818" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((S_inf - S) / tau_S)</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="S_inf" Role="user defined" Unit="molecules.um-2">(1.0 / (1.0 + exp(((Voltage_PM - V_Sinf) / A_Sinf))))</Parameter>
+          <Parameter Name="tau_S" Role="user defined" Unit="s">(60.0 / (0.2 + (5.65 * (((Voltage_PM + V_tau) / 100.0) ^ 2.0))))</Parameter>
+          <Parameter Name="A_Sinf" Role="user defined" Unit="mV">5.8</Parameter>
+          <Parameter Name="V_Sinf" Role="user defined" Unit="mV">-78.0</Parameter>
+          <Parameter Name="V_tau" Role="user defined" Unit="mV">90.0</Parameter>
+        </Kinetics>
+      </SimpleReaction>
+      <SimpleReaction Structure="PM" Name="r4" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845819">
+        <Product LocalizedCompoundRef="n" Stoichiometry="1" KeyValue="245845820" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((alpha_n * (1.0 - n)) - (beta_n * n))</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="alpha_n" Role="user defined" Unit="s-1">(alpha_n0 * (Voltage_PM - V_n) / (1.0 - exp(( - (Voltage_PM - V_n) / K_alphan))))</Parameter>
+          <Parameter Name="beta_n" Role="user defined" Unit="s-1">(beta_n0 * exp(( - (Voltage_PM - V_n) / K_betan)))</Parameter>
+          <Parameter Name="K_alphan" Role="user defined" Unit="mV">7.0</Parameter>
+          <Parameter Name="V_n" Role="user defined" Unit="mV">-40.0</Parameter>
+          <Parameter Name="alpha_n0" Role="user defined" Unit="s-1.mV-1">13.1</Parameter>
+          <Parameter Name="beta_n0" Role="user defined" Unit="s-1">67.0</Parameter>
+          <Parameter Name="K_betan" Role="user defined" Unit="mV">40.0</Parameter>
+        </Kinetics>
+      </SimpleReaction>
+      <SimpleReaction Structure="PM" Name="r5" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845821">
+        <Product LocalizedCompoundRef="h_K" Stoichiometry="1" KeyValue="245845822" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((h_Kinf - h_K) / tau_hK)</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="tau_hK" Role="user defined" Unit="s">(exp(( - (Voltage_PM + 40.0) / 25.75)) * tauUnit)</Parameter>
+          <Parameter Name="h_Kinf" Role="user defined" Unit="molecules.um-2">(1.0 / (1.0 + exp(((Voltage_PM - V_hkinf) / A_hkinf))))</Parameter>
+          <Parameter Name="V_hkinf" Role="user defined" Unit="mV">-40.0</Parameter>
+          <Parameter Name="A_hkinf" Role="user defined" Unit="mV">7.5</Parameter>
+          <Parameter Name="tauUnit" Role="user defined" Unit="s">1.0</Parameter>
+        </Kinetics>
+      </SimpleReaction>
+      <SimpleReaction Structure="PM" Name="r6" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845823">
+        <Product LocalizedCompoundRef="SOCEProb" Stoichiometry="1" KeyValue="245845824" />
+        <Modifier LocalizedCompoundRef="c_SR" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="molecules.um-2.s-1">((SOCEProb_inf - SOCEProb) / tau_SOCEProb)</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="SOCEProb_inf" Role="user defined" Unit="molecules.um-2">(1.0 / (1.0 + ((c_SR / c_ref) ^ 4.0)))</Parameter>
+          <Parameter Name="tau_SOCEProb" Role="user defined" Unit="s">0.01</Parameter>
+          <Parameter Name="c_ref" Role="user defined" Unit="uM">500.0</Parameter>
+        </Kinetics>
+      </SimpleReaction>
+      <FluxStep Name="RyR" Structure="SRM" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845826">
+        <Reactant LocalizedCompoundRef="c_SR" Stoichiometry="1" KeyValue="245845827" />
+        <Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245845828" />
+        <Modifier LocalizedCompoundRef="w_RyR" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">(j0_RyR * openProb * (c_SR - c_i))</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="j0_RyR" Role="user defined" Unit="um.s-1">(300.0 * volFactor / (3.0 * SRM))</Parameter>
+          <Parameter Name="openProb" Role="user defined" Unit="1">(voltProb * (w_RyR / wUnit))</Parameter>
+          <Parameter Name="voltProb" Role="user defined" Unit="1">(((1.0 + (exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0))) ^ 4.0) / (((1.0 + (exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0))) ^ 4.0) + (L * ((1.0 + exp(((Voltage_PM - VBar) / (4.0 * K)))) ^ 4.0))))</Parameter>
+          <Parameter Name="wUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter>
+          <Parameter Name="VBar" Role="user defined" Unit="mV">-20.0</Parameter>
+          <Parameter Name="f" Role="user defined" Unit="1">0.2</Parameter>
+          <Parameter Name="K" Role="user defined" Unit="mV">4.5</Parameter>
+          <Parameter Name="L" Role="user defined" Unit="1">(1000.0 / 0.002)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="DHPR" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845830">
+        <Reactant LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245845831" />
+        <Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245845832" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((g0_DHPR * openDHPR * (E_Ca - Voltage_PM)) * TTFrac)</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">2.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="openDHPR" Role="user defined" Unit="1">(((exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0) * ((1.0 + (exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0))) ^ 3.0)) + (L * exp(((Voltage_PM - VBar) / (4.0 * K))) * ((1.0 + exp(((Voltage_PM - VBar) / (4.0 * K)))) ^ 3.0))) / (((1.0 + (exp(((Voltage_PM - VBar) / (4.0 * K))) * (f ^  - 2.0))) ^ 4.0) + (L * ((1.0 + exp(((Voltage_PM - VBar) / (4.0 * K)))) ^ 4.0))))</Parameter>
+          <Parameter Name="g0_DHPR" Role="user defined" Unit="pA.mV-1.um-2">0.0</Parameter>
+          <Parameter Name="VBar" Role="user defined" Unit="mV">-20.0</Parameter>
+          <Parameter Name="f" Role="user defined" Unit="1">0.2</Parameter>
+          <Parameter Name="K" Role="user defined" Unit="mV">4.5</Parameter>
+          <Parameter Name="L" Role="user defined" Unit="1">(1000.0 / 0.002)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="PMCA" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845833">
+        <Reactant LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245845834" />
+        <Product LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245845835" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">( - (g_PMCA * c_i / (K_PMCA + c_i)) * (1.0 + TTFrac))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">- ((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">2.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="g_PMCA" Role="user defined" Unit="pA.um-2">(5.37 / PM)</Parameter>
+          <Parameter Name="K_PMCA" Role="user defined" Unit="uM">0.17</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="SERCA" Structure="SRM" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845836">
+        <Reactant LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245845837" />
+        <Product LocalizedCompoundRef="c_SR" Stoichiometry="1" KeyValue="245845838" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">(nu_SERCA * c_i / (K_SERCA + c_i))</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="K_SERCA" Role="user defined" Unit="uM">1.0</Parameter>
+          <Parameter Name="nu_SERCA" Role="user defined" Unit="uM.um.s-1">(4875.0 * volFactor * 0.682 / SRM)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="CaLeak_SR" Structure="SRM" Reversible="true" FluxOption="MolecularOnly" KeyValue="245845839">
+        <Reactant LocalizedCompoundRef="c_SR" Stoichiometry="1" KeyValue="245845840" />
+        <Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245845841" />
+        <Kinetics KineticsType="GeneralKinetics">
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">(nu_leakSR * (c_SR - c_i))</Parameter>
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">0.0</Parameter>
+          <Parameter Name="netValence" Role="net charge valence" Unit="1">1.0</Parameter>
+          <Parameter Name="nu_leakSR" Role="user defined" Unit="um.s-1">(0.02 * volFactor * 10.0 / SRM)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="K_DR" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845842">
+        <Reactant LocalizedCompoundRef="K_i" Stoichiometry="1" KeyValue="245845843" />
+        <Product LocalizedCompoundRef="K_EC" Stoichiometry="1" KeyValue="245845844" />
+        <Modifier LocalizedCompoundRef="n" />
+        <Modifier LocalizedCompoundRef="h_K" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((g_K * ((n / nUnit) ^ 4.0) * (h_K / h_KUnit) * (E_K - Voltage_PM)) * (1.0 + (0.45 * TTFrac)))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">- ((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="E_K" Role="user defined" Unit="mV">(log((K_EC / K_i)) * _R_ * _T_ / _F_)</Parameter>
+          <Parameter Name="g_K" Role="user defined" Unit="pA.mV-1.um-2">0.648</Parameter>
+          <Parameter Name="nUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter>
+          <Parameter Name="h_KUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="K_IR" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845847">
+        <Reactant LocalizedCompoundRef="K_EC" Stoichiometry="1" KeyValue="245845848" />
+        <Product LocalizedCompoundRef="K_i" Stoichiometry="1" KeyValue="245845849" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((G_K * ((K_R ^ 2.0) / (K_K + (K_R ^ 2.0))) * (1.0 - ((1.0 + ((K_S / ((S_i ^ 2.0) * exp(((2.0 * (1.0 - delta) * Voltage_PM * _F_) / (_R_ * _T_))))) * (1.0 + ((K_R ^ 2.0) / K_K)))) ^  - 1.0)) * (E_K - Voltage_PM)) * (1.0 + TTFrac))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="E_K" Role="user defined" Unit="mV">(log((K_EC / K_i)) * _R_ * _T_ / _F_)</Parameter>
+          <Parameter Name="G_K" Role="user defined" Unit="pA.um-2.mV-1">0.111</Parameter>
+          <Parameter Name="K_K" Role="user defined" Unit="uM2">9.5E8</Parameter>
+          <Parameter Name="delta" Role="user defined" Unit="1">0.4</Parameter>
+          <Parameter Name="S_i" Role="user defined" Unit="uM">10000.0</Parameter>
+          <Parameter Name="K_S" Role="user defined" Unit="uM2">1000000.0</Parameter>
+          <Parameter Name="K_R" Role="user defined" Unit="uM">(K_EC * exp(( - delta * E_K * _F_ / (_R_ * _T_))))</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="NKX_K" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845850">
+        <Reactant LocalizedCompoundRef="K_EC" Stoichiometry="1" KeyValue="245845851" />
+        <Product LocalizedCompoundRef="K_i" Stoichiometry="1" KeyValue="245845852" />
+        <Modifier LocalizedCompoundRef="Na_i" />
+        <Modifier LocalizedCompoundRef="Na_EC" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((2.0 * (fPump * _F_ * J_NaK / (((1.0 + (K_mK / K_EC)) ^ 2.0) * ((1.0 + (K_mNa / Na_i)) ^ 3.0)))) * (1.0 + (0.1 * TTFrac)))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="K_mK" Role="user defined" Unit="uM">1000.0</Parameter>
+          <Parameter Name="K_mNa" Role="user defined" Unit="uM">13000.0</Parameter>
+          <Parameter Name="J_NaK" Role="user defined" Unit="pmol.s-1.um-2">6.21E-6</Parameter>
+          <Parameter Name="fPump" Role="user defined" Unit="1">((1.0 + (0.12 * exp(( - 0.1 * Voltage_PM * _F_ / (_R_ * _T_)))) + ((0.04 / 7.0) * (exp((Na_EC / 67.3)) - 1.0) * exp(( - Voltage_PM * _F_ / (_R_ * _T_))))) ^  - 1.0)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="Na" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845855">
+        <Reactant LocalizedCompoundRef="Na_EC" Stoichiometry="1" KeyValue="245845856" />
+        <Product LocalizedCompoundRef="Na_i" Stoichiometry="1" KeyValue="245845857" />
+        <Modifier LocalizedCompoundRef="m" />
+        <Modifier LocalizedCompoundRef="h" />
+        <Modifier LocalizedCompoundRef="S" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((g_Na * ((m / mUnit) ^ 3.0) * (h / hUnit) * (S / SUnit) * (E_Na - Voltage_PM)) * (1.0 + (0.1 * TTFrac)))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="mUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter>
+          <Parameter Name="g_Na" Role="user defined" Unit="pA.mV-1.um-2">8.04</Parameter>
+          <Parameter Name="hUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter>
+          <Parameter Name="SUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="Cl" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845861">
+        <Reactant LocalizedCompoundRef="Cl_EC" Stoichiometry="1" KeyValue="245845862" />
+        <Product LocalizedCompoundRef="Cl_i" Stoichiometry="1" KeyValue="245845863" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((g_Cl * (A ^ 4.0) * (E_Cl - Voltage_PM)) * (1.0 + (0.1 * TTFrac)))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">-1.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="g_Cl" Role="user defined" Unit="pA.mV-1.um-2">0.1965</Parameter>
+          <Parameter Name="A" Role="user defined" Unit="1">(1.0 / (1.0 + exp(((Voltage_PM - V_a) / A_a))))</Parameter>
+          <Parameter Name="E_Cl" Role="user defined" Unit="mV">- (log((Cl_EC / Cl_i)) * _R_ * _T_ / _F_)</Parameter>
+          <Parameter Name="A_a" Role="user defined" Unit="mV">150.0</Parameter>
+          <Parameter Name="V_a" Role="user defined" Unit="mV">70.0</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="NCX_C" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845864">
+        <Reactant LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245845865" />
+        <Product LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245845866" />
+        <Modifier LocalizedCompoundRef="Na_EC" />
+        <Modifier LocalizedCompoundRef="Na_i" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((2.0 * (g_NCX * (Q10NCX ^ Qcorr) * Ka * (s1 - s2) / s3 / (1.0 + (ksat * exp(((nu - 1.0) * Voltage_PM / (_R_ * _T_ / _F_))))))) * (1.0 + TTFrac))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">- ((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">2.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="s3" Role="user defined" Unit="uM4">((Kmc_i * (Na_EC ^ 3.0) * (1.0 + ((Na_i / KmNa_i) ^ 3.0))) + ((KmNa_EC ^ 3.0) * c_i * (1.0 + (c_i / Kmc_i))) + (Kmc_EC * (Na_i ^ 3.0)) + ((Na_i ^ 3.0) * c_EC) + ((Na_EC ^ 3.0) * c_i))</Parameter>
+          <Parameter Name="nu" Role="user defined" Unit="1">0.27</Parameter>
+          <Parameter Name="ksat" Role="user defined" Unit="1">0.32</Parameter>
+          <Parameter Name="Q10NCX" Role="user defined" Unit="1">1.57</Parameter>
+          <Parameter Name="Ka" Role="user defined" Unit="1">(1.0 / (1.0 + ((Kdact / c_i) ^ 2.0)))</Parameter>
+          <Parameter Name="Qcorr" Role="user defined" Unit="1">((_T_ - 310.0) / 10.0)</Parameter>
+          <Parameter Name="g_NCX" Role="user defined" Unit="pA.um-2">0.129</Parameter>
+          <Parameter Name="s1" Role="user defined" Unit="uM4">(exp((nu * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_i ^ 3.0) * c_EC)</Parameter>
+          <Parameter Name="s2" Role="user defined" Unit="uM4">(exp(((nu - 1.0) * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_EC ^ 3.0) * c_i)</Parameter>
+          <Parameter Name="Kdact" Role="user defined" Unit="uM">0.05</Parameter>
+          <Parameter Name="KmNa_EC" Role="user defined" Unit="uM">(87.5 * 1000.0)</Parameter>
+          <Parameter Name="Kmc_EC" Role="user defined" Unit="uM">(1.3 * 1000.0)</Parameter>
+          <Parameter Name="Kmc_i" Role="user defined" Unit="uM">6.59</Parameter>
+          <Parameter Name="KmNa_i" Role="user defined" Unit="uM">(12.29 * 1000.0)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="NKX_N" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845869">
+        <Reactant LocalizedCompoundRef="Na_i" Stoichiometry="1" KeyValue="245845870" />
+        <Product LocalizedCompoundRef="Na_EC" Stoichiometry="1" KeyValue="245845871" />
+        <Modifier LocalizedCompoundRef="K_EC" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">( - (3.0 * (fPump * _F_ * J_NaK / (((1.0 + (K_mK / K_EC)) ^ 2.0) * ((1.0 + (K_mNa / Na_i)) ^ 3.0)))) * (1.0 + (0.1 * TTFrac)))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">- ((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="K_mK" Role="user defined" Unit="uM">1000.0</Parameter>
+          <Parameter Name="K_mNa" Role="user defined" Unit="uM">13000.0</Parameter>
+          <Parameter Name="J_NaK" Role="user defined" Unit="pmol.s-1.um-2">6.21E-6</Parameter>
+          <Parameter Name="fPump" Role="user defined" Unit="1">((1.0 + (0.12 * exp(( - 0.1 * Voltage_PM * _F_ / (_R_ * _T_)))) + ((0.04 / 7.0) * (exp((Na_EC / 67.3)) - 1.0) * exp(( - Voltage_PM * _F_ / (_R_ * _T_))))) ^  - 1.0)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="NCX_N" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845873">
+        <Reactant LocalizedCompoundRef="Na_EC" Stoichiometry="1" KeyValue="245845874" />
+        <Product LocalizedCompoundRef="Na_i" Stoichiometry="1" KeyValue="245845875" />
+        <Modifier LocalizedCompoundRef="c_i" />
+        <Modifier LocalizedCompoundRef="c_EC" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">( - (3.0 * (g_NCX * (Q10NCX ^ Qcorr) * Ka * (s1 - s2) / s3 / (1.0 + (ksat * exp(((nu - 1.0) * Voltage_PM / (_R_ * _T_ / _F_))))))) * (1.0 + TTFrac))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="s3" Role="user defined" Unit="uM4">((Kmc_i * (Na_EC ^ 3.0) * (1.0 + ((Na_i / KmNa_i) ^ 3.0))) + ((KmNa_EC ^ 3.0) * c_i * (1.0 + (c_i / Kmc_i))) + (Kmc_EC * (Na_i ^ 3.0)) + ((Na_i ^ 3.0) * c_EC) + ((Na_EC ^ 3.0) * c_i))</Parameter>
+          <Parameter Name="nu" Role="user defined" Unit="1">0.27</Parameter>
+          <Parameter Name="ksat" Role="user defined" Unit="1">0.32</Parameter>
+          <Parameter Name="Q10NCX" Role="user defined" Unit="1">1.57</Parameter>
+          <Parameter Name="Ka" Role="user defined" Unit="1">(1.0 / (1.0 + ((Kdact / c_i) ^ 2.0)))</Parameter>
+          <Parameter Name="Qcorr" Role="user defined" Unit="1">((_T_ - 310.0) / 10.0)</Parameter>
+          <Parameter Name="g_NCX" Role="user defined" Unit="pA.mV-1.um-2">0.129</Parameter>
+          <Parameter Name="s1" Role="user defined" Unit="uM4">(exp((nu * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_i ^ 3.0) * c_EC)</Parameter>
+          <Parameter Name="s2" Role="user defined" Unit="uM4">(exp(((nu - 1.0) * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_EC ^ 3.0) * c_i)</Parameter>
+          <Parameter Name="Kdact" Role="user defined" Unit="uM">0.05</Parameter>
+          <Parameter Name="KmNa_EC" Role="user defined" Unit="uM">(87.5 * 1000.0)</Parameter>
+          <Parameter Name="Kmc_EC" Role="user defined" Unit="uM">(1.3 * 1000.0)</Parameter>
+          <Parameter Name="Kmc_i" Role="user defined" Unit="uM">6.59</Parameter>
+          <Parameter Name="KmNa_i" Role="user defined" Unit="uM">(12.29 * 1000.0)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="SOCE" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845878">
+        <Reactant LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245845879" />
+        <Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245845880" />
+        <Modifier LocalizedCompoundRef="SOCEProb" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((g_SOCE * (E_Ca - Voltage_PM) * (SOCEProb / SOCEProbUnit)) * (1.0 + TTFrac))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">2.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="g_SOCE" Role="user defined" Unit="pA.um-2.mV-1">(0.01 / 210.44)</Parameter>
+          <Parameter Name="SOCEProbUnit" Role="user defined" Unit="molecules.um-2">1.0</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <FluxStep Name="CaLeak_PM" Structure="PM" Reversible="true" FluxOption="MolecularAndElectrical" KeyValue="245845882">
+        <Reactant LocalizedCompoundRef="c_EC" Stoichiometry="1" KeyValue="245845883" />
+        <Product LocalizedCompoundRef="c_i" Stoichiometry="1" KeyValue="245845884" />
+        <Kinetics KineticsType="GeneralCurrentKinetics">
+          <Parameter Name="I" Role="inward current density" Unit="pA.um-2">((g_PMLeak * (E_Ca - Voltage_PM)) * (1.0 + TTFrac))</Parameter>
+          <Parameter Name="J" Role="reaction rate" Unit="uM.um.s-1">((I / (carrierValence * _F_)) * unitFactor)</Parameter>
+          <Parameter Name="carrierValence" Role="flux carrier valence" Unit="1">1.0</Parameter>
+          <Parameter Name="unitFactor" Role="electrical unit factor" Unit="uM.um3.C.s-1.pA-1.mol-1">(1.0E9 / 1.0)</Parameter>
+          <Parameter Name="g_PMLeak" Role="user defined" Unit="pA.mV-1.um-2">(5.0 * 2.0E-6)</Parameter>
+        </Kinetics>
+      </FluxStep>
+      <Diagram Name="c0" Structure="EC">
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="39" LocationY="473" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="45" LocationY="291" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" />
+      </Diagram>
+      <Diagram Name="m0" Structure="PM">
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="39" LocationY="473" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="45" LocationY="291" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" />
+      </Diagram>
+      <Diagram Name="c0" Structure="cyto">
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="39" LocationY="473" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="45" LocationY="291" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" />
+      </Diagram>
+      <Diagram Name="m0" Structure="SRM">
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="39" LocationY="473" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="45" LocationY="291" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" />
+      </Diagram>
+      <Diagram Name="c0" Structure="SR">
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_IR" LocationX="36" LocationY="87" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="PMCA" LocationX="34" LocationY="372" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_i" LocationX="101" LocationY="52" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="m" LocationX="40" LocationY="260" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r3" LocationX="58" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SOCE" LocationX="34" LocationY="438" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_i" LocationX="102" LocationY="116" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="n" LocationX="27" LocationY="130" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="SERCA" LocationX="44" LocationY="458" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_EC" LocationX="91" LocationY="230" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Na" LocationX="34" LocationY="287" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_N" LocationX="34" LocationY="314" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h" LocationX="12" LocationY="255" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="RyR" LocationX="45" LocationY="384" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r5" LocationX="81" LocationY="112" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_SR" LocationX="145" LocationY="408" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_EC" LocationX="88" LocationY="411" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="c_i" LocationX="94" LocationY="401" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Na_i" LocationX="89" LocationY="239" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="Cl_EC" LocationX="90" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="w_RyR" LocationX="54" LocationY="350" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="DHPR" LocationX="39" LocationY="473" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="SOCEProb" LocationX="37" LocationY="415" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="S" LocationX="68" LocationY="257" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r0" LocationX="17" LocationY="351" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r1" LocationX="23" LocationY="220" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="K_EC" LocationX="89" LocationY="117" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="K_DR" LocationX="39" LocationY="151" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_K" LocationX="39" LocationY="175" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_SR" LocationX="45" LocationY="291" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NCX_C" LocationX="35" LocationY="328" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r6" LocationX="81" LocationY="415" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r4" LocationX="12" LocationY="115" />
+        <SimpleReactionShape NodeReferenceModeAttrTag="full" SimpleReactionRef="r2" LocationX="43" LocationY="221" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="Cl" LocationX="38" LocationY="46" />
+        <LocalizedCompoundShape NodeReferenceModeAttrTag="full" LocalizedCompoundRef="h_K" LocationX="56" LocationY="132" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="CaLeak_PM" LocationX="38" LocationY="502" />
+        <FluxReactionShape NodeReferenceModeAttrTag="full" FluxReactionRef="NKX_N" LocationX="39" LocationY="185" />
+      </Diagram>
+      <Version Name="model" KeyValue="245845766" BranchId="244356493" Archived="0" Date="24-Oct-2022 18:44:46" FromVersionable="false">
+        <Owner Name="emmetf" Identifier="243268898" />
+        <GroupAccess Type="1" />
+      </Version>
+      <ModelUnitSystem VolumeSubstanceUnit="uM.um3" MembraneSubstanceUnit="molecules" LumpedReactionSubstanceUnit="molecules" VolumeUnit="um3" AreaUnit="um2" LengthUnit="um" TimeUnit="s" />
+    </Model>
+    <SimulationSpec Name="Application0" Stochastic="false" UseConcentration="true" RuleBased="false" MassConservationModelReduction="false" InsufficientIterations="false" InsufficientMaxMolecules="false">
+      <NetworkConstraints RbmMaxIteration="1" RbmMaxMoleculesPerSpecies="10" RbmSpeciesLimit="800" RbmReactionsLimit="2500" />
+      <Annotation />
+      <Geometry Name="non-spatial" Dimension="0">
+        <Extent X="10.0" Y="10.0" Z="10.0" />
+        <Origin X="0.0" Y="0.0" Z="0.0" />
+        <SubVolume Name="Compartment" Handle="0" Type="Compartmental" KeyValue="244356488" />
+        <Version Name="non-spatial" KeyValue="244356484" BranchId="244356485" Archived="0" Date="05-Oct-2022 01:01:34" FromVersionable="false">
+          <Owner Name="emmetf" Identifier="243268898" />
+          <GroupAccess Type="1" />
+        </Version>
+      </Geometry>
+      <GeometryContext>
+        <FeatureMapping Feature="cyto" GeometryClass="Compartment" SubVolume="Compartment" Size="119381.0">
+          <BoundariesTypes Xm="Flux" Xp="Flux" Ym="Flux" Yp="Flux" Zm="Flux" Zp="Flux" />
+        </FeatureMapping>
+        <FeatureMapping Feature="SR" GeometryClass="Compartment" SubVolume="Compartment" Size="6283.0">
+          <BoundariesTypes Xm="Flux" Xp="Flux" Ym="Flux" Yp="Flux" Zm="Flux" Zp="Flux" />
+        </FeatureMapping>
+        <FeatureMapping Feature="EC" GeometryClass="Compartment" SubVolume="Compartment" Size="1000000.0">
+          <BoundariesTypes Xm="Flux" Xp="Flux" Ym="Flux" Yp="Flux" Zm="Flux" Zp="Flux" />
+        </FeatureMapping>
+        <MembraneMapping Membrane="PM" Size="12566.0" CalculateVoltage="true" SpecificCapacitance="0.01" InitialVoltage="-88.0" GeometryClass="Compartment">
+          <BoundariesTypes Xm="Flux" Xp="Flux" Ym="Flux" Yp="Flux" Zm="Flux" Zp="Flux" />
+        </MembraneMapping>
+        <MembraneMapping Membrane="SRM" Size="37698.0" CalculateVoltage="false" SpecificCapacitance="1.0" InitialVoltage="0.0" GeometryClass="Compartment">
+          <BoundariesTypes Xm="Flux" Xp="Flux" Ym="Flux" Yp="Flux" Zm="Flux" Zp="Flux" />
+        </MembraneMapping>
+      </GeometryContext>
+      <ReactionContext>
+        <LocalizedCompoundSpec LocalizedCompoundRef="c_i" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>0.1</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="Na_i" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>14700.0</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="K_i" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>154500.0</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="Cl_i" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>5830.0</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="c_SR" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>1500.0</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="c_EC" ForceConstant="true" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>1300.0</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="K_EC" ForceConstant="true" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>4000.0</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="Na_EC" ForceConstant="true" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>147000.0</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="Cl_EC" ForceConstant="true" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>128000.0</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="m" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>0.0128</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="h" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>0.8051</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="S" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>0.8487</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="n" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>0.003</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="h_K" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>0.9983</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="SOCEProb" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>4.743E-6</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <LocalizedCompoundSpec LocalizedCompoundRef="w_RyR" ForceConstant="false" WellMixed="false" ForceContinuous="false">
+          <InitialConcentration>0.9091</InitialConcentration>
+          <Diffusion>0.0</Diffusion>
+        </LocalizedCompoundSpec>
+        <ReactionSpec ReactionStepRef="r0" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="r1" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="r2" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="r3" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="r4" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="r5" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="r6" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="RyR" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="DHPR" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="PMCA" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="SERCA" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="CaLeak_SR" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="K_DR" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="K_IR" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="NKX_K" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="Na" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="Cl" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="NCX_C" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="NKX_N" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="NCX_N" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="SOCE" ReactionMapping="included" />
+        <ReactionSpec ReactionStepRef="CaLeak_PM" ReactionMapping="included" />
+      </ReactionContext>
+      <ElectricalContext>
+        <Clamp Type="TotalCurrent">
+          <Electrode Feature="cyto">
+            <Coordinate X="0.0" Y="0.0" Z="0.0" />
+          </Electrode>
+          <Parameter Name="totalCurrent" Role="current" Unit="pA">-20000.0</Parameter>
+        </Clamp>
+        <Electrode Feature="EC">
+          <Coordinate X="0.0" Y="0.0" Z="0.0" />
+        </Electrode>
+      </ElectricalContext>
+      <MathDescription Name="Application0_generated">
+        <Constant Name="_F_">96485.3321</Constant>
+        <Constant Name="_F_nmol_">9.64853321E-5</Constant>
+        <Constant Name="_K_GHK_">1.0E-9</Constant>
+        <Constant Name="_N_pmol_">6.02214179E11</Constant>
+        <Constant Name="_PI_">3.141592653589793</Constant>
+        <Constant Name="_R_">8314.46261815</Constant>
+        <Constant Name="_T_">300.0</Constant>
+        <Constant Name="A_a">150.0</Constant>
+        <Constant Name="A_hkinf">7.5</Constant>
+        <Constant Name="A_Sinf">5.8</Constant>
+        <Constant Name="alpha_h0">8.1</Constant>
+        <Constant Name="alpha_m0">288.0</Constant>
+        <Constant Name="alpha_n0">13.1</Constant>
+        <Constant Name="beta_h0">4380.0</Constant>
+        <Constant Name="beta_m0">1380.0</Constant>
+        <Constant Name="beta_n0">67.0</Constant>
+        <Constant Name="c_EC_init_uM">1300.0</Constant>
+        <Constant Name="c_i_init_uM">0.1</Constant>
+        <Constant Name="C_PM">0.01</Constant>
+        <Constant Name="c_ref">500.0</Constant>
+        <Constant Name="c_SR_init_uM">1500.0</Constant>
+        <Constant Name="C_SRM">1.0</Constant>
+        <Constant Name="carrierValence_CaLeak_PM">1.0</Constant>
+        <Constant Name="carrierValence_Cl">-1.0</Constant>
+        <Constant Name="carrierValence_DHPR">2.0</Constant>
+        <Constant Name="carrierValence_K_DR">1.0</Constant>
+        <Constant Name="carrierValence_K_IR">1.0</Constant>
+        <Constant Name="carrierValence_Na">1.0</Constant>
+        <Constant Name="carrierValence_NCX_C">2.0</Constant>
+        <Constant Name="carrierValence_NCX_N">1.0</Constant>
+        <Constant Name="carrierValence_NKX_K">1.0</Constant>
+        <Constant Name="carrierValence_NKX_N">1.0</Constant>
+        <Constant Name="carrierValence_PMCA">2.0</Constant>
+        <Constant Name="carrierValence_SOCE">2.0</Constant>
+        <Constant Name="Cl_EC_init_uM">128000.0</Constant>
+        <Constant Name="Cl_i_init_uM">5830.0</Constant>
+        <Constant Name="delta">0.4</Constant>
+        <Constant Name="device_totalCurrClampElectrode.F">-20000.0</Constant>
+        <Constant Name="f_DHPR">0.2</Constant>
+        <Constant Name="f_RyR">0.2</Constant>
+        <Constant Name="g0_DHPR">0.0</Constant>
+        <Constant Name="g_Cl">0.1965</Constant>
+        <Constant Name="g_K">0.648</Constant>
+        <Constant Name="G_K">0.111</Constant>
+        <Constant Name="g_Na">8.04</Constant>
+        <Constant Name="g_NCX_NCX_C">0.129</Constant>
+        <Constant Name="g_NCX_NCX_N">0.129</Constant>
+        <Constant Name="h_init_molecules_um_2">0.8051</Constant>
+        <Constant Name="h_K_init_molecules_um_2">0.9983</Constant>
+        <Constant Name="h_KUnit">1.0</Constant>
+        <Constant Name="hUnit">1.0</Constant>
+        <Constant Name="J_NaK_NKX_K">6.21E-6</Constant>
+        <Constant Name="J_NaK_NKX_N">6.21E-6</Constant>
+        <Constant Name="K_alphah">14.7</Constant>
+        <Constant Name="K_alpham">10.0</Constant>
+        <Constant Name="K_alphan">7.0</Constant>
+        <Constant Name="K_betah">9.0</Constant>
+        <Constant Name="K_betam">18.0</Constant>
+        <Constant Name="K_betan">40.0</Constant>
+        <Constant Name="K_DHPR">4.5</Constant>
+        <Constant Name="K_EC_init_uM">4000.0</Constant>
+        <Constant Name="K_i_init_uM">154500.0</Constant>
+        <Constant Name="K_K">9.5E8</Constant>
+        <Constant Name="K_millivolts_per_volt">1000.0</Constant>
+        <Constant Name="K_mK_NKX_K">1000.0</Constant>
+        <Constant Name="K_mK_NKX_N">1000.0</Constant>
+        <Constant Name="K_mNa_NKX_K">13000.0</Constant>
+        <Constant Name="K_mNa_NKX_N">13000.0</Constant>
+        <Constant Name="K_PMCA">0.17</Constant>
+        <Constant Name="K_RyR">4.5</Constant>
+        <Constant Name="K_S">1000000.0</Constant>
+        <Constant Name="K_SERCA">1.0</Constant>
+        <Constant Name="Kdact_NCX_C">0.05</Constant>
+        <Constant Name="Kdact_NCX_N">0.05</Constant>
+        <Constant Name="Kmc_i_NCX_C">6.59</Constant>
+        <Constant Name="Kmc_i_NCX_N">6.59</Constant>
+        <Constant Name="KMOLE">0.001660538783162726</Constant>
+        <Constant Name="ksat_NCX_C">0.32</Constant>
+        <Constant Name="ksat_NCX_N">0.32</Constant>
+        <Constant Name="m_init_molecules_um_2">0.0128</Constant>
+        <Constant Name="mUnit">1.0</Constant>
+        <Constant Name="n_init_molecules_um_2">0.003</Constant>
+        <Constant Name="Na_EC_init_uM">147000.0</Constant>
+        <Constant Name="Na_i_init_uM">14700.0</Constant>
+        <Constant Name="netValence_CaLeak_SR">1.0</Constant>
+        <Constant Name="netValence_r0">1.0</Constant>
+        <Constant Name="netValence_r1">1.0</Constant>
+        <Constant Name="netValence_r2">1.0</Constant>
+        <Constant Name="netValence_r3">1.0</Constant>
+        <Constant Name="netValence_r4">1.0</Constant>
+        <Constant Name="netValence_r5">1.0</Constant>
+        <Constant Name="netValence_r6">1.0</Constant>
+        <Constant Name="netValence_RyR">1.0</Constant>
+        <Constant Name="netValence_SERCA">1.0</Constant>
+        <Constant Name="nu_NCX_C">0.27</Constant>
+        <Constant Name="nu_NCX_N">0.27</Constant>
+        <Constant Name="nUnit">1.0</Constant>
+        <Constant Name="Q10NCX_NCX_C">1.57</Constant>
+        <Constant Name="Q10NCX_NCX_N">1.57</Constant>
+        <Constant Name="S_i">10000.0</Constant>
+        <Constant Name="S_init_molecules_um_2">0.8487</Constant>
+        <Constant Name="Size_cyto">119381.0</Constant>
+        <Constant Name="Size_EC">1000000.0</Constant>
+        <Constant Name="Size_PM">12566.0</Constant>
+        <Constant Name="Size_SR">6283.0</Constant>
+        <Constant Name="Size_SRM">37698.0</Constant>
+        <Constant Name="SOCEProb_init_molecules_um_2">4.743E-6</Constant>
+        <Constant Name="SOCEProbUnit">1.0</Constant>
+        <Constant Name="SUnit">1.0</Constant>
+        <Constant Name="tau_SOCEProb">0.01</Constant>
+        <Constant Name="tauUnit">1.0</Constant>
+        <Constant Name="TTFrac">3.75</Constant>
+        <Constant Name="V_a">70.0</Constant>
+        <Constant Name="V_h">-45.0</Constant>
+        <Constant Name="V_hkinf">-40.0</Constant>
+        <Constant Name="V_m">-46.0</Constant>
+        <Constant Name="V_n">-40.0</Constant>
+        <Constant Name="V_Sinf">-78.0</Constant>
+        <Constant Name="V_tau">90.0</Constant>
+        <Constant Name="VBar_DHPR">-20.0</Constant>
+        <Constant Name="VBar_RyR">-20.0</Constant>
+        <Constant Name="Voltage_PM_init">-88.0</Constant>
+        <Constant Name="Voltage_SRM">0.0</Constant>
+        <Constant Name="Voltage_SRM_init">0.0</Constant>
+        <Constant Name="w_RyR_init_molecules_um_2">0.9091</Constant>
+        <Constant Name="wUnit">1.0</Constant>
+        <VolumeVariable Name="c_i" Domain="Compartment" />
+        <VolumeVariable Name="c_SR" Domain="Compartment" />
+        <VolumeVariable Name="Cl_i" Domain="Compartment" />
+        <VolumeVariable Name="h" Domain="Compartment" />
+        <VolumeVariable Name="h_K" Domain="Compartment" />
+        <VolumeVariable Name="K_i" Domain="Compartment" />
+        <VolumeVariable Name="m" Domain="Compartment" />
+        <VolumeVariable Name="n" Domain="Compartment" />
+        <VolumeVariable Name="Na_i" Domain="Compartment" />
+        <VolumeVariable Name="S" Domain="Compartment" />
+        <VolumeVariable Name="SOCEProb" Domain="Compartment" />
+        <VolumeVariable Name="Voltage_PM" Domain="Compartment" />
+        <VolumeVariable Name="w_RyR" Domain="Compartment" />
+        <Function Name="A" Domain="Compartment">(1.0 / (1.0 + exp(((Voltage_PM - V_a) / A_a))))</Function>
+        <Function Name="alpha_h" Domain="Compartment">(alpha_h0 * exp(( - (Voltage_PM - V_h) / K_alphah)))</Function>
+        <Function Name="alpha_m" Domain="Compartment">(alpha_m0 * (Voltage_PM - V_m) / (1.0 - exp(( - (Voltage_PM - V_m) / K_alpham))))</Function>
+        <Function Name="alpha_n" Domain="Compartment">(alpha_n0 * (Voltage_PM - V_n) / (1.0 - exp(( - (Voltage_PM - V_n) / K_alphan))))</Function>
+        <Function Name="beta_h" Domain="Compartment">(beta_h0 / (1.0 + exp(( - (Voltage_PM - V_h) / K_betah))))</Function>
+        <Function Name="beta_m" Domain="Compartment">(beta_m0 * exp(( - (Voltage_PM - V_m) / K_betam)))</Function>
+        <Function Name="beta_n" Domain="Compartment">(beta_n0 * exp(( - (Voltage_PM - V_n) / K_betan)))</Function>
+        <Function Name="c_EC" Domain="Compartment">c_EC_init_uM</Function>
+        <Function Name="Cl_EC" Domain="Compartment">Cl_EC_init_uM</Function>
+        <Function Name="device_PM.Capacitance" Domain="Compartment">(C_PM * Size_PM)</Function>
+        <Function Name="device_totalCurrClampElectrode.I">device_totalCurrClampElectrode.F</Function>
+        <Function Name="E_Ca">(log((c_EC / c_i)) * (_R_ * _T_) / (2.0 * _F_))</Function>
+        <Function Name="E_Cl" Domain="Compartment">- (log((Cl_EC / Cl_i)) * _R_ * _T_ / _F_)</Function>
+        <Function Name="E_K_K_DR" Domain="Compartment">(log((K_EC / K_i)) * _R_ * _T_ / _F_)</Function>
+        <Function Name="E_K_K_IR" Domain="Compartment">(log((K_EC / K_i)) * _R_ * _T_ / _F_)</Function>
+        <Function Name="E_Na">(log((Na_EC / Na_i)) * _R_ * _T_ / _F_)</Function>
+        <Function Name="F_PM" Domain="Compartment">( - (I_DHPR * Size_PM) - (I_PMCA * Size_PM) - (I_K_DR * Size_PM) - (I_K_IR * Size_PM) - (I_NKX_K * Size_PM) - (I_Na * Size_PM) - (I_Cl * Size_PM) - (I_NCX_C * Size_PM) - (I_NKX_N * Size_PM) - (I_NCX_N * Size_PM) - (I_SOCE * Size_PM) - (I_CaLeak_PM * Size_PM))</Function>
+        <Function Name="fPump_NKX_K" Domain="Compartment">((1.0 + (0.12 * exp(( - 0.1 * Voltage_PM * _F_ / (_R_ * _T_)))) + ((0.04 / 7.0) * (exp((Na_EC / 67.3)) - 1.0) * exp(( - Voltage_PM * _F_ / (_R_ * _T_))))) ^  - 1.0)</Function>
+        <Function Name="fPump_NKX_N" Domain="Compartment">((1.0 + (0.12 * exp(( - 0.1 * Voltage_PM * _F_ / (_R_ * _T_)))) + ((0.04 / 7.0) * (exp((Na_EC / 67.3)) - 1.0) * exp(( - Voltage_PM * _F_ / (_R_ * _T_))))) ^  - 1.0)</Function>
+        <Function Name="g_PMCA" Domain="Compartment">(5.37 / Size_PM)</Function>
+        <Function Name="g_PMLeak" Domain="Compartment">(5.0 * 2.0E-6)</Function>
+        <Function Name="g_SOCE" Domain="Compartment">(0.01 / 210.44)</Function>
+        <Function Name="h_Kinf" Domain="Compartment">(1.0 / (1.0 + exp(((Voltage_PM - V_hkinf) / A_hkinf))))</Function>
+        <Function Name="I_CaLeak_PM" Domain="Compartment">((g_PMLeak * (E_Ca - Voltage_PM)) * (1.0 + TTFrac))</Function>
+        <Function Name="I_Cl" Domain="Compartment">((g_Cl * (A ^ 4.0) * (E_Cl - Voltage_PM)) * (1.0 + (0.1 * TTFrac)))</Function>
+        <Function Name="I_DHPR" Domain="Compartment">((g0_DHPR * openDHPR * (E_Ca - Voltage_PM)) * TTFrac)</Function>
+        <Function Name="I_K_DR" Domain="Compartment">((g_K * ((n / nUnit) ^ 4.0) * (h_K / h_KUnit) * (E_K_K_DR - Voltage_PM)) * (1.0 + (0.45 * TTFrac)))</Function>
+        <Function Name="I_K_IR" Domain="Compartment">((G_K * ((K_R ^ 2.0) / (K_K + (K_R ^ 2.0))) * (1.0 - ((1.0 + ((K_S / ((S_i ^ 2.0) * exp(((2.0 * (1.0 - delta) * Voltage_PM * _F_) / (_R_ * _T_))))) * (1.0 + ((K_R ^ 2.0) / K_K)))) ^  - 1.0)) * (E_K_K_IR - Voltage_PM)) * (1.0 + TTFrac))</Function>
+        <Function Name="I_Na" Domain="Compartment">((g_Na * ((m / mUnit) ^ 3.0) * (h / hUnit) * (S / SUnit) * (E_Na - Voltage_PM)) * (1.0 + (0.1 * TTFrac)))</Function>
+        <Function Name="I_NCX_C" Domain="Compartment">((2.0 * (g_NCX_NCX_C * (Q10NCX_NCX_C ^ Qcorr_NCX_C) * Ka_NCX_C * (s1_NCX_C - s2_NCX_C) / s3_NCX_C / (1.0 + (ksat_NCX_C * exp(((nu_NCX_C - 1.0) * Voltage_PM / (_R_ * _T_ / _F_))))))) * (1.0 + TTFrac))</Function>
+        <Function Name="I_NCX_N" Domain="Compartment">( - (3.0 * (g_NCX_NCX_N * (Q10NCX_NCX_N ^ Qcorr_NCX_N) * Ka_NCX_N * (s1_NCX_N - s2_NCX_N) / s3_NCX_N / (1.0 + (ksat_NCX_N * exp(((nu_NCX_N - 1.0) * Voltage_PM / (_R_ * _T_ / _F_))))))) * (1.0 + TTFrac))</Function>
+        <Function Name="I_NKX_K" Domain="Compartment">((2.0 * (fPump_NKX_K * _F_ * J_NaK_NKX_K / (((1.0 + (K_mK_NKX_K / K_EC)) ^ 2.0) * ((1.0 + (K_mNa_NKX_K / Na_i)) ^ 3.0)))) * (1.0 + (0.1 * TTFrac)))</Function>
+        <Function Name="I_NKX_N" Domain="Compartment">( - (3.0 * (fPump_NKX_N * _F_ * J_NaK_NKX_N / (((1.0 + (K_mK_NKX_N / K_EC)) ^ 2.0) * ((1.0 + (K_mNa_NKX_N / Na_i)) ^ 3.0)))) * (1.0 + (0.1 * TTFrac)))</Function>
+        <Function Name="I_PM" Domain="Compartment">- device_totalCurrClampElectrode.F</Function>
+        <Function Name="I_PMCA" Domain="Compartment">( - (g_PMCA * c_i / (K_PMCA + c_i)) * (1.0 + TTFrac))</Function>
+        <Function Name="I_SOCE" Domain="Compartment">((g_SOCE * (E_Ca - Voltage_PM) * (SOCEProb / SOCEProbUnit)) * (1.0 + TTFrac))</Function>
+        <Function Name="j0_RyR" Domain="Compartment">(300.0 * volFactor / (3.0 * Size_SRM))</Function>
+        <Function Name="J_CaLeak_PM" Domain="Compartment">((I_CaLeak_PM / (carrierValence_CaLeak_PM * _F_)) * unitFactor_CaLeak_PM)</Function>
+        <Function Name="J_CaLeak_SR" Domain="Compartment">(nu_leakSR * (c_SR - c_i))</Function>
+        <Function Name="J_Cl" Domain="Compartment">((I_Cl / (carrierValence_Cl * _F_)) * unitFactor_Cl)</Function>
+        <Function Name="J_DHPR" Domain="Compartment">((I_DHPR / (carrierValence_DHPR * _F_)) * unitFactor_DHPR)</Function>
+        <Function Name="J_K_DR" Domain="Compartment">- ((I_K_DR / (carrierValence_K_DR * _F_)) * unitFactor_K_DR)</Function>
+        <Function Name="J_K_IR" Domain="Compartment">((I_K_IR / (carrierValence_K_IR * _F_)) * unitFactor_K_IR)</Function>
+        <Function Name="J_Na" Domain="Compartment">((I_Na / (carrierValence_Na * _F_)) * unitFactor_Na)</Function>
+        <Function Name="J_NCX_C" Domain="Compartment">- ((I_NCX_C / (carrierValence_NCX_C * _F_)) * unitFactor_NCX_C)</Function>
+        <Function Name="J_NCX_N" Domain="Compartment">((I_NCX_N / (carrierValence_NCX_N * _F_)) * unitFactor_NCX_N)</Function>
+        <Function Name="J_NKX_K" Domain="Compartment">((I_NKX_K / (carrierValence_NKX_K * _F_)) * unitFactor_NKX_K)</Function>
+        <Function Name="J_NKX_N" Domain="Compartment">- ((I_NKX_N / (carrierValence_NKX_N * _F_)) * unitFactor_NKX_N)</Function>
+        <Function Name="J_PMCA" Domain="Compartment">- ((I_PMCA / (carrierValence_PMCA * _F_)) * unitFactor_PMCA)</Function>
+        <Function Name="J_r0" Domain="Compartment">((wInf - w_RyR) / tau_w)</Function>
+        <Function Name="J_r1" Domain="Compartment">((alpha_h * (1.0 - h)) - (beta_h * h))</Function>
+        <Function Name="J_r2" Domain="Compartment">((alpha_m * (1.0 - m)) - (beta_m * m))</Function>
+        <Function Name="J_r3" Domain="Compartment">((S_inf - S) / tau_S)</Function>
+        <Function Name="J_r4" Domain="Compartment">((alpha_n * (1.0 - n)) - (beta_n * n))</Function>
+        <Function Name="J_r5" Domain="Compartment">((h_Kinf - h_K) / tau_hK)</Function>
+        <Function Name="J_r6" Domain="Compartment">((SOCEProb_inf - SOCEProb) / tau_SOCEProb)</Function>
+        <Function Name="J_RyR" Domain="Compartment">(j0_RyR * openProb * (c_SR - c_i))</Function>
+        <Function Name="J_SERCA" Domain="Compartment">(nu_SERCA * c_i / (K_SERCA + c_i))</Function>
+        <Function Name="J_SOCE" Domain="Compartment">((I_SOCE / (carrierValence_SOCE * _F_)) * unitFactor_SOCE)</Function>
+        <Function Name="K_EC" Domain="Compartment">K_EC_init_uM</Function>
+        <Function Name="K_R" Domain="Compartment">(K_EC * exp(( - delta * E_K_K_IR * _F_ / (_R_ * _T_))))</Function>
+        <Function Name="Ka_NCX_C" Domain="Compartment">(1.0 / (1.0 + ((Kdact_NCX_C / c_i) ^ 2.0)))</Function>
+        <Function Name="Ka_NCX_N" Domain="Compartment">(1.0 / (1.0 + ((Kdact_NCX_N / c_i) ^ 2.0)))</Function>
+        <Function Name="KFlux_PM_cyto" Domain="Compartment">(Size_PM / Size_cyto)</Function>
+        <Function Name="KFlux_SRM_cyto" Domain="Compartment">(Size_SRM / Size_cyto)</Function>
+        <Function Name="KFlux_SRM_SR" Domain="Compartment">(Size_SRM / Size_SR)</Function>
+        <Function Name="Kmc_EC_NCX_C" Domain="Compartment">(1.3 * 1000.0)</Function>
+        <Function Name="Kmc_EC_NCX_N" Domain="Compartment">(1.3 * 1000.0)</Function>
+        <Function Name="KmNa_EC_NCX_C" Domain="Compartment">(87.5 * 1000.0)</Function>
+        <Function Name="KmNa_EC_NCX_N" Domain="Compartment">(87.5 * 1000.0)</Function>
+        <Function Name="KmNa_i_NCX_C" Domain="Compartment">(12.29 * 1000.0)</Function>
+        <Function Name="KmNa_i_NCX_N" Domain="Compartment">(12.29 * 1000.0)</Function>
+        <Function Name="L_DHPR" Domain="Compartment">(1000.0 / 0.002)</Function>
+        <Function Name="L_RyR" Domain="Compartment">(1000.0 / 0.002)</Function>
+        <Function Name="Na_EC" Domain="Compartment">Na_EC_init_uM</Function>
+        <Function Name="nu_leakSR" Domain="Compartment">(0.02 * volFactor * 10.0 / Size_SRM)</Function>
+        <Function Name="nu_SERCA" Domain="Compartment">(4875.0 * volFactor * 0.682 / Size_SRM)</Function>
+        <Function Name="openDHPR" Domain="Compartment">(((exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR))) * (f_DHPR ^  - 2.0) * ((1.0 + (exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR))) * (f_DHPR ^  - 2.0))) ^ 3.0)) + (L_DHPR * exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR))) * ((1.0 + exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR)))) ^ 3.0))) / (((1.0 + (exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR))) * (f_DHPR ^  - 2.0))) ^ 4.0) + (L_DHPR * ((1.0 + exp(((Voltage_PM - VBar_DHPR) / (4.0 * K_DHPR)))) ^ 4.0))))</Function>
+        <Function Name="openProb" Domain="Compartment">(voltProb * (w_RyR / wUnit))</Function>
+        <Function Name="Qcorr_NCX_C" Domain="Compartment">((_T_ - 310.0) / 10.0)</Function>
+        <Function Name="Qcorr_NCX_N" Domain="Compartment">((_T_ - 310.0) / 10.0)</Function>
+        <Function Name="s1_NCX_C" Domain="Compartment">(exp((nu_NCX_C * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_i ^ 3.0) * c_EC)</Function>
+        <Function Name="s1_NCX_N" Domain="Compartment">(exp((nu_NCX_N * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_i ^ 3.0) * c_EC)</Function>
+        <Function Name="s2_NCX_C" Domain="Compartment">(exp(((nu_NCX_C - 1.0) * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_EC ^ 3.0) * c_i)</Function>
+        <Function Name="s2_NCX_N" Domain="Compartment">(exp(((nu_NCX_N - 1.0) * Voltage_PM * _F_ / (_R_ * _T_))) * (Na_EC ^ 3.0) * c_i)</Function>
+        <Function Name="s3_NCX_C" Domain="Compartment">((Kmc_i_NCX_C * (Na_EC ^ 3.0) * (1.0 + ((Na_i / KmNa_i_NCX_C) ^ 3.0))) + ((KmNa_EC_NCX_C ^ 3.0) * c_i * (1.0 + (c_i / Kmc_i_NCX_C))) + (Kmc_EC_NCX_C * (Na_i ^ 3.0)) + ((Na_i ^ 3.0) * c_EC) + ((Na_EC ^ 3.0) * c_i))</Function>
+        <Function Name="s3_NCX_N" Domain="Compartment">((Kmc_i_NCX_N * (Na_EC ^ 3.0) * (1.0 + ((Na_i / KmNa_i_NCX_N) ^ 3.0))) + ((KmNa_EC_NCX_N ^ 3.0) * c_i * (1.0 + (c_i / Kmc_i_NCX_N))) + (Kmc_EC_NCX_N * (Na_i ^ 3.0)) + ((Na_i ^ 3.0) * c_EC) + ((Na_EC ^ 3.0) * c_i))</Function>
+        <Function Name="S_inf" Domain="Compartment">(1.0 / (1.0 + exp(((Voltage_PM - V_Sinf) / A_Sinf))))</Function>
+        <Function Name="SOCEProb_inf" Domain="Compartment">(1.0 / (1.0 + ((c_SR / c_ref) ^ 4.0)))</Function>
+        <Function Name="tau_hK" Domain="Compartment">(exp(( - (Voltage_PM + 40.0) / 25.75)) * tauUnit)</Function>
+        <Function Name="tau_S" Domain="Compartment">(60.0 / (0.2 + (5.65 * (((Voltage_PM + V_tau) / 100.0) ^ 2.0))))</Function>
+        <Function Name="tau_w" Domain="Compartment">(1.0 / (100.0 * (1.0 + c_i)))</Function>
+        <Function Name="unitFactor_CaLeak_PM" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_Cl" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_DHPR" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_K_DR" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_K_IR" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="UnitFactor_mV_pF_s_neg_1_pA_neg_1">(1000.0 / 1.0)</Function>
+        <Function Name="unitFactor_Na" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_NCX_C" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_NCX_N" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_NKX_K" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_NKX_N" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_PMCA" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="unitFactor_SOCE" Domain="Compartment">(1.0E9 / 1.0)</Function>
+        <Function Name="volFactor">(Size_cyto / 0.26)</Function>
+        <Function Name="voltProb" Domain="Compartment">(((1.0 + (exp(((Voltage_PM - VBar_RyR) / (4.0 * K_RyR))) * (f_RyR ^  - 2.0))) ^ 4.0) / (((1.0 + (exp(((Voltage_PM - VBar_RyR) / (4.0 * K_RyR))) * (f_RyR ^  - 2.0))) ^ 4.0) + (L_RyR * ((1.0 + exp(((Voltage_PM - VBar_RyR) / (4.0 * K_RyR)))) ^ 4.0))))</Function>
+        <Function Name="wInf" Domain="Compartment">(1.0 / (1.0 + c_i))</Function>
+        <CompartmentSubDomain Name="Compartment">
+          <BoundaryType Boundary="Xm" Type="Value" />
+          <BoundaryType Boundary="Xp" Type="Value" />
+          <BoundaryType Boundary="Ym" Type="Value" />
+          <BoundaryType Boundary="Yp" Type="Value" />
+          <BoundaryType Boundary="Zm" Type="Value" />
+          <BoundaryType Boundary="Zp" Type="Value" />
+          <OdeEquation Name="c_i" SolutionType="Unknown">
+            <Rate>((KFlux_SRM_cyto * J_RyR) + (J_DHPR * KFlux_PM_cyto) - (KFlux_PM_cyto * J_PMCA) - (KFlux_SRM_cyto * J_SERCA) + (J_CaLeak_SR * KFlux_SRM_cyto) - (KFlux_PM_cyto * J_NCX_C) + (KFlux_PM_cyto * J_SOCE) + (J_CaLeak_PM * KFlux_PM_cyto))</Rate>
+            <Initial>c_i_init_uM</Initial>
+          </OdeEquation>
+          <OdeEquation Name="Na_i" SolutionType="Unknown">
+            <Rate>((KFlux_PM_cyto * J_Na) - (KFlux_PM_cyto * J_NKX_N) + (KFlux_PM_cyto * J_NCX_N))</Rate>
+            <Initial>Na_i_init_uM</Initial>
+          </OdeEquation>
+          <OdeEquation Name="K_i" SolutionType="Unknown">
+            <Rate>( - (KFlux_PM_cyto * J_K_DR) + (KFlux_PM_cyto * J_K_IR) + (KFlux_PM_cyto * J_NKX_K))</Rate>
+            <Initial>K_i_init_uM</Initial>
+          </OdeEquation>
+          <OdeEquation Name="Cl_i" SolutionType="Unknown">
+            <Rate>(J_Cl * KFlux_PM_cyto)</Rate>
+            <Initial>Cl_i_init_uM</Initial>
+          </OdeEquation>
+          <OdeEquation Name="c_SR" SolutionType="Unknown">
+            <Rate>( - (KFlux_SRM_SR * J_RyR) + (KFlux_SRM_SR * J_SERCA) - (J_CaLeak_SR * KFlux_SRM_SR))</Rate>
+            <Initial>c_SR_init_uM</Initial>
+          </OdeEquation>
+          <OdeEquation Name="m" SolutionType="Unknown">
+            <Rate>J_r2</Rate>
+            <Initial>m_init_molecules_um_2</Initial>
+          </OdeEquation>
+          <OdeEquation Name="h" SolutionType="Unknown">
+            <Rate>J_r1</Rate>
+            <Initial>h_init_molecules_um_2</Initial>
+          </OdeEquation>
+          <OdeEquation Name="S" SolutionType="Unknown">
+            <Rate>J_r3</Rate>
+            <Initial>S_init_molecules_um_2</Initial>
+          </OdeEquation>
+          <OdeEquation Name="n" SolutionType="Unknown">
+            <Rate>J_r4</Rate>
+            <Initial>n_init_molecules_um_2</Initial>
+          </OdeEquation>
+          <OdeEquation Name="h_K" SolutionType="Unknown">
+            <Rate>J_r5</Rate>
+            <Initial>h_K_init_molecules_um_2</Initial>
+          </OdeEquation>
+          <OdeEquation Name="SOCEProb" SolutionType="Unknown">
+            <Rate>J_r6</Rate>
+            <Initial>SOCEProb_init_molecules_um_2</Initial>
+          </OdeEquation>
+          <OdeEquation Name="w_RyR" SolutionType="Unknown">
+            <Rate>J_r0</Rate>
+            <Initial>w_RyR_init_molecules_um_2</Initial>
+          </OdeEquation>
+          <OdeEquation Name="Voltage_PM" SolutionType="Unknown">
+            <Rate>((UnitFactor_mV_pF_s_neg_1_pA_neg_1 * ((I_CaLeak_PM * Size_PM) + (I_Cl * Size_PM) + (I_DHPR * Size_PM) + (I_K_DR * Size_PM) + (I_K_IR * Size_PM) + (I_NCX_C * Size_PM) + (I_NCX_N * Size_PM) + (I_NKX_K * Size_PM) + (I_NKX_N * Size_PM) + (I_Na * Size_PM) + (I_PMCA * Size_PM) + (Size_PM * I_SOCE) + I_PM)) / device_PM.Capacitance)</Rate>
+            <Initial>Voltage_PM_init</Initial>
+          </OdeEquation>
+        </CompartmentSubDomain>
+        <Version Name="Application0_generated" KeyValue="245845764" BranchId="244356490" Archived="0" Date="24-Oct-2022 18:44:46" FromVersionable="false">
+          <Owner Name="emmetf" Identifier="243268898" />
+          <GroupAccess Type="1" />
+        </Version>
+      </MathDescription>
+      <Version Name="Application0" KeyValue="245845891" BranchId="244356571" Archived="0" Date="24-Oct-2022 18:44:46" FromVersionable="false">
+        <Owner Name="emmetf" Identifier="243268898" />
+        <GroupAccess Type="1" />
+      </Version>
+      <MicroscopeMeasurement Name="fluor">
+        <ConvolutionKernel Type="ProjectionZKernel" />
+      </MicroscopeMeasurement>
+    </SimulationSpec>
+    <Version Name="SkelMuscleCa" KeyValue="245845938" BranchId="244356602" Archived="0" Date="24-Oct-2022 18:44:47" FromVersionable="false">
+      <Owner Name="emmetf" Identifier="243268898" />
+      <GroupAccess Type="1" />
+    </Version>
+    <pathwayModel>
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#" version="3.0" />
+    </pathwayModel>
+    <relationshipModel>
+      <RMNS version="3.0" />
+    </relationshipModel>
+    <vcmetadata>
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" />
+      <nonrdfAnnotationList />
+      <uriBindingList />
+    </vcmetadata>
+  </BioModel>
+</vcml>
+
