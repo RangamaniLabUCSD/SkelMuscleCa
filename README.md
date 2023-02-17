@@ -4,3 +4,4 @@ MATLAB code for ODE-based model of calcium in skeletal muscle. The model was ass
 Files summary:
 - SkelMuscleCa.m: current ODE function to solve for Ca2+ in skeletal muscle
 - SkelMuscleCaDriver.m: Driver script to test and plot runs of SkelMuscleCa
+- SkelMuscleCa.vcml: VCell model used for development
