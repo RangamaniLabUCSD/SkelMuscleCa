@@ -1,36 +1,13 @@
-function [T,Y,SSParam] = SkelMuscleCa(argTimeSpan, freq, lowATP, selParam)
+function yInf = SkelMuscleCa_SS(lowATP, selParam)
 % [T,Y,yinit,param] = SkelMuscleCa_AK(argTimeSpan,argYinit,argParam)
 %
 % input:
-%     argTimeSpan is a vector of start and stop times (e.g. timeSpan = [0 10.0])
-%     argYinit is a vector of initial conditions for the state variables (optional)
-%     argParam is a vector of values for the parameters (optional)
+%     lowATP is true for low ATP conditions
+%     selParam is a vector of selected parameters to test
 %
 % output:
-%     T is the vector of times
-%     Y is the vector of state variables
-%     yinit is the initial conditions that were used
-%     param is the parameter vector that was used
-%     allNames is the output solution variable names
-%     allValues is the output solution variable values corresponding to the names
-%
-%     example of running this file: [T,Y,yinit,param,allNames,allValues] = myMatlabFunc; <-(your main function name)
-%
+%     yInf is the predicted SS values
 
-%
-% Default time span
-%
-timeSpan = [0.0 1.0];
-
-if nargin >= 1
-	if length(argTimeSpan) > 0
-		%
-		% TimeSpan overridden by function arguments
-		%
-		timeSpan = argTimeSpan;
-	end
-end
-%
 % Default Initial Conditions
 %
 yinit = [
@@ -186,24 +163,18 @@ param = [
 	1.0;		% param(128) is 'carrierValence_NKX_K'
 ];
 
-param(45) = selParam*param(45);
-
-
-%
-% invoke the integrator
-%
-options = odeset('RelTol',1e-8,'MaxStep',.001,'NonNegative',[1:5,7:14]);%,'OutputFcn',@odeplot);
-% solve for SS Param
-[~,SSParam] = f(0,yinit,param,yinit,freq,lowATP);
-
-[T,Y] = ode15s(@f,timeSpan,yinit,options,param,yinit,freq,lowATP); %pass extra arguments at the end
-
-
+selIdx = [45, 80, 121]; % sodium, KDR, KIR
+if size(selParam,1) == 1
+    selParam = selParam';
 end
+param(selIdx) = selParam.*param(selIdx);
+
+% solve for SS values
+yInf = fsolve(@(y)f(y,param,lowATP), yinit);
 
 % -------------------------------------------------------
 % ode rate
-function [dydt,SSParam] = f(t,y,p,y0,freq,lowATP)
+function dydt = f(y, p, lowATP)
 	% State Variables
 	SOCEProb = y(1);
 	c_SR = y(2);
@@ -475,11 +446,7 @@ function [dydt,SSParam] = f(t,y,p,y0,freq,lowATP)
     f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2));
     % prescribed stimulus (applied current I_PM at frequency freq - square
     % pulses of width 1 ms)
-    if t>0.1 && (mod(t,1/freq) < .0005 || mod(t,1/freq) > ((1/freq)-.0005))
-        I_PM = I_PM;
-    else
-        I_PM = 0;
-    end
+    I_PM = 0; %SS
 
     % switch lowATP condition on to test predictions in energy deficit (all
     % pumps go to half activity)
@@ -492,20 +459,6 @@ function [dydt,SSParam] = f(t,y,p,y0,freq,lowATP)
         I_NKX_K = I_NKX_K*0.5;
         I_NKX_N = I_NKX_N*0.5;
     end
-
-    % Steady State rates
-    %KFluxDeficit = (J_K_DR - J_K_IR);
-    J_NaK_SS = J_NaK_NKX_K * ((J_K_DR - J_K_IR) / J_NKX_K);
-    J_NKX_K_SS = J_NKX_K * J_NaK_SS / J_NaK_NKX_K;
-    g_NCX_SS = g_NCX_NCX_N*((J_NKX_N * (J_NaK_SS / J_NaK_NKX_N)) - J_Na)/ J_NCX_N;
-    CaFluxDeficit = (J_NCX_C*g_NCX_SS/g_NCX_NCX_C) + J_PMCA - J_SOCE - J_DHPR;
-    g_PMleak_SS = g_PMLeak*(CaFluxDeficit/J_CaLeak_PM);
-    nu_leakSR_SS = nu_leakSR*(LumpedJ_SERCA - LumpedJ_RyR)/LumpedJ_CaLeak_SR;
-
-
-    SSParam = [J_NaK_SS,g_NCX_SS,g_PMleak_SS,nu_leakSR_SS]; % J_NaK, etc.
-
-    I_Cl = 0;
 
 	% Rates
 	dydt = [
@@ -524,5 +477,7 @@ function [dydt,SSParam] = f(t,y,p,y0,freq,lowATP)
 		J_r3;    % rate for S
 		( - (KFlux_PM_cyto .* J_K_DR) + (KFlux_PM_cyto .* J_K_IR) + (KFlux_PM_cyto .* J_NKX_K));    % rate for K_i
 	];
+
+end
 
 end
