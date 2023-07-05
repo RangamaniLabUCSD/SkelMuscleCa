@@ -170,7 +170,14 @@ end
 param(selIdx) = selParam.*param(selIdx);
 
 % solve for SS values
-yInf = fsolve(@(y)f(y,param,lowATP), yinit);
+% yInf = fsolve(@(y)f(y,param,lowATP), yinit);
+lb = zeros(14,1);
+lb(6) = -120;
+ub = 1e6 * ones(14,1);
+yInf = lsqnonlin(@(y)f(y,param,lowATP), yinit, lb, ub);
+if any(yInf([1:5,7:14]) < 0)
+    error('Variable should be non negative')
+end
 
 % -------------------------------------------------------
 % ode rate
@@ -477,6 +484,7 @@ function dydt = f(y, p, lowATP)
 		J_r3;    % rate for S
 		( - (KFlux_PM_cyto .* J_K_DR) + (KFlux_PM_cyto .* J_K_IR) + (KFlux_PM_cyto .* J_NKX_K));    % rate for K_i
 	];
+    dydt = dydt ./ yinit;
 
 end
 

@@ -8,10 +8,12 @@ pSol = particleSwarmSolve(tSpan, freqVals, expPeaks, lb, ub);
 
 function pSol = particleSwarmSolve(tSpan,freqVals,expPeaks,lb,ub)
 
-    psOptions = optimoptions('particleswarm', 'UseParallel', false,'HybridFcn',@fmincon);%,'MaxTime',2*60*60);
+    psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,...
+                             'PlotFcn','pswplotbestf');%,'MaxStallIterations',15);
     rng default
     numParam = length(lb);
     pSol = particleswarm(@pToObj_SS,numParam,lb,ub,psOptions);
+    pToObj_SS(pSol)
     
     function objVal = pToObj(pVec)
         objVal = 0;
@@ -24,6 +26,6 @@ function pSol = particleSwarmSolve(tSpan,freqVals,expPeaks,lb,ub)
 
     function objVal = pToObj_SS(pVec)
         y_SS = SkelMuscleCa_SS(false, pVec);
-        objVal = abs(y_SS(9) - expPeaks);
+        objVal = (y_SS(9) - expPeaks).^2;
     end
 end
