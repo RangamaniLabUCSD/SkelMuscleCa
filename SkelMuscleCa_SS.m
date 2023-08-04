@@ -35,7 +35,7 @@ yinit = [
 param = [
 	288.0;		% param(1) is 'alpha_m0'
 	1.0;		% param(2) is 'carrierValence_K_IR'
-	37698.0;		% param(3) is 'Size_SRM'
+	1; %37698.0;		% param(3) is 'Size_SRM'
 	0.17;		% param(4) is 'K_PMCA'
 	1.0;		% param(5) is 'wUnit_RyR'
 	-20.0;		% param(6) is 'VBar_RyR'
@@ -359,7 +359,7 @@ function dydt = f(y, p, lowATP)
 	I_SOCE = ((g_SOCE .* (E_Ca - Voltage_PM) .* (SOCEProb ./ SOCEProbUnit)) .* (1.0 + TTFrac));
 	E_K_K_DR = (log((K_EC ./ K_i)) .* mlabfix_R_ .* mlabfix_T_ ./ mlabfix_F_);
 	I_K_DR = ((g_K .* ((n ./ nUnit) ^ 4.0) .* (h_K ./ h_KUnit) .* (E_K_K_DR - Voltage_PM)) .* (1.0 + (0.45 .* TTFrac)));
-	g_PMLeak = 2.1362E-6 ; %(5.0 .* 2.0E-6);
+	g_PMLeak = (5.0 .* 2.0E-6); % 2.1362E-6 
 	I_CaLeak_PM = ((g_PMLeak .* (E_Ca - Voltage_PM)) .* (1.0 + TTFrac));
 	L_DHPR = (1000.0 ./ 0.002);
 	openDHPR = ((((1.0 + (exp(((Voltage_PM - VBar_DHPR) ./ (4.0 .* K_DHPR))) .* (f_DHPR ^  - 2.0))) ^ 4.0) ./ (((1.0 + (exp(((Voltage_PM - VBar_DHPR) ./ (4.0 .* K_DHPR))) .* (f_DHPR ^  - 2.0))) ^ 4.0) + (L_DHPR .* ((1.0 + exp(((Voltage_PM - VBar_DHPR) ./ (4.0 .* K_DHPR)))) ^ 4.0)))) .* (w_DHPR ./ wUnit_DHPR));
@@ -441,6 +441,7 @@ function dydt = f(y, p, lowATP)
 	device_PM.Capacitance = (C_PM .* Size_PM);
 	unitFactor_Cl = (1.0E9 ./ 1.0);
 	device_totalCurrClampElectrode.I = device_totalCurrClampElectrode.F;
+    I_Cl = 0;
 	J_Cl = ((I_Cl ./ (carrierValence_Cl .* mlabfix_F_)) .* unitFactor_Cl);
 
     % Emmet - added code to VCell function
@@ -470,11 +471,12 @@ function dydt = f(y, p, lowATP)
 	% Rates
 	dydt = [
 		J_r6;    % rate for SOCEProb
-		f_SR*( - (KFlux_SRM_SR .* LumpedJ_RyR .* UnitFactor_uM_um3_molecules_neg_1 ./ Size_SRM) + (KFlux_SRM_SR .* LumpedJ_SERCA .* UnitFactor_uM_um3_molecules_neg_1 ./ Size_SRM) - (LumpedJ_CaLeak_SR .* KFlux_SRM_SR .* UnitFactor_uM_um3_molecules_neg_1 ./ Size_SRM));    % rate for c_SR
+		f_SR* KFlux_SRM_SR * (UnitFactor_uM_um3_molecules_neg_1/ Size_SRM) * (LumpedJ_SERCA - LumpedJ_CaLeak_SR - LumpedJ_RyR);    % rate for c_SR
 		J_r5;    % rate for h_K
 		J_r0;    % rate for w_RyR
 		J_r7;    % rate for w_DHPR
-		((UnitFactor_mV_pF_s_neg_1_pA_neg_1 .* ((I_CaLeak_PM .* Size_PM) + (I_Cl .* Size_PM) + (I_DHPR .* Size_PM) + (I_K_DR .* Size_PM) + (I_K_IR .* Size_PM) + (I_NCX_C .* Size_PM) + (I_NCX_N .* Size_PM) + (I_NKX_K .* Size_PM) + (I_NKX_N .* Size_PM) + (I_Na .* Size_PM) + (I_PMCA .* Size_PM) + (Size_PM .* I_SOCE) + I_PM)) ./ device_PM.Capacitance);    % rate for Voltage_PM
+		(I_CaLeak_PM  + I_Cl  + I_DHPR + I_K_DR + I_K_IR  + I_NCX_C + I_NCX_N  + I_NKX_K  + I_NKX_N + I_Na + I_PMCA  + I_SOCE + I_PM) * (UnitFactor_mV_pF_s_neg_1_pA_neg_1 * Size_PM / device_PM.Capacitance) 
+        %((UnitFactor_mV_pF_s_neg_1_pA_neg_1 .* ((I_CaLeak_PM .* Size_PM) + (I_Cl .* Size_PM) + (I_DHPR .* Size_PM) + (I_K_DR .* Size_PM) + (I_K_IR .* Size_PM) + (I_NCX_C .* Size_PM) + (I_NCX_N .* Size_PM) + (I_NKX_K .* Size_PM) + (I_NKX_N .* Size_PM) + (I_Na .* Size_PM) + (I_PMCA .* Size_PM) + (Size_PM .* I_SOCE) + I_PM)) ./ device_PM.Capacitance);    % rate for Voltage_PM
 		((KFlux_PM_cyto .* J_Na) - (KFlux_PM_cyto .* J_NKX_N) + (KFlux_PM_cyto .* J_NCX_N));    % rate for Na_i
 		0;%(J_Cl .* KFlux_PM_cyto);    % rate for Cl_i
 		f_i*((KFlux_SRM_cyto .* LumpedJ_RyR .* UnitFactor_uM_um3_molecules_neg_1 ./ Size_SRM) + (J_DHPR .* KFlux_PM_cyto) - (KFlux_PM_cyto .* J_PMCA) - (KFlux_SRM_cyto .* LumpedJ_SERCA .* UnitFactor_uM_um3_molecules_neg_1 ./ Size_SRM) + (LumpedJ_CaLeak_SR .* KFlux_SRM_cyto .* UnitFactor_uM_um3_molecules_neg_1 ./ Size_SRM) - (KFlux_PM_cyto .* J_NCX_C)  + (KFlux_PM_cyto .* J_SOCE) + (J_CaLeak_PM .* KFlux_PM_cyto));    % rate for c_i
