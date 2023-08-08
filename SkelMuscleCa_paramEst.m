@@ -1,12 +1,15 @@
-%% start parameter optimization
-lb = 0.5*ones(3,1);
-ub = 2*ones(3,1);
-tSpan = [0 1];
-freqVals = 0;
-expPeaks = 0.1;
-pSol = particleSwarmSolve(tSpan, freqVals, expPeaks, lb, ub);
+%% Function definition
+% Input: 
+%       tSpan - Time span
+%       freqVals - Frequency
+%       expPeaks - Experimental values for ion concentrations
+%       lb - Lower bound for estimation
+%       ub - upper bound for estimation
+%
+% Output:
+%       pSol - Particle swarm solution 
 
-function pSol = particleSwarmSolve(tSpan,freqVals,expPeaks,lb,ub)
+function pSol = SkelMuscleCa_paramEst(tSpan,freqVals,expPeaks,lb,ub)
 
     psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,...
                              'PlotFcn','pswplotbestf');%,'MaxStallIterations',15);
@@ -15,17 +18,19 @@ function pSol = particleSwarmSolve(tSpan,freqVals,expPeaks,lb,ub)
     pSol = particleswarm(@pToObj_SS,numParam,lb,ub,psOptions);
     pToObj_SS(pSol)
     
-    function objVal = pToObj(pVec)
-        objVal = 0;
-        for i = 1:length(freqVals)
-            [~,y] = SkelMuscleCa_AK1(tSpan, freqVals(i), false, pVec);
-            CaPeak = max(y(:,9));
-            objVal = objVal + (CaPeak - expPeaks(i))^2;
-        end
-    end
-
-    function objVal = pToObj_SS(pVec)
+    function objVal = pToObj_SS(pVec) % Obj function should be scalar
         y_SS = SkelMuscleCa_SS(false, pVec);
-        objVal = (y_SS(9) - expPeaks).^2;
+       
+        objVal = sqrt (mean ((y_SS(9) - expPeaks(1,:)).^2)) / mean(expPeaks(1,:)) + ...
+                 sqrt (mean ((y_SS(2) - expPeaks(2,:)).^2)) / mean(expPeaks(2,:)) + ...
+                 sqrt (mean ((y_SS(7) - expPeaks(3,:)).^2)) / mean(expPeaks(3,:)) + ...
+                 sqrt (mean ((y_SS(14) - expPeaks(4,:)).^2))/ mean(expPeaks(4,:)) + ...
+                 sqrt (mean ((y_SS(6) - expPeaks(5,:)).^2)) / mean(expPeaks(5,:)); %nRMSE
     end
-end
+end 
+
+% objVal = sum(((y_SS(9) - expPeaks(1,:)) / expPeaks(1,:)).^2) + ...
+        %          sum(((y_SS(2) - expPeaks(2,:)) / expPeaks(2,:)).^2) + ...
+        %          sum(((y_SS(7) - expPeaks(3,:)) / expPeaks(3,:)).^2) + ...
+        %          sum(((y_SS(14) - expPeaks(4,:))/ expPeaks(4,:)).^2) + ...
+        %          sum(((y_SS(6) - expPeaks(5,:)) / expPeaks(5,:)).^2);
