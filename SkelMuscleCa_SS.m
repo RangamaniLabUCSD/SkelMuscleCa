@@ -113,13 +113,16 @@ selIdx = [21,30,50]; % J_NaK, g_Cl, g_NCX, g_Na, g_K, G_K [[7,16,19,21,30,50]
 if size(selParam,1) == 1
     selParam = selParam';
 end
-param(selIdx) = selParam.*param(selIdx);
+for i = 1: length(selParam)
+    param(selIdx(i)) = selParam(i).*param(selIdx(i));
+end 
 
 % solve for SS values
 % yInf = fsolve(@(y)f(y,param,lowATP), yinit);
 lb = zeros(14,1);
 lb(6) = -120;
 ub = 1e6 * ones(14,1);
+%ub(13) = 1;
 yInf = lsqnonlin(@(y)f(y,param,lowATP), yinit, lb, ub);
 if any(yInf([1:5,7:14]) < 0)
     error('Variable should be non negative')
@@ -250,10 +253,11 @@ function dydt = f(y, p, lowATP)
     vol_SR = volFraction_SR * vol_Fiber ;
     SA_TT = volFraction_TT * vol_Fiber / vol_SA_ratio; 
     TTFrac = SA_TT / SA_PM;  
-    SA_SRM = 1; %37698.0;
+    %SA_SRM = 1; %37698.0;
 
     % Functions
-    UnitFactor_uM_um3_molecules_neg_1 = KMOLE;
+
+    %UnitFactor_uM_um3_molecules_neg_1 = KMOLE;
 	K_EC = K_EC_init_uM;
 	E_K_K_IR = (log((K_EC ./ K_i)) .* R .* T ./ F);
 	K_R = (K_EC .* exp(( - delta .* E_K_K_IR .* F ./ (R .* T))));
@@ -263,8 +267,8 @@ function dydt = f(y, p, lowATP)
 	E_Na = (log((Na_EC ./ Na_i)) .* R .* T ./ F);
 	KmNa_i_NCX = (12.29 .* 1000.0);
 	volFactor = (vol_cyto ./ (PI .* 0.26));
-	nu_SERCA = (4875.0 .* volFactor); % ./ SA_SRM);
-	LumpedJ_SERCA = (602.214179 .* nu_SERCA .* c_i ./ (K_SERCA + c_i)); %.* SA_SRM
+	nu_SERCA = (4875.0 .* volFactor);
+	LumpedJ_SERCA = (602.214179 .* nu_SERCA .* c_i ./ (K_SERCA + c_i)); 
 	I_Na = ((g_Na .* ((m ./ mUnit) ^ 3.0) .* (h ./ hUnit) .* (S ./ SUnit) .* (E_Na - Voltage_PM)) .* (1.0 + (0.1 .* TTFrac)));
 	J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
 	fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
@@ -310,21 +314,14 @@ function dydt = f(y, p, lowATP)
 	tau_w_r7 = (1.0 ./ (100.0 .* (1.0 + c_i)));
 	tau_w_r0 = (1.0 ./ (100.0 .* (1.0 + c_i)));
 
-	% j0_RyR = (300.0 .* volFactor ./ SA_SRM);
-	% openProb = (voltProb .* (w_RyR ./ wUnit_RyR));
-	% LumpedJ_RyR = (602.214179 .* SA_SRM .* j0_RyR .* openProb .* (c_SR - c_i));
-
 	alpha_n = (alpha_n0 .* (Voltage_PM - V_n) ./ (1.0 - exp(( - (Voltage_PM - V_n) ./ K_alphan))));
 	alpha_m = (alpha_m0 .* (Voltage_PM - V_m) ./ (1.0 - exp(( - (Voltage_PM - V_m) ./ K_alpham))));
-	%nu_leakSR = (0.02 .* volFactor .* 10.0 ./ SA_SRM); %1.1338;
-	%J_CaLeak_SR = (602.214179 .* SA_SRM .* nu_leakSR .* (c_SR - c_i));
-
-
+	
     j0_RyR = 300.0 * volFactor;
 	openProb = voltProb * w_RyR;
 	LumpedJ_RyR = 602.214179 * j0_RyR * openProb * (c_SR - c_i);
 
-    nu_leakSR =1.1338; %0.2*volFactor;
+    nu_leakSR = 0.2*volFactor;  %1.1338; %
     J_CaLeak_SR = 602.214179 * nu_leakSR * (c_SR - c_i);
 
 
