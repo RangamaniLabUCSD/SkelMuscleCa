@@ -1,6 +1,13 @@
-function [T,Y,yInf] = SkelMuscleCa_SS(tSpan,freq, lowATP, yinit,p)
-% [T,Y,yinit,param] = SkelMuscleCa_AK(argTimeSpan,argYinit,argParam)
-%
+function yInf = SkelMuscleCa_SS(tSpan,lowATP, p, yinit)
+
+% function [T,Y,yInf] = SkelMuscleCa_SS(tSpan,freq, lowATP, p, varargin)
+% if isempty(varargin)
+%     solve for ss values
+% elseif length(varargin)==1
+%   yinit = varargin{1};
+% else
+%   error('too many inputs')
+
 % input:
 %     tSpan is a vector of start and stop times
 %     lowATP is true for low ATP conditions
@@ -12,55 +19,25 @@ function [T,Y,yInf] = SkelMuscleCa_SS(tSpan,freq, lowATP, yinit,p)
 %     Y is the vector of state variables
 %     yInf is the predicted SS values
 
-% Default Initial Conditions
-%
-% Default Parameters
-%   constants are only those "Constants" from the Math Description that are just floating point numbers (no identifiers)
-%   note: constants of the form "A_init" are really initial conditions and are treated in "yinit" 
-% Parameters taken as input
 
 
 % solve for SS values
-lb = zeros(14,1);
+
+if size(p,1) == 1
+    p = p';
+end
+
+lb = zeros(17,1);
 lb(6) = -120;
-ub = 1e6 * ones(14,1);
+ub = 1e6 * ones(17,1);
 %ub(13) = 1;
-yInf = lsqnonlin(@(y)f(y,p,lowATP), yinit, lb, ub);
-if any(yInf([1:5,7:14]) < 0)
+yInf = lsqnonlin(@(y)f(tSpan,y,p,lowATP), yinit, lb, ub); 
+if any(yInf([1:5,7:17]) < 0)
     error('Variable should be non negative')
 end
-
-
-% selIdx = [21,30,48]; % J_NaK, g_Cl, g_NCX, g_Na, g_K, G_K [[7,16,19,21,30,50]
-% if size(p,1) == 1
-%     p = p';
-% end
-% param = [1,1,1];
-% for i = 1: length(p)
-%     param(selIdx(i)) = p(i).*param(selIdx(i));
-% end 
-
-% -------------------------------------------------------------------------
-
-timeSpan = [0.0 1.0];
-
-if nargin >= 1
-	if length(tSpan) > 0
-		%
-		% TimeSpan overridden by function arguments
-		%
-		timeSpan = tSpan;
-	end
-end
-%
-% invoke the integrator
-%
-options = odeset('RelTol',1e-8,'MaxStep',.001,'NonNegative',[1:5,7:14]);%,'OutputFcn',@odeplot);
-[T,Y] = ode15s(@f,timeSpan,yinit,options,param,yinit,freq,lowATP); %pass extra arguments at the end
-
 % -------------------------------------------------------
 % ode rate
-function dydt = f(y, p, lowATP)
+    function dydt = f(tSpan,y, p, lowATP) %f(y, p, lowATP)
 	% State Variables
 	SOCEProb = y(1);
 	c_SR = y(2);
@@ -76,6 +53,9 @@ function dydt = f(y, p, lowATP)
 	h = y(12);
 	S = y(13);
 	K_i = y(14);
+    CaParv = y(15);
+    MgParv = y(16);
+    CATP = y(17);
 	
     
     % Parameters
@@ -92,7 +72,7 @@ function dydt = f(y, p, lowATP)
     c_ref = p(11);
     C_SRM = p(12);
     delta = p(13);
-    device_totalCurrClampElectrode.F = p(14);
+    ClampCurrent = p(14);
     f_DHPR = p(15);
     f_RyR = p(16);
     g_Cl = p(17);
@@ -249,7 +229,7 @@ function dydt = f(y, p, lowATP)
 	openProb = voltProb * w_RyR;
 	LumpedJ_RyR = 602.214179 * j0_RyR * openProb * (c_SR - c_i);
 
-    nu_leakSR = 0.2*volFactor;  %1.1338; %
+    nu_leakSR = 0.2*volFactor;  %1.1338;
     J_CaLeak_SR = 602.214179 * nu_leakSR * (c_SR - c_i);
 
 	alpha_h = (alpha_h0 .* exp(( - (Voltage_PM - V_h) ./ K_alphah)));
@@ -276,7 +256,7 @@ function dydt = f(y, p, lowATP)
 	J_SOCE = ((I_SOCE ./ (carrierValence_SOCE .* F)) .* 1E09);
 	J_NKX_K = ((I_NKX_K ./ (carrierValence_NKX .* F)) .* 1E09);
 	J_K_DR =  - ((I_K_DR ./ (carrierValence_K_DR .* F)) .* 1E09);
-	%LumpedI_RyR =  - ((carrierValence_RyR .* F .* LumpedJ_RyR) ./ N_pmol);
+	
 	%KFlux_SRM_SR = (SA_SRM ./ vol_SR);
     %KFlux_SRM_SR = 1/vol_SR; 
 	KFlux_PM_cyto = (SA_PM ./ vol_cyto);
@@ -285,7 +265,7 @@ function dydt = f(y, p, lowATP)
 	J_NCX_C =  - ((I_NCX_C ./ (carrierValence_NCX_C .* F)) .* 1E09);
 	%KFlux_SRM_cyto = (SA_SRM ./ vol_cyto);
     %KFlux_SRM_cyto = (1/ vol_cyto);
-	I_PM = 0; % - device_totalCurrClampElectrode.F;
+	%I_PM = - ClampCurrent;
 	J_PMCA =  - ((I_PMCA ./ (carrierValence_PMCA .* F)) .* 1E09);
 	device_PM.Capacitance = (C_PM .* SA_PM);
 	J_Cl = ((I_Cl ./ (carrierValence_Cl .* F)) .* 1E09);
@@ -293,34 +273,43 @@ function dydt = f(y, p, lowATP)
 
     %% Emmet - added code to VCell function
     % calcium buffering in the cytosol and SR
-    % B_itot = 300;
-    % K_iBuffer = 0.5;
-    k_offATP = 0.01364;
-    k_onATP = 30;
-    K_iATP = k_offATP/k_onATP;
+   
+    k_onATP = 0.01364*1000;
+    k_offATP = 30*1000;
+    k_onParv = 0.0417*1000;
+    k_offParv = 0.0005*1000;
+    Parv_itot = 1500; 
     ATP_itot = 8000;
-    k_onParv = 0.0417;
-    k_offParv = 0.0005;
-    K_iParv = k_offParv/k_onParv;
-    Parv_itot = 1500;
-    f_i = 1/(1 + (K_iATP*ATP_itot/((K_iATP+c_i).^2)) + (K_iParv*Parv_itot/((K_iParv+c_i).^2)));
-    %f_i = 1/(1 + B_itot*K_iBuffer./((K_iBuffer+c_i).^2)); %Rapid equilibrium
-    CaParv = 0.258 * Parv_itot; %Fraction of Parv sites bound with Ca2+ at
-    %resting
-    CATP = 0*ATP_itot;
-    Parv = Parv_itot - CaParv; 
+    % CaParv = 0.258 * Parv_itot; %Fraction of Parv sites bound with Ca2+ at resting
+    % CATP = 0*ATP_itot;
+    % MgParv = 0.680 * Parv_itot %Fraction of Parv sites bound with Mg2+ at resting
+    % CATP = 0*ATP_itot;
     ATP = ATP_itot - CATP; 
-    %ATP = ATP_itot - CATP - MgATP;
-    %Parv = Parv_itot - CaParv - MgParv
+    Parv = Parv_itot - CaParv - MgParv;
+    Mg = 0.001; %1mM constant concentration
     
     dCP = k_onParv*c_i*Parv - k_offParv*CaParv;
-
+    dMP = k_onParv*Mg * Parv - k_offParv*MgParv;
     dCA = k_onATP*c_i*ATP - k_offATP*CATP;
+    %K_iATP = k_offATP/k_onATP; % ATP binding affinity
+    %K_iParv = k_offParv/k_onParv; % Parvalbumin binding afinity
+    %f_i = 1/(1 + (K_iATP*ATP_itot/((K_iATP+c_i).^2)) + (K_iParv*Parv_itot/((K_iParv+c_i).^2))); % Assuming rapid buffering
+
 
     B_SRtot = 31000;
     K_SRBuffer = 500;
     f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2));
     
+    % prescribed stimulus (applied current I_PM at frequency freq - square
+    % pulses of width 1 ms)
+    I_PM = - ClampCurrent;
+ 
+    % if t>0.1 && (mod(t,1/freq) < .0005 || mod(t,1/freq) > ((1/freq)-.0005))
+    %     I_PM = - ClampCurrent;
+    % else
+    %     I_PM = 0;
+    % end
+   
 
     % switch lowATP condition on to test predictions in energy deficit (all
     % pumps go to half activity)
@@ -346,19 +335,21 @@ function dydt = f(y, p, lowATP)
         + I_Na + I_PMCA + I_SOCE + I_PM);    % rate for Voltage_PM
 		KFlux_PM_cyto * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i
 		0;%(J_Cl .* KFlux_PM_cyto);    % rate for Cl_i
-		f_i*((KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA))...
-        + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_cyto)); % rate for c_i
+		%f_i*((KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA))...
+        %+ ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE /vol_cyto)); % rate for c_i assuming rapid buffering
+        (KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA))...
+        + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_cyto) - dCP - dCA; % rate for c_i
 		J_r4;    % rate for n
 		J_r2;    % rate for m
 		J_r1;    % rate for h
 		J_r3;    % rate for S
 		KFlux_PM_cyto * ( J_K_IR - J_K_DR + J_NKX_K);    % rate for K_i
-        dCA; %Rate for ATP bound Ca2+
-        dCP;  % Rate for Parvalbumin bound Ca2+
+        dCP;     % Rate for Parvalbumin bound Ca2+
+        dMP;     % Rate for Parvalbumin bound Mg2+
+        dCA;     % Rate for ATP bound Ca2+
 	];
     dydt = dydt ./ yinit;
 
     end
 end 
 
-%f_SR*( - (KFlux_SRM_SR .* LumpedJ_RyR .* UnitFactor_uM_um3_molecules_neg_1 ./ SA_SRM) + (KFlux_SRM_SR .* LumpedJ_SERCA .* UnitFactor_uM_um3_molecules_neg_1 ./ SA_SRM) - (J_CaLeak_SR .* KFlux_SRM_SR .* UnitFactor_uM_um3_molecules_neg_1 ./ SA_SRM));    % rate for c_SR
