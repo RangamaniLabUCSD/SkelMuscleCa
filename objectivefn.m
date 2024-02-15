@@ -89,49 +89,49 @@ function mse = objectivefn(y,expt,p)
 
     %% Optimization Parameters
 
-    ClampCurrent = p(1) ;
-    K_S = p(2) ;
-    delta = p(3) ;
-    beta_m0 = p(4) ;
-    K_betam = p(5) ;
-    alpha_m0 = p(6) ;
-    K_alpham = p(7) ;
-    K_RyR = p(8) ;
-    f_RyR = p(9) ;
-
-    % Non-optimized parameters
-    A_a = 150;
-    A_hkinf = 7.5;
-    A_Sinf = 5.8;
-    alpha_h0 = 8.1;
-    alpha_n0 = 13.1;
-    alpha_w_r0 = 100;
-    beta_h0 = 4380;
-    beta_n0 = 67;
-    C_PM = 0.01;
-    c_ref = 500;
-    g_Cl = 0.1;
-    g_K = 0.648;
-    G_K = 0.111;
-    g_Na = 8.04;
-    g_NCX = 0.129;
-    J_NaK_NKX = 0.00003542;
-    K_alphah = 14.7;
-    K_alphan = 7;
-    K_betah = 9;
-    K_betan = 40;
-    K_K = 950000000;
-    K_mK_NKX = 1000;
-    K_mNa_NKX = 13000;
-    K_PMCA = 0.17;
-    K_SERCA = 1;
-    K_w_r0 = 1;
-    Kdact_NCX = 0.05;
-    Kmc_i_NCX = 6.59;
-    ksat_NCX = 0.32;
-    nu_NCX = 0.27;
-    S_i = 10000;
-    tau_SOCEProb = 0.01;
+    % ClampCurrent = p(1) ;
+    % K_S = p(2) ;
+    % delta = p(3) ;
+    % beta_m0 = p(4) ;
+    % K_betam = p(5) ;
+    % alpha_m0 = p(6) ;
+    % K_alpham = p(7) ;
+    % K_RyR = p(8) ;
+    % f_RyR = p(9) ;
+    % 
+    % % Non-optimized parameters
+    % A_a = 150;
+    % A_hkinf = 7.5;
+    % A_Sinf = 5.8;
+    % alpha_h0 = 8.1;
+    % alpha_n0 = 13.1;
+    % alpha_w_r0 = 100;
+    % beta_h0 = 4380;
+    % beta_n0 = 67;
+    % C_PM = 0.01;
+    % c_ref = 500;
+    % g_Cl = 0.1;
+    % g_K = 0.648;
+    % G_K = 0.111;
+    % g_Na = 8.04;
+    % g_NCX = 0.129;
+    % J_NaK_NKX = 0.00003542;
+    % K_alphah = 14.7;
+    % K_alphan = 7;
+    % K_betah = 9;
+    % K_betan = 40;
+    % K_K = 950000000;
+    % K_mK_NKX = 1000;
+    % K_mNa_NKX = 13000;
+    % K_PMCA = 0.17;
+    % K_SERCA = 1;
+    % K_w_r0 = 1;
+    % Kdact_NCX = 0.05;
+    % Kmc_i_NCX = 6.59;
+    % ksat_NCX = 0.32;
+    % nu_NCX = 0.27;
+    % S_i = 10000;
+    % tau_SOCEProb = 0.01;
 
     %% Experimental Inputs
     %Expt = {[R_t R_C],[R_MP_t R_MP_C] [HB_t HB_C], [H_t H_C],[H_MP_t H_MP_C]
