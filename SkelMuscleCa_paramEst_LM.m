@@ -5,28 +5,29 @@
 %       expPeaks - Experimental values for ion concentrations
 %       lb - Lower bound for estimation
 %       ub - upper bound for estimation
+%       p_est - baseline input parameters
 %
 % Output:
 %       pSol - Particle swarm solution
 
-function pSol = SkelMuscleCa_paramEst_LM(~,lb,ub,yinit,p_est)
+function [pSol,fval,exitflag] = SkelMuscleCa_paramEst_LM(~,lb,ub,yinit,p_est)
 
-psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','MaxStallIterations',10);
+psOptions = optimoptions('particleswarm','SwarmSize',500,'UseParallel',true,'HybridFcn',@fmincon,...
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations',100); %%Increased from 15
 
 numParam = length(lb);
-pVec = ones(1,10); %48
+pVec = ones(1,numParam); %41
 pToObj(pVec)
 delete(gcp('nocreate'))
 %parpool(12)
-pSol = particleswarm(@pToObj,numParam,lb,ub,psOptions);
+[pSol,fval,exitflag] = particleswarm(@pToObj,numParam,lb,ub,psOptions);
 pToObj(pSol)
 
 
     function objVal = pToObj(pVec) % Obj function should be scalar
 
         %Initialize values
-        fprintf('\n ------ Code Started ------ ');
+        %fprintf(' ------ Code Started ------ ');
         T_max = zeros(1,9);        
         InterpExpt = cell(1,9);
         Expt_t = cell(1,9);
@@ -41,22 +42,22 @@ pToObj(pSol)
         tSS = [0 1000];
 
         %Interpolating experimental values
-        for m = 6:9
+        for m = 3 %:9
             T_max(m) = max(Expt{m}(:,1))/1000;
             Expt_t{m} = Expt{m}(:,1)/1000;
-            InterpExpt{m-5} = interp1(Expt_t{m},Expt{m}(:,2),0:0.0001:T_max(m));
+            InterpExpt{m} = interp1(Expt_t{m},Expt{m}(:,2),0:0.0001:T_max(m));
         end
 
         penaltyVal = 100000;
         count = 0;
-        for n = 6:8         
+        for n = 3 %:9         
             %% Colmpute SS yinit with LM algorithm.
             initialGuess = yinit;
-            options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt', 'Display', 'off', 'MaxIter', 1000);
+            options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt', 'Display', 'off', 'MaxIter', 10000); %,'UseParallel',true);
             lb1 = 0.5 * initialGuess;
             ub1 = 2 * initialGuess;
-            lb1(6) = 2 * initialGuess(6);
-            ub1(6) = 0.5 * initialGuess(6);
+            lb1(5) = -140; %2 * initialGuess(5);
+            ub1(5) = 0.5 * initialGuess(5);
 
             [y_LM] = lsqnonlin(@(initialGuess) objectivefn(initialGuess,n,param),initialGuess, lb1, ub1, options);
             if any(isnan(y_LM))
@@ -65,42 +66,43 @@ pToObj(pSol)
             end
            
             %% Compute SS with ode15s            
-            [~,ySS] = SkelMuscleCa1_SS(tSS,0, 0, y_LM, param,StartTimer,n);
-            
-            if any(isnan(ySS))
-                objVal = penaltyVal;
-                count = count+1;    
-                return
-            end
-            yinf = ySS(end,:);
+            % [~,ySS] = SkelMuscleCa1_SS(tSS,0, 0, y_LM, param,StartTimer,n);
+            % 
+            % if any(isnan(ySS))
+            %     objVal = penaltyVal;
+            %     count = count+1;    
+            %     return
+            % end
+            yinf = y_LM; %ySS(end,:);
              
             %     yinf_ratio(n,:) = yinf ./ y_LM';
             % else
             %     yinf_ratio(n,:) = yinf ./ y_LM;
             % end
             
-            fprintf('----- SS Complete ------ ');           
+            %fprintf('----- SS Complete ------ ');           
           
             %% Calculate Dynamics
             t = [0 T_max(n)];
             [Time,y] = SkelMuscleCa1_SS(t,freq(n), 0, yinf, param,StartTimer,n);
+            %[Time,y] = SkelMuscleCa1_SS([0 t(n)],freq(n), 0, yinit, p,tic,n);
             if size(y,1)<2
                 objVal = penaltyVal;
                 count = count+1;
                 return
             end
             if n <= 5
-                Comp = y(:,9); % Calcium Calculations
+                Comp = y(:,8); % Calcium Calculations
             elseif n > 5
-                Comp = y(:,6); % Voltage Calculations
+                Comp = y(:,5); % Voltage Calculations
             end
-            InterpComp{n-5} = interp1(Time,Comp,0:0.0001:T_max(n));            
+            InterpComp{n} = interp1(Time,Comp,0:0.0001:T_max(n));            
             yinit = yinf;
         end
 
-        fprintf('----- Dynamics Complete ------ ');
-        fprintf(' ----- %d ----- ',count); 
-        toc(StartTimer)
+        %fprintf('----- Dynamics Complete ------ ');
+        %fprintf(' ----- %d ----- \n',count); 
+        %toc(StartTimer)
 
         %%
         % Plots       
@@ -128,53 +130,51 @@ pToObj(pSol)
         %             ylabel('Conc (uM)')
         %         end            
         % end
+
         % figure
-        % for i = 1:5
-        %     subplot(3,2,i)
+        % %for i = 1:5
+        % % subplot(3,2,i)
+        % i = 3;
+        % plot(0:0.0001:T_max(i),InterpComp{i},'b','LineWidth',2)
+        % hold on
+        % plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2)
+        % xlabel('Time (s)');
+        % legend('Computational','Experimental')
+        % title('Computational vs expt \Delta[Ca^{2+}] concentration for expt - Rincon',i); % num2str(i));
+        % ylabel('\Delta[Ca^{2+}] Concentration (uM)');
+        % fontsize(15,"points")
+        %end
+        % figure
+        % for i = 6:9        
+        %     subplot(2,2,i-5)            
         %     plot(0:0.0001:T_max(i),InterpComp{i},'b','LineWidth',2)
         %     hold on
         %     plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2)
         %     xlabel('Time (s)');
         %     legend('Computational','Experimental')
-        %     title('Computational vs expt \Delta[Ca^{2+}] concentration for expt %d',i); % num2str(i));
-        %     ylabel('\Delta[Ca^{2+}] Concentration (uM)');
-        %     fontsize(15,"points")
-        % end
-        % figure
-        % for i = 1:3        
-        %     subplot(2,2,i)            
-        %     plot(0:0.0001:T_max(i+5),InterpComp{i},'b','LineWidth',2)
-        %     hold on
-        %     plot(0:0.0001:T_max(i+5),InterpExpt{i},'r','LineWidth',2)
-        %     xlabel('Time (s)');
-        %     legend('Computational','Experimental')
         %     ylabel('V_{PM} (mV)');
-        %     title('Computational vs expt V_{PM} for expt %d',i+5); %', num2str(i));
+        %     title('Computational vs expt V_{PM} for expt %d',i); %', num2str(i));
         %     fontsize(15,"points")
         % end 
         
         %% Objective Value Calc       
-        delta = cell(1,4);
-        sum_delta = zeros(1,4);
+        % delta = cell(1,9);
+        sum_delta = zeros(1,9);
 
-       for j = 1:3
-           weight = length(InterpExpt{j});
-           %sigma_C = 0.1 + (0.05 * InterpExpt{j}).^2;
-            % if j < 6
-            % delta{j} = ((InterpComp{j} - InterpExpt{j}).^2) ./ (weight * sigma_C) ;
-            % else
-            %if j > 5
-            if max(InterpExpt{j}) > 0 &&  max(InterpComp{j}) < 0
-                objVal = penaltyVal;
-                return
-            else
-            delta{j} = ((InterpComp{j} - InterpExpt{j}).^2)/(weight* 25) ;
-            %end
-            sum_delta(j) = sum(delta{j}); 
-            end
-       end
-       
-        objVal = sum(sum_delta);
+        % for j = 3 %:9
+        %     weight = length(InterpExpt{j});
+        %     sigma_C = 1; %(0.1 + (0.05 * InterpExpt{j})).^2;
+        %     if j < 6
+        %         delta{j} = ((InterpComp{j} - InterpExpt{j}).^2) ./ (weight * sigma_C) ;
+        %     else
+        %         if j > 5
+        %             delta{j} = ((InterpComp{j} - InterpExpt{j}).^2)/(weight* 25) ;
+        %         end
+        %         sum_delta(j) = sum(delta{j});
+        %     end
+        % end 
+        delta = ((InterpComp{3} - InterpExpt{3}).^2) ./ 1.1; %./length(InterpExpt{1});% sigma_C = 1
+        objVal = sum(delta);
     end
 end
 
