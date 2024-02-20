@@ -30,9 +30,9 @@ end
 %
 
 if freq == 0
-    options = odeset('RelTol',1e-8,'NonNegative',[1:4,6:16]);
+    options = odeset('RelTol',1e-3,'NonNegative',[1:4,6:16]);
 else
-    options = odeset('RelTol',1e-8,'MaxStep',.001,'NonNegative',[1:4,6:16]);%,'OutputFcn',@odeplot);
+    options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:16]);%,'OutputFcn',@odeplot);
 end
 [Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP); %pass extra arguments at the end
 
@@ -380,17 +380,6 @@ end
         Parv = Parv_itot - CaParv - MgParv;
         Mg = 1000; %1mM constant concentration
 
-
-        % if freq > 0
-        %      %LumpedJ_SERCA = 0.8 * LumpedJ_SERCA;
-        %      %LumpedJ_RyR = 2 * LumpedJ_RyR;
-        %     % J_DHPR = 2* J_DHPR;
-        %     % Parv = 0.5 * Parv;
-        %     %J_PMCA = 2 * J_PMCA;
-        % 
-        % end
-
-
         dCP = k_onParvCa*c_i*Parv - k_offParvCa*CaParv;
         dMP = k_onParvMg*Mg * Parv - k_offParvMg*MgParv;
         dCA = k_onATP*c_i*ATP - k_offATP*CATP;
@@ -505,4 +494,3 @@ end
       
     end
 end
-
