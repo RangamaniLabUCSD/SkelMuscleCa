@@ -129,9 +129,9 @@ save('LM_PSO_2_16_1.mat')
 
         for j = 1 %:9
              weight = length(InterpExpt{j});
-             % sigma_C = 1.1; %(0.1 + (0.05 * InterpExpt{j})).^2;
+             sigma_C = (0.1 + (0.05 * InterpExpt{j})).^2;
              if j < 6
-                 delta{j} = ((InterpComp{j} - InterpExpt{j}).^2); % ./ (weight * sigma_C) ;
+                 delta{j} = ((InterpComp{j} - InterpExpt{j}).^2)/ (weight * sigma_C) ;
             else
                 if j > 5
                     delta{j} = ((InterpComp{j} - InterpExpt{j}).^2)/(weight* 25) ;
