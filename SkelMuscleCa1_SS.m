@@ -30,9 +30,9 @@ end
 %
 
 if freq == 0
-    options = odeset('RelTol',1e-8,'NonNegative',[1:4,6:16]);
+    options = odeset('RelTol',1e-3,'NonNegative',[1:4,6:16]);
 else
-    options = odeset('RelTol',1e-8,'MaxStep',.001,'NonNegative',[1:4,6:16]);%,'OutputFcn',@odeplot);
+    options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:16]);%,'OutputFcn',@odeplot);
 end
 [Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP); %pass extra arguments at the end
 
@@ -103,52 +103,6 @@ end
         S_i = p(40);
         tau_SOCEProb = p(41);
 
-        %% Optimization Parameters
-
-        % ClampCurrent = p(1) ;
-        % K_S = p(2) ;
-        % delta = p(3) ;
-        % beta_m0 = p(4) ;
-        % K_betam = p(5) ;
-        % alpha_m0 = p(6) ;
-        % K_alpham = p(7) ;
-        % K_RyR = p(8) ;
-        % f_RyR = p(9) ;
-        % 
-        % % Non-optimized parameters
-        % A_a = 150;
-        % A_hkinf = 7.5;
-        % A_Sinf = 5.8;
-        % alpha_h0 = 8.1;
-        % alpha_n0 = 13.1;
-        % alpha_w_r0 = 100;
-        % beta_h0 = 4380;
-        % beta_n0 = 67;
-        % C_PM = 0.01;
-        % c_ref = 500;
-        % g_Cl = 0.1;
-        % g_K = 0.648;
-        % G_K = 0.111;
-        % g_Na = 8.04;
-        % g_NCX = 0.129;
-        % J_NaK_NKX = 0.00003542;
-        % K_alphah = 14.7;
-        % K_alphan = 7;
-        % K_betah = 9;
-        % K_betan = 40;
-        % K_K = 950000000;
-        % K_mK_NKX = 1000;
-        % K_mNa_NKX = 13000;
-        % K_PMCA = 0.17;
-        % K_SERCA = 1;
-        % K_w_r0 = 1;
-        % Kdact_NCX = 0.05;
-        % Kmc_i_NCX = 6.59;
-        % ksat_NCX = 0.32;
-        % nu_NCX = 0.27;
-        % S_i = 10000;
-        % tau_SOCEProb = 0.01;
-
         %% Constants
         vol_SA_ratio = 0.01 ;
         volFraction_cyto = 0.95 ;
@@ -168,14 +122,8 @@ end
         Cl_o_exp = [143700, 143700, 158000, 158000,158000, 124000, 126170, 157000, 128000, 146000];  %mM  128000
         Temp = [(273+22),(273+22),(273+20),(273+22), (273+22),(273+ 26),(273+22),(273+22),(273+35),(273+22)]; %K
         
-        if expt == 2 
-            expt_n = 1; 
-        elseif expt < 4 || expt > 5
-            expt_n = 3;
-        else
-            expt_n = expt;
-         
-        end
+        expt_n = expt;
+        
         % Constants
         c_EC_init_uM = Ca_o_exp(expt_n); %1300.0;
         Cl_EC_init_uM = Cl_o_exp(expt_n); %128000.0;
@@ -319,7 +267,7 @@ end
         voltProb = (((1.0 + (exp(((Voltage_PM - VBar_RyR) ./ (4.0 .* K_RyR))) .* (f_RyR ^  - 2.0))) ^ 4.0) ./ (((1.0 + (exp(((Voltage_PM - VBar_RyR) ./ (4.0 .* K_RyR))) .* (f_RyR ^  - 2.0))) ^ 4.0) + (L_RyR .* ((1.0 + exp(((Voltage_PM - VBar_RyR) ./ (4.0 .* K_RyR)))) ^ 4.0))));
                 
         j0_RyR = 300.0 * volFactor;
-        openProb = voltProb * w_RyR;
+        openProb = voltProb * (w_RyR / wUnit_RyR);
         LumpedJ_RyR = 602.214179 * j0_RyR * openProb * (c_SR - c_i);
 
         nu_leakSR = 0.2*volFactor;  %1.1338; %
@@ -379,17 +327,6 @@ end
         ATP = ATP_itot - CATP;
         Parv = Parv_itot - CaParv - MgParv;
         Mg = 1000; %1mM constant concentration
-
-
-        % if freq > 0
-        %      %LumpedJ_SERCA = 0.8 * LumpedJ_SERCA;
-        %      %LumpedJ_RyR = 2 * LumpedJ_RyR;
-        %     % J_DHPR = 2* J_DHPR;
-        %     % Parv = 0.5 * Parv;
-        %     %J_PMCA = 2 * J_PMCA;
-        % 
-        % end
-
 
         dCP = k_onParvCa*c_i*Parv - k_offParvCa*CaParv;
         dMP = k_onParvMg*Mg * Parv - k_offParvMg*MgParv;
@@ -472,28 +409,23 @@ end
             return;
         end
         dydt = [
-            J_r6;    % rate for SOCEProb
-            (f_SR * KMOLE * (LumpedJ_SERCA - LumpedJ_RyR - J_CaLeak_SR))/vol_SR; %c_SR
-            J_r5;    % rate for h_K
-            J_r0;    % rate for w_RyR
-            %J_r7;    % rate for w_DHPR
-            (1000 /device_PM.Capacitance) * (SA_PM * (I_CaLeak_PM + I_Cl +...
-            I_DHPR + I_K_DR + I_K_IR + I_NCX_C + I_NCX_N + I_NKX_K + I_NKX_N ...
-            + I_Na + I_PMCA + I_SOCE) + I_PM);    % rate for Voltage_PM
-            KFlux_PM_cyto * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i
-            (J_Cl .* KFlux_PM_cyto);    % rate for Cl_i
-            %f_i*((KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA))...
-            %+ ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE /vol_cyto)); % rate for c_i assuming rapid buffering
-            (KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA))...
-            + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_cyto) - dCP - dCA; % rate for c_i
-            J_r4;    % rate for n
-            J_r2;    % rate for m
-            J_r1;    % rate for h
-            J_r3;    % rate for S
-            KFlux_PM_cyto * ( J_K_IR - J_K_DR + J_NKX_K);    % rate for K_i
-            dCP;     % Rate for Parvalbumin bound Ca2+
-            dMP;     % Rate for Parvalbumin bound Mg2+
-            dCA;     % Rate for ATP bound Ca2+
+            J_r6;    % rate for SOCEProb(1)
+            (f_SR * KMOLE * (LumpedJ_SERCA - LumpedJ_RyR - J_CaLeak_SR))/vol_SR; %c_SR (2)
+            J_r5;    % rate for h_K (3)
+            J_r0;    % rate for w_RyR (4)           
+            (1000 /device_PM.Capacitance) * (SA_PM * (I_CaLeak_PM + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE) + I_PM);    % rate for Voltage_PM (5)
+            KFlux_PM_cyto * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i (6)
+            (J_Cl .* KFlux_PM_cyto);    % rate for Cl_i (7)
+            %f_i*((KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE /vol_cyto)); % rate for c_i assuming rapid buffering
+            (KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_cyto) - dCP - dCA; % rate for c_i (8)
+            J_r4;    % rate for n (9)
+            J_r2;    % rate for m (10)
+            J_r1;    % rate for h (11)
+            J_r3;    % rate for S (12)
+            KFlux_PM_cyto * ( J_K_IR - J_K_DR + J_NKX_K);    % rate for K_i  (13)
+            dCP;     % Rate for Parvalbumin bound Ca2+ (14)
+            dMP;     % Rate for Parvalbumin bound Mg2+ (15)
+            dCA;     % Rate for ATP bound Ca2+ (16)
             ];
 
         R = abs(dydt ./ Nf); %Normalize
