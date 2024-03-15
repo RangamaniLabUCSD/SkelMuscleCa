@@ -13,7 +13,7 @@
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst_LM(~,lb,ub,yinit,p_est)
 
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations',100); %'SwarmSize',100, 
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations',100);%, 'SwarmSize',20);
 
 numParam = length(lb);
 pVec = ones(1,numParam); %41

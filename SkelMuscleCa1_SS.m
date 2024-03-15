@@ -1,4 +1,4 @@
-function [Time,Y,currtime] = SkelMuscleCa1_SS(tSpan,freq, lowATP, yinit, p,StartTimer,expt)
+function [Time,Y,currtime,fluxes] = SkelMuscleCa1_SS(tSpan,freq, lowATP, yinit, p,StartTimer,expt)
 % [T,Y,yinit,param] = SkelMuscleCa_AK(argTimeSpan,argYinit,argParam)
 %
 % input:
@@ -12,7 +12,10 @@ function [Time,Y,currtime] = SkelMuscleCa1_SS(tSpan,freq, lowATP, yinit, p,Start
 % output:
 %     T is the vector of times
 %     Y is the vector of state variables
-%     yInf is the predicted SS values
+%     currtime:
+%     fluxes: calcium fluxes at each time point, each row has: 
+%            [J_SOCE, J_CaLeak_PM, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR]
+%            in units of uM/s (in terms of myoplasmic conc)
 % -------------------------------------------------------------------------
 
 timeSpan = [0.0 1.0];
@@ -36,11 +39,14 @@ else
 end
 [Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP); %pass extra arguments at the end
 
-
+fluxes = zeros(length(Time), 8);
+for i = 1:length(Time)
+    [~, fluxes(i,:)] = f(Time(i), Y(i,:), p, freq, lowATP);
+end
 
 % -------------------------------------------------------
 % ode rate
-    function dydt = f(t,y,p,freq,lowATP)
+    function [dydt, fluxes] = f(t,y,p,freq,lowATP)
         % State Variables
         SOCEProb = y(1);
         c_SR = y(2);
@@ -122,7 +128,11 @@ end
         Cl_o_exp = [143700, 143700, 158000, 158000,158000, 124000, 126170, 157000, 128000, 146000];  %mM  128000
         Temp = [(273+22),(273+22),(273+20),(273+22), (273+22),(273+ 26),(273+22),(273+22),(273+35),(273+22)]; %K
         
-        expt_n = expt;
+        if expt==10
+            expt_n = 5;
+        else
+            expt_n = expt;
+        end
         
         % Constants
         c_EC_init_uM = Ca_o_exp(expt_n); %1300.0;
@@ -342,49 +352,39 @@ end
 
         % prescribed stimulus (applied current I_PM at frequency freq - square
         % pulses of width 1 ms)
-        I_PM = 0;
-
-        % n_pulses = [1, 5, 1, 1, 5, 1, 1, 1, 1, 1];
-        % 
-        % if expt == 8
-        %     pulsewidth = pulsewidth/2; %0.0005;
-        % end
-        % for p = 1 : n_pulses(expt)
-        %     if t >= 2*(p-1)*pulsewidth && t <= (2*p - 1) * pulsewidth
-        %         if expt == 6
-        %             I_PM =  - ClampCurrent + 5000;
-        %         else
-        %             I_PM = - ClampCurrent;
-        %         end
-        %     end
-        % end
         
-        if expt == 2 
-            if t > 0 && t < 0.05
-                if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
-                    I_PM = - ClampCurrent; 
+        I_PM = 0;
+        if freq > 0
+            if expt == 2
+                if t > 0 && t < 0.05
+                    if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
+                        I_PM = - ClampCurrent;
+                    end
                 end
-            end
-        elseif expt == 5
-            if t > 0 && t < 0.07
-                if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
-                    I_PM = - ClampCurrent; 
+            elseif expt == 5
+                if t > 0 && t < 0.07
+                    if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
+                        I_PM = - ClampCurrent;
+                    end
                 end
-            end
-        elseif expt == 6 
-            if t > 0 && t < 0.07
-                if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
-                    I_PM =  - ClampCurrent + 5000; %  Increased I_PM from -20k to -25kPA
+            elseif expt == 6
+                if t > 0 && t < 0.07
+                    if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
+                        I_PM =  - ClampCurrent + 5000; %  Increased I_PM from -20k to -25kPA
+                    end
                 end
-            end
-        elseif expt == 8
-            if t > 0 && t < 0.001
-                pulsewidth = 0.05;
-                I_PM = - ClampCurrent ;
-            end
-        elseif expt < 2 || expt > 2 || expt < 5 || expt > 6 
-            if t > 0 && t < 0.001
-                I_PM = - ClampCurrent;
+            elseif expt == 8
+                if t > 0 && t < 0.001
+                    I_PM = - ClampCurrent ;
+                end
+            elseif any(expt == [1,3,4,7,9])
+                if t > 0 && t < 0.001
+                    I_PM = - ClampCurrent;
+                end
+            else
+                if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
+                    I_PM =  - ClampCurrent; %  Increased I_PM from -20k to -25kPA
+                end
             end
         end
 
@@ -404,8 +404,9 @@ end
         %% Rates
 
         Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1]; %Normalization factor
-        if freq == 0 && currtime > 600
+        if freq == 0 && currtime > 60
             dydt = zeros(16,1);
+            fluxes = zeros(1,8);
             return;
         end
         dydt = [
@@ -429,11 +430,17 @@ end
             ];
 
         R = abs(dydt ./ Nf); %Normalize
-        if all(R < 0.00001)
+        if all(R < 0.00001) && freq==0
            dydt = zeros(16,1);
+           fluxes = zeros(1,8);
            %fprintf('Threshold met \n')
            return
         end
+
+        fluxes = [J_SOCE, J_CaLeak_PM, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];
+        % convert all fluxes to uM/s
+        fluxes(1:4) = fluxes(1:4) * KFlux_PM_cyto;
+        fluxes(5:end) = fluxes(5:end) * KMOLE / vol_cyto;
       
     end
 end
