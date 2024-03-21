@@ -13,15 +13,15 @@ tSpan = [0 1];
             0.003;		% yinit(9) is the initial condition for 'n'
             0.0128;		% yinit(10) is the initial condition for 'm'
             0.8051;		% yinit(11) is the initial condition for 'h'
-            0.8487;		% yinit(13) is the initial condition for 'S'
-            154500.0;	% yinit(14) is the initial condition for 'K_i'
-            387;        % yinit(15) is the initial condition for 'CaParv'
-            1020;       % yinit(16) is the initial condition for 'MgParv'
-            0.3632;    % yinit(17) is the inital consition for 'CATP'
+            0.8487;		% yinit(12) is the initial condition for 'S'
+            154500.0;	% yinit(13) is the initial condition for 'K_i'
+            387;        % yinit(14) is the initial condition for 'CaParv'
+            1020;       % yinit(15) is the initial condition for 'MgParv'
+            0.3632;    % yinit(16) is the inital consition for 'CATP'
             ];
  
 % Parameter values
-param = importdata('InputParam.xlsx');
+param = importdata('InputParam1.xlsx');
 p =  param.data; 
 
 % ClampCurrent = p(1) ;K_S = p(2) ;delta = p(3) ;beta_m0 = p(4) ;K_betam = p(5) ;alpha_m0 = p(6) ;K_alpham = p(7) ;K_RyR = p(8) ;f_RyR = p(9) ;
