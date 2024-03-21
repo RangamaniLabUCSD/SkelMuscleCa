@@ -109,7 +109,8 @@ end
         S_i = p(40);
         tau_SOCEProb = p(41);
         nu_SERCA = p(42);
-        g_PMCA = p(43);
+        nu_leakSR = p(43);
+        g_PMCA = p(44);
 
         %% Constants
         vol_SA_ratio = 0.01 ;
@@ -219,13 +220,13 @@ end
         E_Na = (log((Na_EC ./ Na_i)) .* R .* T ./ F);
         KmNa_i_NCX = (12.29 .* 1000.0);
         volFactor = (vol_cyto ./ (PI .* 0.26));
-        %nu_SERCA = 4875.0; % .* volFactor);
-        LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA .* volFactor * c_i ./ (K_SERCA + c_i));
+        nu_SERCA = nu_SERCA .* volFactor; %4875.0 .* volFactor; 
+        LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i));
         I_Na = ((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit) * (E_Na - Voltage_PM)) * (1.0 + (0.1 .* TTFrac)));
         J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
         fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
-        g_PMCA = (g_PMCA / SA_PM);% (g_PMCA * vol_cyto) / (700 * SA_PM);
+        g_PMCA = (g_PMCA * vol_cyto) / (700 * SA_PM); %5.37 / SA_PM ; % %(g_PMCA / SA_PM);%
         I_PMCA = (Q10PMCA .^ QCorr) * ( - (g_PMCA .* c_i ./ (K_PMCA + c_i)) .* (1.0 + TTFrac));
         fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_N = ( - (3.0 .* (fPump_NKX_N .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
@@ -282,7 +283,7 @@ end
         openProb = voltProb * (w_RyR / wUnit_RyR);
         LumpedJ_RyR = 602.214179 * j0_RyR * openProb * (c_SR - c_i);
 
-        nu_leakSR = 0.2*volFactor;  %1.1338; %
+        nu_leakSR = nu_leakSR * volFactor;  %1.1338; % 0.2
         J_CaLeak_SR = 602.214179 * nu_leakSR * (c_SR - c_i);
 
         alpha_h = (alpha_h0 .* (Q10alpha_h.^ QCorr) .*exp(( - (Voltage_PM - V_h) ./ K_alphah)));
@@ -364,8 +365,8 @@ end
                     end
                 end
             elseif expt == 5
-                if t > 0 % && t < 0.07
-                    % I_PM = - ClampCurrent*currentStimulus(t,pulsewidth);
+                if t > 0  && t < 0.07
+                    %I_PM = - ClampCurrent*currentStimulus(t);
                     % pulsewidth = 0.5;
                     if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
                         I_PM = - ClampCurrent;
