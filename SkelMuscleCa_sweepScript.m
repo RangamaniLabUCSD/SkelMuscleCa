@@ -26,46 +26,48 @@ p0 =  param.data;
 % ClampCurrent = p(1) ;K_S = p(2) ;delta = p(3) ;beta_m0 = p(4) ;K_betam = p(5) ;alpha_m0 = p(6) ;K_alpham = p(7) ;K_RyR = p(8) ;f_RyR = p(9) ;
 %p = [-25000, 1000000, 0.4, 1380, 18, 288, 10, 4.5, 0.2]' ;%.* pSol_LM';
 
-lb = 0.5*ones(length(p),1);
-ub = 2*ones(length(p),1);
+lb = 0.5*ones(length(p0),1);
+ub = 2*ones(length(p0),1);
 
 psOptions = optimoptions('particleswarm','SwarmSize',100,'UseParallel',true,'HybridFcn',@fmincon,...
     'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations',50);
 
 numParam = length(lb);
-pVec = ones(1,numParam); %41
-% load LM_PSO_2_16_1.mat pSol_LM
-% pVec = pSol_LM;
-samples = 100;
-randPop = exp(0.1*randn([samples, length(p0)]));
-objVals = zeros(samples, 1);
-CaSaved = cell(samples, 1);
-figure
-hold on
-for i = 1:samples
-    [objVals(i), simSaved, fluxesSaved] = pToObj(randPop(i,:), p0, yinit);
-    CaSaved{i} = simSaved{5};
-    fluxesSaved{i} = fluxesSaved{5};
-    plot(CaSaved{i}(:,1), CaSaved{i}(:,2))
-    drawnow
-    fprintf("%d\n", i)
-end
+% pVec = ones(1,numParam); %41
+% samples = 100;
+% randPop = exp(0.1*randn([samples, length(p0)]));
+% objVals = zeros(samples, 1);
+% CaSaved = cell(samples, 1);
+% figure
+% hold on
+% for i = 1:samples
+%     [objVals(i), simSaved, fluxesSaved] = pToObj(randPop(i,:), p0, yinit);
+%     CaSaved{i} = simSaved{5};
+%     fluxesSaved{i} = fluxesSaved{5};
+%     plot(CaSaved{i}(:,1), CaSaved{i}(:,2))
+%     drawnow
+%     fprintf("%d\n", i)
+% end
 
 %% plot the best solution over an extended time
-[~,bestIdx] = min(objVals);
-pBest = randPop(bestIdx,:).*p0';
-[TimeSS,ySS] = SkelMuscleCa1_SS([0 1000],0, 0, yinit, pBest, tic, 10);
-[Time,Y, ~, fluxes] = SkelMuscleCa1_SS([0 60], 20, 0, ySS(end,:), pBest, tic, 10);
-figure
-subplot(3,1,1)
-plot(Time, Y(:,5))
-subplot(3,1,2)
-title('Voltage')
-plot(Time, Y(:,8))
-title('Myoplasmic Ca2+')
-subplot(3,1,3)
-plot(Time, Y(:,2))
-title('SR Ca2+')
+% [~,bestIdx] = min(objVals);
+% pBest = randPop(bestIdx,:).*p0';
+load PSO_15-Mar-2024_NEW.mat pSol
+% pVec = pSol;
+pBest = pSol.*p0';
+% pBest(43) = p0(43);
+[TimeSS,ySS] = SkelMuscleCa1_SS([0 1000],0, 0, yinit, pBest, tic, 5);
+[Time,Y, ~, fluxes] = SkelMuscleCa1_SS([0 150], 10, 0, ySS(end,:), pBest, tic, 5);
+
+%% Plot function
+Fig3a_1(Time,Y(:,5),Y(:,8))
+Fig3a_2(Time,Y(:,5),Y(:,8)) % V_SL vs Ca2+_Myo Zoomedin
+Fig3b(Time,Y(:,1),Y(:,2)) % Density of activated Orai1 channel vs SR [Ca^{2+}] 
+Fluxes_myo = fluxes(:,1) + fluxes(:,2)+fluxes(:,3) + fluxes(:,4)+ fluxes(:,5);
+Fluxes_SR = fluxes(:,6) + fluxes(:,7)+ fluxes(:,8);
+Fig3c(Time,Fluxes_myo,Fluxes_SR) % Myo vs SR fluxes
+Fig3d(Time,[fluxes(:,6), fluxes(:,7), fluxes(:,8)]) % SR fluxes
+Fig3e(Time,[fluxes(:,4), fluxes(:,3)]) % DHPR and NCX Myo Fluxes
 
 
 function [objVal, simSaved, fluxesSaved] = pToObj(pVec, p_est, yinit) % Obj function should be scalar
@@ -88,7 +90,7 @@ expt_title = ["Rincon","Rincon", "Baylor & Hollingworth", "Hollingworth", "Baylo
 param = p_est(:) .* pVec(:);
 tSS = 0:1000;
 
-expt_n = [1 5 7 8]; % 1:9; % [1 8];%
+expt_n = 5; % [1 5 7 8]; % 1:9; % [1 8];%
 
 %Interpolating experimental values
 for m_index = 1 :length(expt_n) %:9
@@ -152,7 +154,7 @@ Error = cell(1,9);
 for j_index = 1 :length(expt_n) %:9
     j = expt_n(j_index);
     weight = length(InterpExpt{j}) ;
-    sigma_C = (0.05 * InterpExpt{j}); %
+    sigma_C = 0.5; %(0.05 * InterpExpt{j}); %
     sigma_V = 5 ;
     delta{j} = InterpComp{j}' - InterpExpt{j};
     if j < 6

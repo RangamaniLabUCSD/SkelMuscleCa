@@ -17,9 +17,9 @@ psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon
 
 numParam = length(lb);
 pVec = ones(1,numParam); %41
-% load PSO_11-Mar-2024_2.mat pSol
-% pVec = pSol;
-% error_i = pToObj(pVec);
+load PSO_15-Mar-2024_NEW.mat pSol
+pVec = pSol;
+pToObj(pVec);
 %%
 % pVec = 0.8 + (1.25 - 0.8)* rand(100,numParam);
 % for a = 1:100
@@ -152,34 +152,34 @@ save(filename);
         % xlabel('Time (s)');
         % title('V_{SL} for expt 1 vs 5'); %', num2str(i));
 
+        figure
+        for index = 1:2 %
+            i = expt_n(index);
+            subplot(2,2,index)
+            plot(0:0.0001:T_max(i),InterpComp{i},'b','LineWidth',2)
+            hold on
+            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2)
+            xlabel('Time (s)');
+            legend('Computational','Experimental')
+            title('Computational vs expt \Delta[Ca^{2+}] concentration for expt - '+ expt_title(i)); % num2str(i));
+            ylabel('\Delta[Ca^{2+}] Concentration (uM)');
+            fontsize(15,"points")
+        end
+
+
         % figure
-        % for index = 1:2 %
-        %     i = expt_n(index);
-        %     subplot(2,2,index)
-        %     plot(0:0.0001:T_max(i),InterpComp{i},'b','LineWidth',2)
-        %     hold on
-        %     plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2)
-        %     xlabel('Time (s)');
-        %     legend('Computational','Experimental')
-        %     title('Computational vs expt \Delta[Ca^{2+}] concentration for expt - '+ expt_title(i)); % num2str(i));
-        %     ylabel('\Delta[Ca^{2+}] Concentration (uM)');
-        %     fontsize(15,"points")
-        % end
-        % 
-        % 
-        % % figure
-        % for index = 3:4 
-        %     i = expt_n(index); %:9
-        %     subplot(2,2,index)
-        %     plot(0:0.0001:T_max(i),InterpComp{i},'b','LineWidth',2)
-        %     hold on
-        %     plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2)
-        %     xlabel('Time (s)');
-        %     legend('Computational','Experimental')
-        %     ylabel('V_{PM} (mV)');
-        %     title('Computational vs expt V_{PM} for expt - '+ expt_title(i)); %');
-        %     fontsize(15,"points")
-        % end
+        for index = 3:4 
+            i = expt_n(index); %:9
+            subplot(2,2,index)
+            plot(0:0.0001:T_max(i),InterpComp{i},'b','LineWidth',2)
+            hold on
+            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2)
+            xlabel('Time (s)');
+            legend('Computational','Experimental')
+            ylabel('V_{PM} (mV)');
+            title('Computational vs expt V_{PM} for expt - '+ expt_title(i)); %');
+            fontsize(15,"points")
+        end
 
         %% Objective Value Calc       
         delta = cell(1,9);

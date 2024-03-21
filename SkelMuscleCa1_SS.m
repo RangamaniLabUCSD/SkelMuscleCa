@@ -108,6 +108,8 @@ end
         nu_NCX = p(39);
         S_i = p(40);
         tau_SOCEProb = p(41);
+        nu_SERCA = p(42);
+        g_PMCA = p(43);
 
         %% Constants
         vol_SA_ratio = 0.01 ;
@@ -120,25 +122,25 @@ end
         %% Experimental Inputs
         %Expt = {[R_t R_C],[R_MP_t R_MP_C] [HB_t HB_C], [H_t H_C],[HB_MP_t HB_MP_C]
         %[K_t K_V], [B_t B_V] , [M_t M_V], [W_t W_V], [MJ_t MJ_V],};
-        Ca_o_exp = [1000, 1000, 2000, 2000,2000, 2500, 1800, 2000,  5000];% 2000]; 1300,             %mM
-        Na_o_exp = [138100, 138100, 150000, 150000, 150000, 143800, 118240, 140000, 151000.0, 151000];%133000] ;147000.0 %mM
-        K_o_exp = [3900, 3900, 2000, 2000, 2000, 5000, 5330, 4000, 5900 , 5000]; %5900]; %4000               %mM
+        Ca_o_exp = [1000, 1000, 2000, 2000,2000, 2500, 1800, 2000,  5000, 1300];% 2000];              %mM
+        Na_o_exp = [138100, 138100, 150000, 150000, 150000, 143800, 118240, 140000, 151000.0, 151000, 147000.0];%133000] ;147000.0 %mM
+        K_o_exp = [3900, 3900, 2000, 2000, 2000, 5000, 5330, 4000, 5900 , 5000 , 4000 ]; %5900]; %              %mM
 
         %K_o_exp = [3900, 4000, 4000, 4000, 5000, 5330];               %mM
-        Cl_o_exp = [143700, 143700, 158000, 158000,158000, 124000, 126170, 157000, 128000, 146000];  %mM  128000
+        Cl_o_exp = [143700, 143700, 158000, 158000,158000, 124000, 126170, 157000, 128000,  128000];  %mM 146000, 
         Temp = [(273+22),(273+22),(273+20),(273+22), (273+22),(273+ 26),(273+22),(273+22),(273+35),(273+22)]; %K
         
-        if expt==10
-            expt_n = 5;
-        else
-            expt_n = expt;
-        end
-        
+        % if expt==10
+        %     expt_n = 5;
+        % else
+        expt_n = expt;
+        % end
+
         % Constants
         c_EC_init_uM = Ca_o_exp(expt_n); %1300.0;
         Cl_EC_init_uM = Cl_o_exp(expt_n); %128000.0;
         K_EC_init_uM = K_o_exp(expt_n); %4000.0;
-        Na_EC_init_uM = Na_o_exp(expt_n); %147000.0;
+        Na_EC_init_uM = Na_o_exp(expt_n); %147000.0;     
 
         carrierValence_CaLeak_PM = 2.0;
         carrierValence_Cl = -1.0;
@@ -217,13 +219,13 @@ end
         E_Na = (log((Na_EC ./ Na_i)) .* R .* T ./ F);
         KmNa_i_NCX = (12.29 .* 1000.0);
         volFactor = (vol_cyto ./ (PI .* 0.26));
-        nu_SERCA = (4875.0 .* volFactor);
-        LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i));
+        %nu_SERCA = 4875.0; % .* volFactor);
+        LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA .* volFactor * c_i ./ (K_SERCA + c_i));
         I_Na = ((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit) * (E_Na - Voltage_PM)) * (1.0 + (0.1 .* TTFrac)));
         J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
         fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
-        g_PMCA = (5.37 ./ SA_PM);
+        g_PMCA = (g_PMCA / SA_PM);% (g_PMCA * vol_cyto) / (700 * SA_PM);
         I_PMCA = (Q10PMCA .^ QCorr) * ( - (g_PMCA .* c_i ./ (K_PMCA + c_i)) .* (1.0 + TTFrac));
         fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_N = ( - (3.0 .* (fPump_NKX_N .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
@@ -356,13 +358,15 @@ end
         I_PM = 0;
         if freq > 0
             if expt == 2
-                if t > 0 && t < 0.05
+                if t > 0 % && t < 0.05
                     if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
                         I_PM = - ClampCurrent;
                     end
                 end
             elseif expt == 5
-                if t > 0 && t < 0.07
+                if t > 0 % && t < 0.07
+                    % I_PM = - ClampCurrent*currentStimulus(t,pulsewidth);
+                    % pulsewidth = 0.5;
                     if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
                         I_PM = - ClampCurrent;
                     end
@@ -439,8 +443,8 @@ end
 
         fluxes = [J_SOCE, J_CaLeak_PM, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];
         % convert all fluxes to uM/s
-        fluxes(1:4) = fluxes(1:4) * KFlux_PM_cyto;
-        fluxes(5:end) = fluxes(5:end) * KMOLE / vol_cyto;
+        fluxes(1:5) = fluxes(1:5) * KFlux_PM_cyto;
+        fluxes(6:end) = fluxes(6:end) * KMOLE / vol_cyto;
       
     end
 end
