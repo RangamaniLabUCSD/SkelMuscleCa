@@ -13,12 +13,12 @@
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst_LM(~,lb,ub,yinit,p_est)
 
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations',100);%, 'SwarmSize',20);
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 24);
 
 numParam = length(lb);
 pVec = ones(1,numParam); %41
-load PSO_15-Mar-2024_NEW.mat pSol
-pVec = pSol;
+% load PSO_15-Mar-2024_NEW.mat pSol
+% pVec = pSol;
 pToObj(pVec);
 %%
 % pVec = 0.8 + (1.25 - 0.8)* rand(100,numParam);
@@ -29,7 +29,7 @@ pToObj(pVec);
 % pVec = [1.13221318715608	0.910784829890607	1.08766990881102	0.960520363703168	0.881220949480694	1.14980749044848	1.01784366722258	0.832650430164826	1.13204434984506	1.21134064952321	0.853989752515383	1.02556941419551	1.04505055423832	1.24069003552003	1.20312237401022	1.05626370998520	1.21757747171939	0.906544295531512	0.811685340553057	0.948058482316822	1.18105151245671	1.00575732420527	0.872659170917175	1.24424664541645	1.20403751216216	1.15221082903596	1.11655793288450	0.878720899125972	1.06486411347693	1.14367568901613	0.890078146487194	1.24850588834879	1.24985485041859	0.811471290427414	1.03705854781936	1.02675718342494	0.917570025970154	1.14125840581366	1.10821470759528	0.890444308368329	1.17040333644423];
 % pToObj(pVec)
 delete(gcp('nocreate'))
-parpool(50)
+parpool(12)
 [pSol,fval,exitflag] = particleswarm(@pToObj,numParam,lb,ub,psOptions);
 pToObj(pSol)
 filename = "PSO_" + date +"_2.mat";
@@ -56,7 +56,7 @@ save(filename);
         param = p_est(:) .* pVec(:);
         tSS = 0:1000;
 
-        expt_n = [1 5 7 8]; % 1:9; % [1 8];%
+        expt_n = [4 5 7 8]; % 1:9; % [1 8];%
 
         %Interpolating experimental values
         for m_index = 1 :length(expt_n) %:9
@@ -189,7 +189,7 @@ save(filename);
         for j_index = 1 :length(expt_n) %:9
             j = expt_n(j_index);
             weight = length(InterpExpt{j}) ;
-            sigma_C = (0.05 * InterpExpt{j}); %
+            sigma_C = 0.5;%(0.05 * InterpExpt{j}); %
             sigma_V = 5 ;
             delta{j} = InterpComp{j}' - InterpExpt{j};
             if j < 6               

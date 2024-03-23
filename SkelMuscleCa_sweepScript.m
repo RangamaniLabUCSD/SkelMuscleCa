@@ -22,6 +22,8 @@ yinit = [
 % Parameter values
 param = importdata('InputParam1.xlsx');
 p0 =  param.data;
+p0([20,42,43]) = 0.1*p0([20,42,43]);
+p0(44) = 0.1*p0(44);
 
 % ClampCurrent = p(1) ;K_S = p(2) ;delta = p(3) ;beta_m0 = p(4) ;K_betam = p(5) ;alpha_m0 = p(6) ;K_alpham = p(7) ;K_RyR = p(8) ;f_RyR = p(9) ;
 %p = [-25000, 1000000, 0.4, 1380, 18, 288, 10, 4.5, 0.2]' ;%.* pSol_LM';
@@ -33,31 +35,31 @@ psOptions = optimoptions('particleswarm','SwarmSize',100,'UseParallel',true,'Hyb
     'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations',50);
 
 numParam = length(lb);
-% pVec = ones(1,numParam); %41
-% samples = 100;
-% randPop = exp(0.1*randn([samples, length(p0)]));
-% objVals = zeros(samples, 1);
-% CaSaved = cell(samples, 1);
-% figure
-% hold on
-% for i = 1:samples
-%     [objVals(i), simSaved, fluxesSaved] = pToObj(randPop(i,:), p0, yinit);
-%     CaSaved{i} = simSaved{5};
-%     fluxesSaved{i} = fluxesSaved{5};
-%     plot(CaSaved{i}(:,1), CaSaved{i}(:,2))
-%     drawnow
-%     fprintf("%d\n", i)
-% end
+pVec = ones(1,numParam); %41
+samples = 200;
+randPop = exp(0.3*randn([samples, length(p0)]));
+objVals = zeros(samples, 1);
+CaSaved = cell(samples, 1);
+figure
+hold on
+for i = 1:samples
+    [objVals(i), simSaved, fluxesSaved] = pToObj(randPop(i,:), p0, yinit);
+    CaSaved{i} = simSaved{5};
+    fluxesSaved{i} = fluxesSaved{5};
+    plot(CaSaved{i}(:,1), CaSaved{i}(:,2))
+    drawnow
+    fprintf("%d\n", i)
+end
 
 %% plot the best solution over an extended time
-% [~,bestIdx] = min(objVals);
-% pBest = randPop(bestIdx,:).*p0';
-load PSO_15-Mar-2024_NEW.mat pSol
+[~,bestIdx] = min(objVals);
+pBest = randPop(bestIdx,:).*p0';
+load PSO_21-Mar-2024_2.mat pSol
 % pVec = pSol;
-pBest = pSol.*p0';
+% pBest = pSol.*p0';
 % pBest(43) = p0(43);
-[TimeSS,ySS] = SkelMuscleCa1_SS([0 1000],0, 0, yinit, pBest, tic, 5);
-[Time,Y, ~, fluxes] = SkelMuscleCa1_SS([0 150], 10, 0, ySS(end,:), pBest, tic, 5);
+[TimeSS,ySS] = SkelMuscleCa1_SS([0 1000],0, 0, yinit, pBest, tic, 10);
+[Time,Y, ~, fluxes] = SkelMuscleCa1_SS([0 150], 10, 0, ySS(end,:), pBest, tic, 10);
 
 %% Plot function
 Fig3a_1(Time,Y(:,5),Y(:,8))
@@ -90,7 +92,7 @@ expt_title = ["Rincon","Rincon", "Baylor & Hollingworth", "Hollingworth", "Baylo
 param = p_est(:) .* pVec(:);
 tSS = 0:1000;
 
-expt_n = 5; % [1 5 7 8]; % 1:9; % [1 8];%
+expt_n = [4 5 7 8]; % 1:9; % [1 8];%
 
 %Interpolating experimental values
 for m_index = 1 :length(expt_n) %:9
@@ -156,10 +158,11 @@ for j_index = 1 :length(expt_n) %:9
     weight = length(InterpExpt{j}) ;
     sigma_C = 0.5; %(0.05 * InterpExpt{j}); %
     sigma_V = 5 ;
-    delta{j} = InterpComp{j}' - InterpExpt{j};
     if j < 6
+        delta{j} = InterpComp{j}' - InterpExpt{j};
         Error{j} = ((delta{j} ./ sigma_C ) .^ 2 )./ weight; %     (((InterpComp{j}' - InterpExpt{j})./sigma_C).^2)./weight ;
     elseif j > 5
+        delta{j} = InterpComp{j}' - InterpExpt{j};
         Error{j} = ((delta{j} ./ sigma_V ) .^ 2 )./ weight; % (((InterpComp{j}' - InterpExpt{j}) ./ sigma_V).^2) ./ weight;
     end
     sum_delta(j) = sum(Error{j});

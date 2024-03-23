@@ -110,6 +110,7 @@ end
         tau_SOCEProb = p(41);
         nu_SERCA = p(42);
         g_PMCA = p(43);
+        nu_leakSR = p(44);
 
         %% Constants
         vol_SA_ratio = 0.01 ;
@@ -130,11 +131,13 @@ end
         Cl_o_exp = [143700, 143700, 158000, 158000,158000, 124000, 126170, 157000, 128000,  128000];  %mM 146000, 
         Temp = [(273+22),(273+22),(273+20),(273+22), (273+22),(273+ 26),(273+22),(273+22),(273+35),(273+22)]; %K
         
-        % if expt==10
-        %     expt_n = 5;
-        % else
-        expt_n = expt;
-        % end
+        if expt==10 % activation continues for the whole time course
+            expt_n = 5; % conditions from expt 5
+            expt_stim = 10; % stimulus repeats until end of simulation
+        else
+            expt_n = expt;
+            expt_stim = expt;
+        end
 
         % Constants
         c_EC_init_uM = Ca_o_exp(expt_n); %1300.0;
@@ -219,13 +222,13 @@ end
         E_Na = (log((Na_EC ./ Na_i)) .* R .* T ./ F);
         KmNa_i_NCX = (12.29 .* 1000.0);
         volFactor = (vol_cyto ./ (PI .* 0.26));
-        %nu_SERCA = 4875.0; % .* volFactor);
+        % nu_SERCA = nu_SERCA;%*volFactor;
         LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA .* volFactor * c_i ./ (K_SERCA + c_i));
         I_Na = ((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit) * (E_Na - Voltage_PM)) * (1.0 + (0.1 .* TTFrac)));
         J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
         fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
-        g_PMCA = (g_PMCA / SA_PM);% (g_PMCA * vol_cyto) / (700 * SA_PM);
+        g_PMCA = (g_PMCA * vol_cyto) / (700 * SA_PM);
         I_PMCA = (Q10PMCA .^ QCorr) * ( - (g_PMCA .* c_i ./ (K_PMCA + c_i)) .* (1.0 + TTFrac));
         fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_N = ( - (3.0 .* (fPump_NKX_N .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
@@ -282,7 +285,7 @@ end
         openProb = voltProb * (w_RyR / wUnit_RyR);
         LumpedJ_RyR = 602.214179 * j0_RyR * openProb * (c_SR - c_i);
 
-        nu_leakSR = 0.2*volFactor;  %1.1338; %
+        nu_leakSR = nu_leakSR*volFactor;  %1.1338; %
         J_CaLeak_SR = 602.214179 * nu_leakSR * (c_SR - c_i);
 
         alpha_h = (alpha_h0 .* (Q10alpha_h.^ QCorr) .*exp(( - (Voltage_PM - V_h) ./ K_alphah)));
@@ -347,7 +350,7 @@ end
         %f_i = 1/(1 + (K_iATP*ATP_itot/((K_iATP+c_i).^2)) + (K_iParv*Parv_itot/((K_iParv+c_i).^2))); % Assuming rapid buffering
 
         B_SRtot = 31000;
-        K_SRBuffer = 500;
+        K_SRBuffer = 800;
         f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2));
 
         currtime = toc(StartTimer);     
@@ -357,37 +360,37 @@ end
         
         I_PM = 0;
         if freq > 0
-            if expt == 2
-                if t > 0 % && t < 0.05
+            if expt_stim == 2
+                if t > 0 && t < 0.05
                     if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
                         I_PM = - ClampCurrent;
                     end
                 end
-            elseif expt == 5
-                if t > 0 % && t < 0.07
+            elseif expt_stim == 5
+                if t > 0 && t < 0.07
                     % I_PM = - ClampCurrent*currentStimulus(t,pulsewidth);
                     % pulsewidth = 0.5;
                     if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
                         I_PM = - ClampCurrent;
                     end
                 end
-            elseif expt == 6
+            elseif expt_stim == 6
                 if t > 0 && t < 0.07
                     if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
                         I_PM =  - ClampCurrent + 5000; %  Increased I_PM from -20k to -25kPA
                     end
                 end
-            elseif expt == 8
+            elseif expt_stim == 8
                 if t > 0 && t < 0.001
                     I_PM = - ClampCurrent ;
                 end
-            elseif any(expt == [1,3,4,7,9])
+            elseif any(expt_stim == [1,3,4,7,9])
                 if t > 0 && t < 0.001
                     I_PM = - ClampCurrent;
                 end
             else
-                if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
-                    I_PM =  - ClampCurrent; %  Increased I_PM from -20k to -25kPA
+                if (mod(t,1/freq) < pulsewidth)
+                    I_PM =  - ClampCurrent;
                 end
             end
         end
@@ -408,7 +411,7 @@ end
         %% Rates
 
         Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1]; %Normalization factor
-        if freq == 0 && currtime > 60
+        if freq == 0 && currtime > 10
             dydt = zeros(16,1);
             fluxes = zeros(1,8);
             return;
