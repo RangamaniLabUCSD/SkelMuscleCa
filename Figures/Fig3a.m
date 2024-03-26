@@ -1,4 +1,4 @@
-function Fig3a_1(X1, Y1, Y2)
+function Fig3a(X1, Y1, Y2)
 %CREATEFIGURE(X1, Y1, Y2)
 %  X1:  vector of plot x data
 %  Y1:  vector of plot y data

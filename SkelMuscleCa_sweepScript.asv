@@ -23,6 +23,9 @@ yinit = [
 param = importdata('InputParam1.xlsx');
 p0 =  param.data;
 
+% ClampCurrent = p(1) ;K_S = p(2) ;delta = p(3) ;beta_m0 = p(4) ;K_betam = p(5) ;alpha_m0 = p(6) ;K_alpham = p(7) ;K_RyR = p(8) ;f_RyR = p(9) ;
+%p = [-25000, 1000000, 0.4, 1380, 18, 288, 10, 4.5, 0.2]' ;%.* pSol_LM';
+
 lb = 0.5*ones(length(p0),1);
 ub = 2*ones(length(p0),1);
 
@@ -32,7 +35,7 @@ psOptions = optimoptions('particleswarm','SwarmSize',100,'UseParallel',true,'Hyb
 numParam = length(lb);
 pVec = ones(1,numParam); %41
 samples = 100;
-randPop = exp(0.25*randn([samples, length(p0)]));
+randPop = exp(0.5*randn([samples, length(p0)]));
 objVals = zeros(samples, 1);
 CaSaved = cell(samples, 1);
 figure
@@ -49,76 +52,44 @@ end
 %% plot the best solution over an extended time
 [~,bestIdx] = min(objVals);
 pBest = randPop(bestIdx,:).*p0';
-%load PSO_15-Mar-2024_NEW.mat pSol
-%pBest = pSol(:) .* p0(:);
+% load PSO_15-Mar-2024_NEW.mat pSol
+%pVec = pSol;
+% pSol(end+1) = 1;
+% pBest = pSol(:) .* p0(:);
+% pBest(43) = p0(43);
+[TimeSS,ySS] = SkelMuscleCa1_SS([0 1000],0, 0, yinit, pBest, tic, 10);
+[Time,Y, ~, fluxes] = SkelMuscleCa1_SS([0 150], 50, 0, ySS(end,:), pBest, tic, 10);
 
-[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pBest, tic, 1);
-[Time,Y, ~, fluxes] = SkelMuscleCa_dydt([0 150], 50, 0, ySS(end,:), pBest, tic, 1); 
-
-expt = 2;
-p = pBest;
-[~,ySS_noSOCE] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, expt); % Steady State values of variable 
-[Time_noSOCE,Y_noSOCE, ~, fluxes_noSOCE] = SkelMuscleCa_dydt([0 150], 50, 0, ySS_noSOCE(end,:), p, tic, expt); % Dynamics computation
-
-% Figure 3
-Fig3a(Time,Y(:,5),Y(:,8))
-Fig3b(Time,Y(:,5),Y(:,8)) % V_SL vs Ca2+_Myo Zoomedin
-Fig3c(Time,Y(:,1),Y(:,2)) % Density of activated Orai1 channel vs SR [Ca^{2+}] 
-Fig3d(Time,[fluxes(:,4), fluxes(:,3)]) % DHPR and NCX Myo Fluxes
-Fig3e(Time,[fluxes(:,6), fluxes(:,7), fluxes(:,8)]) % SR fluxes
-
-%% Figure 4
-t = 0 : 2.5 : max(Time);
-
-% Peak Ca2+ per stimulus plot
+%% figure 4
+t = [0 : 2.5 : max(Time)];
 MaxCa = zeros(length(t),1);
-MaxCa_noSOCE = zeros(length(t),1);
 for j = 1 : (length(t) - 1)
     t_index = (Time > t(j)) & (Time < t(j+1));
     timepts = Time(t_index);
-    MaxCa(j) = max(Y(t_index,8));  
-
-    t_index_noSOCE = (Time_noSOCE > t(j)) & (Time_noSOCE < t(j+1));
-    timepts_noSOCE = Time_noSOCE(t_index_noSOCE);
-    MaxCa_noSOCE(j) = max(Y_noSOCE(t_index_noSOCE,8));  
+    MaxCa(j) = max(Y(t_index,8));   
 end
-
 figure
-subplot1 = subplot(2,1,1);
-scatter(t(2:end),MaxCa(1:end-1),'filled')
-hold on
-scatter(t(2:end),MaxCa_noSOCE(1:end-1),'filled')
-xlabel('Time (s)','FontSize',16);
-ylabel('Max [Ca^{2+}_{myo}] (\muM)','FontSize',16);
-title ('Max [Ca^{2+}_{myo}] per stimulus period of 2.5s ','FontSize',16,'FontWeight','bold');
-legend('Control','Orai1 blocked','FontSize',14,'EdgeColor','none');
-set(subplot1,'FontSize',14)
-hold off
+scatter(t(2:end),MaxCa(1:end-1))
 
-% Tail integral per stimulus plot
 AUC = zeros(length(t),1);
-AUC_noSOCE = zeros(length(t),1);
 for k = 1 : (length(t) - 1)
     t_index = (Time >= (t(k) + 0.5)) & (Time < t(k+1));
     timepts = Time(t_index);
     AUC(k) = trapz(timepts,Y(t_index,8));   
-
-    t_index_noSOCE = (Time_noSOCE >= (t(k) + 0.5)) & (Time_noSOCE < t(k+1));
-    timepts_noSOCE = Time_noSOCE(t_index_noSOCE);
-    AUC_noSOCE(k) = trapz(timepts_noSOCE,Y(t_index_noSOCE,8));   
 end
+figure
 
-subplot2 = subplot(2,1,2);
-scatter(t(2:end),AUC(1:end-1),'filled')
-hold on
-scatter(t(2:end),AUC_noSOCE(1:end-1),'filled')
-xlabel('Time (s)','FontSize',16);
-ylabel('Tail Integral of [Ca^{2+}]_{myo} (\muM)','FontSize',16);
-title ('Tail Integral of [Ca^{2+}]_{myo} per stimulus period of 2.5s ','FontSize',16,'FontWeight','bold')
-legend('Control','Orai1 blocked','FontSize',14,'EdgeColor','none')
-set(subplot2,'FontSize',14)
-hold off
 
+
+%% Plot function
+Fig3a_1(Time,Y(:,5),Y(:,8))
+Fig3a_2(Time,Y(:,5),Y(:,8)) % V_SL vs Ca2+_Myo Zoomedin
+Fig3b(Time,Y(:,1),Y(:,2)) % Density of activated Orai1 channel vs SR [Ca^{2+}] 
+Fluxes_myo = fluxes(:,1) + fluxes(:,2)+fluxes(:,3) + fluxes(:,4)+ fluxes(:,5);
+Fluxes_SR = fluxes(:,6) + fluxes(:,7)+ fluxes(:,8);
+Fig3c(Time,Fluxes_myo,Fluxes_SR) % Myo vs SR fluxes
+Fig3d(Time,[fluxes(:,6), fluxes(:,7), fluxes(:,8)]) % SR fluxes
+Fig3e(Time,[fluxes(:,4), fluxes(:,3)]) % DHPR and NCX Myo Fluxes
 
 
 function [objVal, simSaved, fluxesSaved] = pToObj(pVec, p_est, yinit) % Obj function should be scalar
@@ -141,7 +112,7 @@ expt_title = ["Rincon","Rincon", "Baylor & Hollingworth", "Hollingworth", "Baylo
 param = p_est(:) .* pVec(:);
 tSS = 0:1000;
 
-expt_n = [4 5]; % 1:9; % [1 8];%
+expt_n = [4 5 7 8]; % 1:9; % [1 8];%
 
 %Interpolating experimental values
 for m_index = 1 :length(expt_n) %:9
@@ -161,8 +132,8 @@ fluxesSaved = cell(length(expt_n), 1);
 for n_index = 1 :length(expt_n) %:9
     n = expt_n(n_index);
 
-    % Compute SS with ode15s
-    [TimeSS,ySS] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, param,StartTimer,n);
+    %% Compute SS with ode15s
+    [TimeSS,ySS] = SkelMuscleCa1_SS(tSS,0, 0, yinit, param,StartTimer,n);
     if size(ySS,1) < length(tSS)
         objVal = penaltyVal;
         count = count+1;
@@ -175,9 +146,9 @@ for n_index = 1 :length(expt_n) %:9
     end
     yinf = ySS(end,:);
 
-    % Calculate Dynamics
+    %% Calculate Dynamics
     t = 0:0.0001:T_max(n);
-    [Time,y,~,fluxes] = SkelMuscleCa_dydtEst(t,freq(n), 0, yinf, param,StartTimer,n);
+    [Time,y,~,fluxes] = SkelMuscleCa1_SS(t,freq(n), 0, yinf, param,StartTimer,n);
     %[Time,y] = SkelMuscleCa1_SS([0 t(n)],freq(n), 0, yinit, p,tic,n);
     if size(y,1) < length(t)
         objVal = penaltyVal;
