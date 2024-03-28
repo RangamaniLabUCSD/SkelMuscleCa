@@ -9,8 +9,7 @@ function Fig3d(X1, YMatrix1)
 figure1 = figure;
 
 % Create axes
-axes1 = axes('Parent',figure1,...
-    'Position',[0.13 0.130620985010707 0.762282958199357 0.794379014989294]);
+axes1 = axes('Parent',figure1); %,...'Position',[0.13 0.130620985010707 0.762282958199357 0.794379014989294]);
 hold(axes1,'on');
 
 % Create multiple line objects using matrix input to plot
@@ -18,24 +17,14 @@ plot1 = plot(X1,YMatrix1,'LineWidth',2);
 set(plot1(1),'DisplayName','DHPR');
 set(plot1(2),'DisplayName','NCX');
 
-% Create ylabel
-ylabel('Ca^{2+} flux (\muM/s)','FontWeight','bold');
-
-% Create xlabel
-xlabel('Time (s)','FontWeight','bold');
-
-% Uncomment the following line to preserve the X-limits of the axes
+ylabel('Ca^{2+} flux (\muM/s)','FontWeight','bold','FontSize',16);
+xlabel('Time (s)','FontWeight','bold','FontSize',16);
 xlim(axes1,[0 0.5]);
-% Uncomment the following line to preserve the Y-limits of the axes
-ylim(axes1,[-1708.8948787062 7291.1051212938]);
+%ylim(axes1,[-1708.8948787062 7291.1051212938]);
+
 hold(axes1,'off');
-% Set the remaining axes properties
-set(axes1,'FontSize',12.6);
-% Create legend
+set(axes1,'FontSize',14);
+
 legend1 = legend(axes1,'show');
-set(legend1,...
-    'Position',[0.762577798473114 0.808804951194339 0.159163984838406 0.112419697150939],...
-    'FontSize',12.6,...
-    'EdgeColor','none',...
-    'Color','none');
+set(legend1,'FontSize',14,'EdgeColor','none','Color','none');  %'Position',[0.762577798473114 0.808804951194339 0.159163984838406 0.112419697150939],...
 

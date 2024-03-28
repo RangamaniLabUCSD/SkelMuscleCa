@@ -109,22 +109,25 @@ end
         S_i = p(40);
         tau_SOCEProb = p(41);
         nu_SERCA = p(42);
-        nu_leakSR = p(43);
-        g_PMCA = p(44);
+        g_PMCA = p(43);
+        nu_leakSR = p(44);
 
         %% Constants
-        vol_SA_ratio = 0.01 ;
+        vol_SA_ratio = 0.01 ;       
         volFraction_cyto = 0.95 ;
         volFraction_SR = 0.05 ;
         volFraction_TT = 0.003 ;
-        pulsewidth = 0.001 ;
-        R_fiber = 20;
+        pulsewidth = 0.001 ;        %s
+        R_fiber = 20;              %um
        
         % Constants
-        c_EC_init_uM = 2000; %Ca_o_exp(expt_n)
-        Cl_EC_init_uM = 158000; %Cl_o_exp(expt_n);
-        K_EC_init_uM = 2000; %K_o_exp(expt_n); 
-        Na_EC_init_uM = 150000; %Na_o_exp(expt_n);
+        c_EC_init_uM = 1300; %2000;        %uM
+        Cl_EC_init_uM = 128000.0;
+        K_EC_init_uM = 4000.0;
+        Na_EC_init_uM = 147000.0; 
+        % Cl_EC_init_uM = 158000;     %uM
+        % K_EC_init_uM = 2000;        %uM
+        % Na_EC_init_uM = 150000;     %uM
 
         carrierValence_CaLeak_PM = 2.0;
         carrierValence_Cl = -1.0;
@@ -153,7 +156,7 @@ end
         F = 96485.3321;
         PI = 3.141592653589793;
         R = 8314.46261815;
-        T = 293; %Temp(expt)
+        T = 293;        %K
         KMOLE = 0.001660538783162726;
 
         V_a = 70.0;
@@ -209,15 +212,17 @@ end
         J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
         fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
-        g_PMCA = (g_PMCA * vol_cyto) / (700 * SA_PM); %5.37 / SA_PM ; %5.37 / SA_PM ; % %(g_PMCA / SA_PM);%
+        g_PMCA = (g_PMCA / SA_PM);  %(g_PMCA * vol_cyto) / (700 * SA_PM);  % 5.37 / SA_PM ; %
         I_PMCA = (Q10PMCA .^ QCorr) * ( - (g_PMCA .* c_i ./ (K_PMCA + c_i)) .* (1.0 + TTFrac));
         fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_N = ( - (3.0 .* (fPump_NKX_N .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
+
         if expt == 1
             g_SOCE = (0.01 ./ 210.44);
         else
-            g_SOCE = 0; 
+            g_SOCE = 0;
         end
+
         c_EC = c_EC_init_uM;
         E_Ca = (log((c_EC ./ c_i)) .* (R .* T) ./ (2.0 .* F));
         I_SOCE = ((g_SOCE .* (E_Ca - Voltage_PM) .* (SOCEProb ./ SOCEProbUnit)) .* (1.0 + TTFrac));
@@ -340,14 +345,15 @@ end
         
         I_PM = 0;
         if (freq > 0 && t > 0)
-            period = 2.5;
-            numPeriods = floor(t / period);
-            timeInCurrentPeriod = t - numPeriods * period;
-            if timeInCurrentPeriod <= 0.5
-                if (mod(timeInCurrentPeriod,1/freq) < pulsewidth)
-                    I_PM = - ClampCurrent;
-                end
+            % period = 2.5;
+            % numPeriods = floor(t / period);
+            % timeInCurrentPeriod = t - numPeriods * period;
+            % if timeInCurrentPeriod <= 0.5
+            % if (mod(timeInCurrentPeriod,1/freq) < pulsewidth)
+            if (mod(t,1/freq) < pulsewidth)
+                I_PM = - ClampCurrent;
             end
+            % end
         end
 
         %% Rates

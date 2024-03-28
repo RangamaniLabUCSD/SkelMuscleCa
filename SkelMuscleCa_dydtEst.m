@@ -109,9 +109,9 @@ end
         S_i = p(40);
         tau_SOCEProb = p(41);
         nu_SERCA = p(42);
-        nu_leakSR = p(43);
-        g_PMCA = p(44);
-
+        g_PMCA = p(43);
+        nu_leakSR = p(44);
+        
         %% Constants
         vol_SA_ratio = 0.01 ;
         volFraction_cyto = 0.95 ;

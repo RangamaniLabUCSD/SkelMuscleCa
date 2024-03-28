@@ -32,7 +32,7 @@ psOptions = optimoptions('particleswarm','SwarmSize',100,'UseParallel',true,'Hyb
 numParam = length(lb);
 pVec = ones(1,numParam); %41
 samples = 100;
-randPop = exp(0.25*randn([samples, length(p0)]));
+randPop = exp(0.5*randn([samples, length(p0)]));
 objVals = zeros(samples, 1);
 CaSaved = cell(samples, 1);
 figure
@@ -141,7 +141,7 @@ expt_title = ["Rincon","Rincon", "Baylor & Hollingworth", "Hollingworth", "Baylo
 param = p_est(:) .* pVec(:);
 tSS = 0:1000;
 
-expt_n = [4 5]; % 1:9; % [1 8];%
+expt_n = [1 5 7 8]; % 1:9; % [1 8];%
 
 %Interpolating experimental values
 for m_index = 1 :length(expt_n) %:9
