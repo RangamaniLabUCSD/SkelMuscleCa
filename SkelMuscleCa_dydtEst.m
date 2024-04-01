@@ -1,5 +1,5 @@
 function [Time,Y,currtime,fluxes] = SkelMuscleCa_dydtEst(tSpan,freq, lowATP, yinit, p,StartTimer,expt)
-% [T,Y,yinit,param] = SkelMuscleCa_AK(argTimeSpan,argYinit,argParam)
+% Function for solving the system of ODEs
 %
 % input:
 %     tSpan is a vector of start and stop times
@@ -7,14 +7,14 @@ function [Time,Y,currtime,fluxes] = SkelMuscleCa_dydtEst(tSpan,freq, lowATP, yin
 %     lowATP is true for low ATP conditions
 %     p is a vector of selected parameters to test
 %     yinit is a vector of initial conditions for the state variables
-%     expt is the exapiremental value used for calculation
+%     expt is the index of the experimental value used for calculation
 %
 % output:
-%     T is the vector of times
+%     Time is the vector of time 
 %     Y is the vector of state variables
-%     currtime:
-%     fluxes: calcium fluxes at each time point, each row has: 
-%            [J_SOCE, J_CaLeak_PM, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR]
+%     currtime: Time used to solve the ode equations
+%     fluxes: Different calcium fluxes at each time point, each row has: 
+%            [J_SOCE, J_CaLeak_SL, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR]
 %            in units of uM/s (in terms of myoplasmic conc)
 % -------------------------------------------------------------------------
 
@@ -25,19 +25,16 @@ if nargin >= 1
         %
         % TimeSpan overridden by function arguments
         %
-        timeSpan = tSpan;
+        tSpan = timeSpan ;
     end
 end
-%
-% invoke the integrator
-%
 
 if freq == 0
     options = odeset('RelTol',1e-3,'NonNegative',[1:4,6:16]);
 else
-    options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:16]);%,'OutputFcn',@odeplot);
+    options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:16]); %,'OutputFcn',@odeplot);
 end
-[Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP); %pass extra arguments at the end
+[Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP);
 
 fluxes = zeros(length(Time), 9);
 for i = 1:length(Time)
@@ -45,15 +42,16 @@ for i = 1:length(Time)
 end
 
 % -------------------------------------------------------
-% ode rate
+
     function [dydt, fluxes] = f(t,y,p,freq,lowATP)
+
         % State Variables
         SOCEProb = y(1);
         c_SR = y(2);
         h_K = y(3);
         w_RyR = y(4);
         %w_DHPR = y(5);
-        Voltage_PM = y(5);
+        Voltage_SL = y(5);
         Na_i = y(6);
         Cl_i = y(7);
         c_i = y(8);
@@ -77,7 +75,7 @@ end
         beta_h0 = p(8);
         beta_m0 = p(9);
         beta_n0 = p(10);
-        C_PM = p(11);
+        C_SL = p(11);
         c_ref = p(12);
         ClampCurrent = p(13);
         delta = p(14);
@@ -111,24 +109,24 @@ end
         nu_SERCA = p(42);
         g_PMCA = p(43);
         nu_leakSR = p(44);
-        
+
         %% Constants
         vol_SA_ratio = 0.01 ;
-        volFraction_cyto = 0.95 ;
+        volFraction_myo = 0.95 ;
         volFraction_SR = 0.05 ;
         volFraction_TT = 0.003 ;
         pulsewidth = 0.001 ;
         R_fiber = 20;
-        
+
         %% Experimental Inputs
         %Expt = {[R_t R_C],[R_MP_t R_MP_C] [HB_t HB_C], [H_t H_C],[HB_MP_t HB_MP_C]
         %[K_t K_V], [B_t B_V] , [M_t M_V], [W_t W_V], [MJ_t MJ_V],};
         Ca_o_exp = [1000, 1000, 2000, 2000,2000, 2500, 1800, 2000,  5000, 1300];                                    %mM
         Na_o_exp = [138100, 138100, 150000, 150000, 150000, 143800, 118240, 140000, 151000.0, 151000, 147000.0];    %mM
         K_o_exp = [3900, 3900, 2000, 2000, 2000, 5000, 5330, 4000, 5900 , 5000 , 4000 ]; %5900];                    %mM
-        Cl_o_exp = [143700, 143700, 158000, 158000,158000, 124000, 126170, 157000, 128000,  128000];                %mM  
+        Cl_o_exp = [143700, 143700, 158000, 158000,158000, 124000, 126170, 157000, 128000,  128000];                %mM
         Temp = [(273+22),(273+22),(273+20),(273+22), (273+22),(273+ 26),(273+22),(273+22),(273+35),(273+22)];       %K
-        
+
         if expt == 10
             expt_n = 5;
         else
@@ -139,9 +137,9 @@ end
         c_EC_init_uM = Ca_o_exp(expt_n); %1300.0;
         Cl_EC_init_uM = Cl_o_exp(expt_n); %128000.0;
         K_EC_init_uM = K_o_exp(expt_n); %4000.0;
-        Na_EC_init_uM = Na_o_exp(expt_n); %147000.0;     
+        Na_EC_init_uM = Na_o_exp(expt_n); %147000.0;
 
-        carrierValence_CaLeak_PM = 2.0;
+        carrierValence_CaLeak_SL = 2.0;
         carrierValence_Cl = -1.0;
         carrierValence_DHPR = 2.0;
         carrierValence_K_DR = 1.0;
@@ -188,7 +186,7 @@ end
         Q10g_KIR= 1.55;
         Q10g_NaK = 1 ;
         Q10g_Cl = 1.5;
-        Q10C_PM = 1.02;
+        Q10C_SL = 1.02;
         Q10alpha_n = 2.5;
         Q10alpha_m = 2.3;
         Q10alpha_h = 2.5;
@@ -201,61 +199,61 @@ end
 
         % Geometry
         vol_Fiber = PI * (R_fiber^2) * L_fiber;
-        vol_cyto = volFraction_cyto* vol_Fiber;
-        SA_PM = 2* PI * R_fiber * L_fiber ;
+        vol_myo = volFraction_myo* vol_Fiber;
+        SA_SL = 2 * PI * R_fiber * L_fiber ;
         vol_SR = volFraction_SR * vol_Fiber ;
         SA_TT = volFraction_TT * vol_Fiber / vol_SA_ratio;
-        TTFrac = SA_TT / SA_PM;
+        TTFrac = SA_TT / SA_SL;
 
         % Functions
 
         K_EC = K_EC_init_uM;
         E_K_K_IR = (log((K_EC ./ K_i)) .* R .* T ./ F);
         K_R = (K_EC .* exp(( - delta .* E_K_K_IR .* F ./ (R .* T))));
-        I_K_IR = ((G_K .* (Q10g_KIR .^ QCorr) .* ((K_R ^ 2.0) ./ (K_K + (K_R ^ 2.0))) .* (1.0 - ((1.0 + ((K_S ./ ((S_i ^ 2.0) .* exp(((2.0 .* (1.0 - delta) .* Voltage_PM .* F) ./ (R .* T))))) .* (1.0 + ((K_R ^ 2.0) ./ K_K)))) ^  - 1.0)) .* (E_K_K_IR - Voltage_PM)) .* (1.0 + TTFrac));
+        I_K_IR = ((G_K .* (Q10g_KIR .^ QCorr) .* ((K_R ^ 2.0) ./ (K_K + (K_R ^ 2.0))) .* (1.0 - ((1.0 + ((K_S ./ ((S_i ^ 2.0) .* exp(((2.0 .* (1.0 - delta) .* Voltage_SL .* F) ./ (R .* T))))) .* (1.0 + ((K_R ^ 2.0) ./ K_K)))) ^  - 1.0)) .* (E_K_K_IR - Voltage_SL)) .* (1.0 + TTFrac));
         J_K_IR = ((I_K_IR ./ (carrierValence_K_IR .* F)) .* 1.0E9);
         Na_EC = Na_EC_init_uM;
         E_Na = (log((Na_EC ./ Na_i)) .* R .* T ./ F);
         KmNa_i_NCX = (12.29 .* 1000.0);
-        volFactor = (vol_cyto ./ (PI .* 0.26));
-        nu_SERCA = nu_SERCA .* volFactor; %4875.0 .* volFactor; 
+        volFactor = (vol_myo ./ (PI .* 0.26));
+        nu_SERCA = nu_SERCA .* volFactor; %4875.0 .* volFactor;
         LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i));
-        I_Na = ((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit) * (E_Na - Voltage_PM)) * (1.0 + (0.1 .* TTFrac)));
+        I_Na = ((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit) * (E_Na - Voltage_SL)) * (1.0 + (0.1 .* TTFrac)));
         J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
-        fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
+        fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
-        g_PMCA = (g_PMCA * vol_cyto) / (700 * SA_PM); %5.37 / SA_PM ; %5.37 / SA_PM ; % %(g_PMCA / SA_PM);%
+        g_PMCA = (g_PMCA * vol_myo) / (700 * SA_SL); 
         I_PMCA = (Q10PMCA .^ QCorr) * ( - (g_PMCA .* c_i ./ (K_PMCA + c_i)) .* (1.0 + TTFrac));
-        fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_PM .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_PM .* F ./ (R .* T))))) ^  - 1.0);
+        fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_N = ( - (3.0 .* (fPump_NKX_N .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
         g_SOCE = (0.01 ./ 210.44);
         c_EC = c_EC_init_uM;
         E_Ca = (log((c_EC ./ c_i)) .* (R .* T) ./ (2.0 .* F));
-        I_SOCE = ((g_SOCE .* (E_Ca - Voltage_PM) .* (SOCEProb ./ SOCEProbUnit)) .* (1.0 + TTFrac));
+        I_SOCE = ((g_SOCE .* (E_Ca - Voltage_SL) .* (SOCEProb ./ SOCEProbUnit)) .* (1.0 + TTFrac));
         E_K_K_DR = (log((K_EC ./ K_i)) .* R .* T ./ F);
-        I_K_DR = ((g_K .* (Q10g_K^ QCorr) .* ((n ./ nUnit) ^ 4.0) .* (h_K ./ h_KUnit) .* (E_K_K_DR - Voltage_PM)) .* (1.0 + (0.45 .* TTFrac)));
-        g_PMLeak = 5.0 .* 2.0E-6;
-        I_CaLeak_PM = ((g_PMLeak .* (E_Ca - Voltage_PM)) .* (1.0 + TTFrac));
-        s1_NCX_N = (exp((nu_NCX .* Voltage_PM .* F ./ (R .* T))) .* (Na_i ^ 3.0) .* c_EC);
+        I_K_DR = ((g_K .* (Q10g_K^ QCorr) .* ((n ./ nUnit) ^ 4.0) .* (h_K ./ h_KUnit) .* (E_K_K_DR - Voltage_SL)) .* (1.0 + (0.45 .* TTFrac)));
+        g_SLLeak = 5.0 .* 2.0E-6;
+        I_CaLeak_SL = ((g_SLLeak .* (E_Ca - Voltage_SL)) .* (1.0 + TTFrac));
+        s1_NCX_N = (exp((nu_NCX .* Voltage_SL .* F ./ (R .* T))) .* (Na_i ^ 3.0) .* c_EC);
         Ka_NCX_N = (1.0 ./ (1.0 + ((Kdact_NCX ./ c_i) ^ 2.0)));
         Qcorr_NCX = ((T - 310.0) ./ 10.0);
-        s2_NCX_N = (exp(((nu_NCX - 1.0) .* Voltage_PM .* F ./ (R .* T))) .* (Na_EC ^ 3.0) .* c_i);
+        s2_NCX_N = (exp(((nu_NCX - 1.0) .* Voltage_SL .* F ./ (R .* T))) .* (Na_EC ^ 3.0) .* c_i);
         KmNa_EC_NCX_N = (87.5 .* 1000.0);
         Kmc_EC_NCX_N = (1.3 .* 1000.0);
         s3_NCX_N = ((Kmc_i_NCX .* (Na_EC ^ 3.0) .* (1.0 + ((Na_i ./ KmNa_i_NCX) ^ 3.0))) + ((KmNa_EC_NCX_N ^ 3.0) .* c_i .* (1.0 + (c_i ./ Kmc_i_NCX))) + (Kmc_EC_NCX_N .* (Na_i ^ 3.0)) + ((Na_i ^ 3.0) .* c_EC) + ((Na_EC ^ 3.0) .* c_i));
-        I_NCX_N = ( - (3.0 .* (g_NCX .* (Q10NCX ^ Qcorr_NCX) .* Ka_NCX_N .* (s1_NCX_N - s2_NCX_N) ./ s3_NCX_N ./ (1.0 + (ksat_NCX .* exp(((nu_NCX - 1.0) .* Voltage_PM ./ (R .* T ./ F))))))) .* (1.0 + TTFrac));
-        A = (1.0 / (1.0 + exp(((Voltage_PM - V_a) / A_a))));
+        I_NCX_N = ( - (3.0 .* (g_NCX .* (Q10NCX ^ Qcorr_NCX) .* Ka_NCX_N .* (s1_NCX_N - s2_NCX_N) ./ s3_NCX_N ./ (1.0 + (ksat_NCX .* exp(((nu_NCX - 1.0) .* Voltage_SL ./ (R .* T ./ F))))))) .* (1.0 + TTFrac));
+        A = (1.0 / (1.0 + exp(((Voltage_SL - V_a) / A_a))));
         Cl_EC = Cl_EC_init_uM;
         E_Cl =  - (log((Cl_EC ./ Cl_i)) .* R .* T ./ F);
-        I_Cl = ((g_Cl .* (Q10g_Cl.^ QCorr) .* (A ^ 4.0) .* (E_Cl - Voltage_PM)) .* (1.0 + (0.1 .* TTFrac)));
-        s2_NCX_C = (exp(((nu_NCX - 1.0) .* Voltage_PM .* F ./ (R .* T))) .* (Na_EC ^ 3.0) .* c_i);
+        I_Cl = ((g_Cl .* (Q10g_Cl.^ QCorr) .* (A ^ 4.0) .* (E_Cl - Voltage_SL)) .* (1.0 + (0.1 .* TTFrac)));
+        s2_NCX_C = (exp(((nu_NCX - 1.0) .* Voltage_SL .* F ./ (R .* T))) .* (Na_EC ^ 3.0) .* c_i);
         Kmc_EC_NCX_C = (1.6 .* 1000.0);
         KmNa_EC_NCX_C = (87.5 .* 1000.0);
         s3_NCX_C = ((Kmc_i_NCX .* (Na_EC ^ 3.0) .* (1.0 + ((Na_i ./ KmNa_i_NCX) ^ 3.0))) + ((KmNa_EC_NCX_C ^ 3.0) .* c_i .* (1.0 + (c_i ./ Kmc_i_NCX))) + (Kmc_EC_NCX_C .* (Na_i ^ 3.0)) + ((Na_i ^ 3.0) .* c_EC) + ((Na_EC ^ 3.0) .* c_i));
         Ka_NCX_C = (1.0 ./ (1.0 + ((Kdact_NCX ./ c_i) ^ 2.0)));
         Qcorr_NCX = ((T - 310.0) ./ 10.0);
-        s1_NCX_C = (exp((nu_NCX .* Voltage_PM .* F ./ (R .* T))) .* (Na_i ^ 3.0) .* c_EC);
-        I_NCX_C = ((2.0 .* (g_NCX .* (Q10NCX ^ Qcorr_NCX) .* Ka_NCX_C .* (s1_NCX_C - s2_NCX_C) ./ s3_NCX_C ./ (1.0 + (ksat_NCX .* exp(((nu_NCX - 1.0) .* Voltage_PM ./ (R .* T ./ F))))))) .* (1.0 + TTFrac));
+        s1_NCX_C = (exp((nu_NCX .* Voltage_SL .* F ./ (R .* T))) .* (Na_i ^ 3.0) .* c_EC);
+        I_NCX_C = ((2.0 .* (g_NCX .* (Q10NCX ^ Qcorr_NCX) .* Ka_NCX_C .* (s1_NCX_C - s2_NCX_C) ./ s3_NCX_C ./ (1.0 + (ksat_NCX .* exp(((nu_NCX - 1.0) .* Voltage_SL ./ (R .* T ./ F))))))) .* (1.0 + TTFrac));
         %L_RyR = (1000.0 ./ 0.002);
         %tau_w_r7 = (1.0 ./ (100.0 .* (1.0 + c_i)));
         % alpha_w_r0 = 100;
@@ -263,20 +261,20 @@ end
 
         tau_w_r0 = (1.0 / (alpha_w_r0 * ( 1 + (c_i / K_w_r0)))) ;%(100.0 .* (1.0 + c_i)));
 
-        alpha_n = (alpha_n0 .* (Q10alpha_n .^ QCorr) .* (Voltage_PM - V_n) ./ (1.0 - exp(( - (Voltage_PM - V_n) ./ K_alphan))));
-        alpha_m = (alpha_m0 .* (Q10alpha_m .^ QCorr) .* (Voltage_PM - V_m) ./ (1.0 - exp(( - (Voltage_PM - V_m) ./ K_alpham))));
-        
+        alpha_n = (alpha_n0 .* (Q10alpha_n .^ QCorr) .* (Voltage_SL - V_n) ./ (1.0 - exp(( - (Voltage_SL - V_n) ./ K_alphan))));
+        alpha_m = (alpha_m0 .* (Q10alpha_m .^ QCorr) .* (Voltage_SL - V_m) ./ (1.0 - exp(( - (Voltage_SL - V_m) ./ K_alpham))));
+
         L_RyR = (1000.0 ./ 0.002);
         w_DHPR = w_RyR;
         f_DHPR = f_RyR;
         K_DHPR = K_RyR;
         L_DHPR = L_RyR;
         VBar_DHPR = VBar_RyR;
-        openDHPR = ((((1.0 + (exp(((Voltage_PM - VBar_DHPR) ./ (4.0 .* K_DHPR))) .* (f_DHPR ^  - 2.0))) ^ 4.0) ./ (((1.0 + (exp(((Voltage_PM - VBar_DHPR) ./ (4.0 .* K_DHPR))) .* (f_DHPR ^  - 2.0))) ^ 4.0) + (L_DHPR .* ((1.0 + exp(((Voltage_PM - VBar_DHPR) ./ (4.0 .* K_DHPR)))) ^ 4.0)))) .* (w_DHPR ./ wUnit_DHPR));
+        openDHPR = ((((1.0 + (exp(((Voltage_SL - VBar_DHPR) ./ (4.0 .* K_DHPR))) .* (f_DHPR ^  - 2.0))) ^ 4.0) ./ (((1.0 + (exp(((Voltage_SL - VBar_DHPR) ./ (4.0 .* K_DHPR))) .* (f_DHPR ^  - 2.0))) ^ 4.0) + (L_DHPR .* ((1.0 + exp(((Voltage_SL - VBar_DHPR) ./ (4.0 .* K_DHPR)))) ^ 4.0)))) .* (w_DHPR ./ wUnit_DHPR));
         g0_DHPR = (9.39 ./ 100.0);
-        I_DHPR = ((g0_DHPR .* openDHPR .* (E_Ca - Voltage_PM)) .* TTFrac);
-        voltProb = (((1.0 + (exp(((Voltage_PM - VBar_RyR) ./ (4.0 .* K_RyR))) .* (f_RyR ^  - 2.0))) ^ 4.0) ./ (((1.0 + (exp(((Voltage_PM - VBar_RyR) ./ (4.0 .* K_RyR))) .* (f_RyR ^  - 2.0))) ^ 4.0) + (L_RyR .* ((1.0 + exp(((Voltage_PM - VBar_RyR) ./ (4.0 .* K_RyR)))) ^ 4.0))));
-                
+        I_DHPR = ((g0_DHPR .* openDHPR .* (E_Ca - Voltage_SL)) .* TTFrac);
+        voltProb = (((1.0 + (exp(((Voltage_SL - VBar_RyR) ./ (4.0 .* K_RyR))) .* (f_RyR ^  - 2.0))) ^ 4.0) ./ (((1.0 + (exp(((Voltage_SL - VBar_RyR) ./ (4.0 .* K_RyR))) .* (f_RyR ^  - 2.0))) ^ 4.0) + (L_RyR .* ((1.0 + exp(((Voltage_SL - VBar_RyR) ./ (4.0 .* K_RyR)))) ^ 4.0))));
+
         j0_RyR = 300.0 * volFactor;
         openProb = voltProb * (w_RyR / wUnit_RyR);
         LumpedJ_RyR = 602.214179 * j0_RyR * openProb * (c_SR - c_i);
@@ -284,23 +282,21 @@ end
         nu_leakSR = nu_leakSR * volFactor;  %1.1338; % 0.2
         J_CaLeak_SR = 602.214179 * nu_leakSR * (c_SR - c_i);
 
-        alpha_h = (alpha_h0 .* (Q10alpha_h.^ QCorr) .*exp(( - (Voltage_PM - V_h) ./ K_alphah)));
-        J_CaLeak_PM = ((I_CaLeak_PM ./ (carrierValence_CaLeak_PM .* F)) .* 1.0E09);
-        %wInf_r7 = (1.0 ./ (1.0 + c_i));
-        %J_r7 = ((wInf_r7 - w_DHPR) ./ tau_w_r7);
+        alpha_h = (alpha_h0 .* (Q10alpha_h.^ QCorr) .*exp(( - (Voltage_SL - V_h) ./ K_alphah)));
+        J_CaLeak_SL = ((I_CaLeak_SL ./ (carrierValence_CaLeak_SL .* F)) .* 1.0E09);
         SOCEProb_inf = (1.0 ./ (1.0 + ((c_SR ./ c_ref) ^ 4.0)));
         J_r6 = ((SOCEProb_inf - SOCEProb) ./ tau_SOCEProb);
-        tau_hK = (exp(( - (Voltage_PM + 40.0) ./ 25.75)) .* tauUnit);
-        h_Kinf = (1.0 ./ (1.0 + exp(((Voltage_PM - V_hkinf) ./ A_hkinf))));
+        tau_hK = (exp(( - (Voltage_SL + 40.0) ./ 25.75)) .* tauUnit);
+        h_Kinf = (1.0 ./ (1.0 + exp(((Voltage_SL - V_hkinf) ./ A_hkinf))));
         J_r5 = ((h_Kinf - h_K) ./ tau_hK);
-        beta_n = (beta_n0 .* (Q10beta_n .^ QCorr).* exp(( - (Voltage_PM - V_n) ./ K_betan)));
+        beta_n = (beta_n0 .* (Q10beta_n .^ QCorr).* exp(( - (Voltage_SL - V_n) ./ K_betan)));
         J_r4 = ((alpha_n .* (1.0 - n)) - (beta_n .* n));
-        S_inf = (1.0 ./ (1.0 + exp(((Voltage_PM - V_Sinf) ./ A_Sinf))));
-        tau_S = (60.0 ./ (0.2 + (5.65 .* (((Voltage_PM + V_tau) ./ 100.0) ^ 2.0))));
+        S_inf = (1.0 ./ (1.0 + exp(((Voltage_SL - V_Sinf) ./ A_Sinf))));
+        tau_S = (60.0 ./ (0.2 + (5.65 .* (((Voltage_SL + V_tau) ./ 100.0) ^ 2.0))));
         J_r3 = ((S_inf - S) ./ tau_S);
-        beta_m = (beta_m0 .* (Q10beta_m.^ QCorr) .* exp(( - (Voltage_PM - V_m) ./ K_betam)));
+        beta_m = (beta_m0 .* (Q10beta_m.^ QCorr) .* exp(( - (Voltage_SL - V_m) ./ K_betam)));
         J_r2 = ((alpha_m .* (1.0 - m)) - (beta_m .* m));
-        beta_h = (Q10beta_h .^ QCorr) .*(beta_h0 ./ (1.0 + exp(( - (Voltage_PM - V_h) ./ K_betah))));
+        beta_h = (Q10beta_h .^ QCorr) .*(beta_h0 ./ (1.0 + exp(( - (Voltage_SL - V_h) ./ K_betah))));
         J_r1 = ((alpha_h .* (1.0 - h)) - (beta_h .* h));
         wInf_r0 = (1.0 ./ (1.0 + (c_i / K_w_r0)));
         J_r0 = ((wInf_r0 - w_RyR) ./ tau_w_r0);
@@ -311,108 +307,91 @@ end
 
         %KFlux_SRM_SR = (SA_SRM ./ vol_SR);
         %KFlux_SRM_SR = 1/vol_SR;
-        KFlux_PM_cyto = (SA_PM ./ vol_cyto);
+        %KFlux_SRM_myo = (SA_SRM ./ vol_myo);
+        %KFlux_SRM_myo = (1/ vol_myo);
+
+        KFlux_SL_myo = (SA_SL ./ vol_myo);
         J_DHPR = ((I_DHPR ./ (carrierValence_DHPR .* F)) .* 1E09);
         J_NCX_N = ((I_NCX_N ./ (carrierValence_NCX_N .* F)) .* 1E09);
         J_NCX_C =  - ((I_NCX_C ./ (carrierValence_NCX_C .* F)) .* 1E09);
-        %KFlux_SRM_cyto = (SA_SRM ./ vol_cyto);
-        %KFlux_SRM_cyto = (1/ vol_cyto);
-        %I_PM = - ClampCurrent;
         J_PMCA =  - ((I_PMCA ./ (carrierValence_PMCA .* F)) .* 1E09);
-        device_PM.Capacitance = (C_PM .* SA_PM) .* (Q10C_PM .^ QCorr);
+        device_SL.Capacitance = (C_SL .* SA_SL) .* (Q10C_SL .^ QCorr);
         J_Cl = ((I_Cl ./ (carrierValence_Cl .* F)) .* 1E09);
 
+        % Calcium buffering in the myoplasm and SR. Added to VCell code
 
-        %% Emmet - added code to VCell function
-        % calcium buffering in the cytosol and SR
-
-        k_onATP = 0.01364*1000;
-        k_offATP = 30*1000;
-        k_onParvCa = 41.7; %(uM s)^-1
-        k_offParvCa = 0.5; %s^-1
-        k_onParvMg = 0.033;
-        k_offParvMg = 3;
-        Parv_itot = 1500;
-        ATP_itot = 8000;
+        k_onATP = 0.01364*1000; %(uM s)^-1
+        k_offATP = 30*1000;     %s^-1
+        k_onParvCa = 41.7;      %(uM s)^-1
+        k_offParvCa = 0.5;      %s^-1
+        k_onParvMg = 0.033;     %(uM s)^-1
+        k_offParvMg = 3;        %s^-1
+        Parv_itot = 1500;       %(uM)
+        ATP_itot = 8000;        %(uM)
 
         ATP = ATP_itot - CATP;
         Parv = Parv_itot - CaParv - MgParv;
-        Mg = 1000; %1mM constant concentration
+        Mg = 1000;              %(uM) constant concentration
 
         dCP = k_onParvCa*c_i*Parv - k_offParvCa*CaParv;
-        dMP = k_onParvMg*Mg * Parv - k_offParvMg*MgParv;
+        dMP = k_onParvMg*Mg * Parv - k_offParvMg*MgParv;    
         dCA = k_onATP*c_i*ATP - k_offATP*CATP;
 
-        %f_i = 1/(1 + (K_iATP*ATP_itot/((K_iATP+c_i).^2)) + (K_iParv*Parv_itot/((K_iParv+c_i).^2))); % Assuming rapid buffering
+        B_SRtot = 31000;        %(uM)
+        K_SRBuffer = 500;       % k_off/k_on
+        f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2)); % Rapid buffering in SR
 
-        B_SRtot = 31000;
-        K_SRBuffer = 500; %k_off/k_on
-        f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2));
+        currtime = toc(StartTimer);
 
-        currtime = toc(StartTimer);     
-
-        % prescribed stimulus (applied current I_PM at frequency freq - square
+        % prescribed stimulus (applied current I_SLat frequency freq - square
         % pulses of width 1 ms)
-        
-        I_PM = 0;
+
+        I_SL = 0;
         if freq > 0
             if expt == 2
-                if t > 0 % && t < 0.05
-                    if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
-                        I_PM = - ClampCurrent;
+                if t > 0 && t < 0.05
+                    if (mod(t,1/freq) < pulsewidth)
+                        I_SL = - ClampCurrent;
                     end
                 end
             elseif expt == 5
                 if t > 0 && t < 0.07
-                        if (mod(t,1/freq) < pulsewidth) %%|| mod(t,1/freq) > ((1/freq)-pulsewidth/2)
-                            I_PM = - ClampCurrent;
-                        end                   
+                    if (mod(t,1/freq) < pulsewidth)
+                        I_SL = - ClampCurrent;
+                    end
                 end
             elseif expt == 6
                 if t > 0 && t < 0.07
-                    if (mod(t,1/freq) < pulsewidth)% || mod(t,1/freq) > ((1/freq)-pulsewidth/2)
-                        I_PM =  - ClampCurrent + 5000; %  Increased I_PM from -20k to -25kPA
+                    if (mod(t,1/freq) < pulsewidth)
+                        I_SL =  - ClampCurrent + 5000; %  Increased I_SLfrom -20k to -25kPA
                     end
                 end
             elseif expt == 8
                 if t > 0 && t < 0.001
-                    I_PM = - ClampCurrent ;
+                    I_SL = - ClampCurrent ;
                 end
             elseif any(expt == [1,3,4,7,9])
                 if t > 0 && t < 0.001
-                    I_PM = - ClampCurrent;
+                    I_SL = - ClampCurrent;
                 end
             else
-                if t > 0 % && t < 0.07
+                if t > 0
                     period = 2.5;
                     numPeriods = floor(t / period);
                     timeInCurrentPeriod = t - numPeriods * period;
                     if timeInCurrentPeriod <= 0.5
-                        if (mod(timeInCurrentPeriod,1/freq) < pulsewidth) 
-                            I_PM = - ClampCurrent;
+                        if (mod(timeInCurrentPeriod,1/freq) < pulsewidth)
+                            I_SL = - ClampCurrent;
                         end
                     end
                 end
             end
         end
 
-
-        % switch lowATP condition on to test predictions in energy deficit (all
-        % pumps go to half activity)
-        % if lowATP
-        %     LumpedJ_SERCA = LumpedJ_SERCA*0.5;
-        %     J_PMCA = J_PMCA*0.5;
-        %     I_PMCA = I_PMCA*0.5;
-        %     J_NKX_K = J_NKX_K*0.5;
-        %     J_NKX_N = J_NKX_N*0.5;
-        %     I_NKX_K = I_NKX_K*0.5;
-        %     I_NKX_N = I_NKX_N*0.5;
-        % end
-
         %% Rates
 
         Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1]; %Normalization factor
-        if freq == 0 && currtime > 60
+        if freq == 0 && currtime > 10
             dydt = zeros(16,1);
             fluxes = zeros(1,9);
             return;
@@ -421,35 +400,33 @@ end
             J_r6;    % rate for SOCEProb(1)
             (f_SR * KMOLE * (LumpedJ_SERCA - LumpedJ_RyR - J_CaLeak_SR))/vol_SR; %c_SR (2)
             J_r5;    % rate for h_K (3)
-            J_r0;    % rate for w_RyR (4)           
-            (1000 /device_PM.Capacitance) * (SA_PM * (I_CaLeak_PM + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE) + I_PM);    % rate for Voltage_PM (5)
-            KFlux_PM_cyto * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i (6)
-            (J_Cl .* KFlux_PM_cyto);    % rate for Cl_i (7)
-            %f_i*((KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE /vol_cyto)); % rate for c_i assuming rapid buffering
-            (KFlux_PM_cyto * (J_SOCE + J_CaLeak_PM - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_cyto) - dCP - dCA; % rate for c_i (8)
+            J_r0;    % rate for w_RyR (4)
+            (1000 /device_SL.Capacitance) * (SA_SL * (I_CaLeak_SL + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE) + I_SL);    % rate for Voltage_SL (5)
+            KFlux_SL_myo * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i (6)
+            (J_Cl .* KFlux_SL_myo);    % rate for Cl_i (7)           
+            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA; % rate for c_i (8)
             J_r4;    % rate for n (9)
             J_r2;    % rate for m (10)
             J_r1;    % rate for h (11)
             J_r3;    % rate for S (12)
-            KFlux_PM_cyto * ( J_K_IR - J_K_DR + J_NKX_K);    % rate for K_i  (13)
+            KFlux_SL_myo * ( J_K_IR - J_K_DR + J_NKX_K);    % rate for K_i  (13)
             dCP;     % Rate for Parvalbumin bound Ca2+ (14)
             dMP;     % Rate for Parvalbumin bound Mg2+ (15)
             dCA;     % Rate for ATP bound Ca2+ (16)
             ];
 
-        R = abs(dydt ./ Nf); %Normalize
+        R = abs(dydt ./ Nf); 
         if all(R < 0.00001) && freq==0
-           dydt = zeros(16,1);
-           fluxes = zeros(1,9);
-           %fprintf('Threshold met \n')
-           return
+            dydt = zeros(16,1);
+            fluxes = zeros(1,9);
+            return
         end
 
-        fluxes = [J_SOCE, J_CaLeak_PM, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR,I_PM];
+        fluxes = [J_SOCE, J_CaLeak_SL, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR,I_SL];
         % convert all fluxes to uM/s
-        fluxes(1:5) = fluxes(1:5) * KFlux_PM_cyto;
-        fluxes(6:8) = fluxes(6:8) * KMOLE / vol_cyto;
-      
+        fluxes(1:5) = fluxes(1:5) * KFlux_SL_myo;
+        fluxes(6:8) = fluxes(6:8) * KMOLE / vol_myo;
+
     end
 end
 

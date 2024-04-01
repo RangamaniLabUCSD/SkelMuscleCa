@@ -1,4 +1,4 @@
-clc 
+clc
 
 yinit = [
     0.0122; 	% yinit(1) is the initial condition for 'SOCEProb'
@@ -18,34 +18,31 @@ yinit = [
     1020;       % yinit(15) is the initial condition for 'MgParv'
     0.3632;    % yinit(16) is the inital consition for 'CATP'
     ];
- 
-% % Parameter values
+
+% Parameter values
 param = importdata('InputParam1.xlsx');
-p =  param.data; 
+p =  param.data;
 
 load PSO_15-Mar-2024_NEW.mat pSol
-pSol(44) = 1;
-% load PSO_14-Mar-2024_2.mat pSol
-% pSol(42:44) = 1;
 p = p(:) .* pSol(:);
 
-
-%% Steady State and Dynamics calculation
+%% Steady State and Dynamics calculation ----------------------------------
 expt = 1;
-[~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, expt); % Steady State values of variable 
-[Time,Y, ~, fluxes] = SkelMuscleCa_dydt([0 60], 50, 0, ySS(end,:), p, tic, expt); % Dynamics computation
+[~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, expt);                    % Steady State values of variable
+[Time,Y, ~, fluxes] = SkelMuscleCa_dydt([0 60], 50, 0, ySS(end,:), p, tic, expt);   % Dynamics computation
 
-% Steady State and Dynamics calculation without any SOCE.
+%% Steady State and Dynamics calculation without any SOCE -----------------
 expt = 2;
-[~,ySS_noSOCE] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, expt); % Steady State values of variable 
-[Time_noSOCE,Y_noSOCE, ~, fluxes_noSOCE] = SkelMuscleCa_dydt([0 60], 50, 0, ySS_noSOCE(end,:), p, tic, expt); % Dynamics computation
+[~,ySS_noSOCE] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, expt);                                         % Steady State values of variable
+[Time_noSOCE,Y_noSOCE, ~, fluxes_noSOCE] = SkelMuscleCa_dydt([0 60], 50, 0, ySS_noSOCE(end,:), p, tic, expt);   % Dynamics computation
 
-%% Figure 3
-Fig3a(Time,Y(:,5),Y(:,8))
-Fig3b(Time,Y(:,5),Y(:,8)) % V_SL vs Ca2+_Myo Zoomedin
-Fig3c(Time,Y(:,1),Y(:,2)) % Density of activated Orai1 channel vs SR [Ca^{2+}] 
-Fig3d(Time,[fluxes(:,4), fluxes(:,3)]) % DHPR and NCX Myo Fluxes
+%% Figure 3 ---------------------------------------------------------------
+Fig3a(Time,Y(:,5),Y(:,8))                           % V_SL and [Ca^2+]_myo over time
+Fig3b(Time,Y(:,5),Y(:,8))                           % V_SL vs Ca2+_Myo Zoomedin
+Fig3c(Time,Y(:,1),Y(:,2))                           % Density of activated Orai1 channel vs SR [Ca^{2+}]
+Fig3d(Time,[fluxes(:,4), fluxes(:,3)])              % DHPR and NCX Myo Fluxes
 Fig3e(Time,[fluxes(:,6), fluxes(:,7), fluxes(:,8)]) % SR fluxes
+
 %% Subplot for flux comparision of different channels in SRM and Sarcolemma
 figure
 subplot(1,3,1)
@@ -80,21 +77,21 @@ xlabel('Time (s)', 'Fontsize',16)
 ylabel('Flux (\muM/s)','Fontsize',16)
 legend('J_{SOCE}','J_{PMCA}','Fontsize',14)
 
-%% Figure 4
+%% Figure 4 ---------------------------------------------------------------
 %t = 0 : 2.5 : max(Time);
 t = 0:max(Time);
 
-% Peak Ca2+ per stimulus plot
+% Peak Ca2+ per stimulus plot----------------------------------------------
 MaxCa = zeros(length(t),1);
 MaxCa_noSOCE = zeros(length(t),1);
 for j = 1 : (length(t) - 1)
     t_index = (Time > t(j)) & (Time < t(j+1));
     timepts = Time(t_index);
-    MaxCa(j) = max(Y(t_index,8));  
-
+    MaxCa(j) = max(Y(t_index,8));
+    % When Orai1 channel is blocked
     t_index_noSOCE = (Time_noSOCE > t(j)) & (Time_noSOCE < t(j+1));
     timepts_noSOCE = Time_noSOCE(t_index_noSOCE);
-    MaxCa_noSOCE(j) = max(Y_noSOCE(t_index_noSOCE,8));  
+    MaxCa_noSOCE(j) = max(Y_noSOCE(t_index_noSOCE,8));
 end
 
 figure
@@ -109,17 +106,17 @@ legend('Control','Orai1 blocked','FontSize',14,'EdgeColor','none');
 set(subplot1,'FontSize',14)
 hold off
 
-% Tail integral per stimulus plot
+% Tail integral per stimulus plot -----------------------------------------
 AUC = zeros(length(t),1);
 AUC_noSOCE = zeros(length(t),1);
 for k = 1 : (length(t) - 1)
     t_index = (Time >= (t(k) + 0.5)) & (Time < t(k+1));
     timepts = Time(t_index);
-    AUC(k) = trapz(timepts,Y(t_index,8));   
-
+    AUC(k) = trapz(timepts,Y(t_index,8));
+    % When Orai1 channel is blocked
     t_index_noSOCE = (Time_noSOCE >= (t(k) + 0.5)) & (Time_noSOCE < t(k+1));
     timepts_noSOCE = Time_noSOCE(t_index_noSOCE);
-    AUC_noSOCE(k) = trapz(timepts_noSOCE,Y_noSOCE(t_index_noSOCE,8));   
+    AUC_noSOCE(k) = trapz(timepts_noSOCE,Y_noSOCE(t_index_noSOCE,8));
 end
 
 subplot2 = subplot(2,1,2);
@@ -132,5 +129,5 @@ title ('Tail Integral of [Ca^{2+}]_{myo} per stimulus period of 2.5s ','FontSize
 legend('Control','Orai1 blocked','FontSize',14,'EdgeColor','none')
 set(subplot2,'FontSize',14)
 hold off
-
+% -------------------------------------------------------------------------
 

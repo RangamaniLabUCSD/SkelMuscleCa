@@ -23,9 +23,6 @@ yinit = [
 param = importdata('InputParam1.xlsx');
 p0 =  param.data;
 
-% ClampCurrent = p(1) ;K_S = p(2) ;delta = p(3) ;beta_m0 = p(4) ;K_betam = p(5) ;alpha_m0 = p(6) ;K_alpham = p(7) ;K_RyR = p(8) ;f_RyR = p(9) ;
-%p = [-25000, 1000000, 0.4, 1380, 18, 288, 10, 4.5, 0.2]' ;%.* pSol_LM';
-
 lb = 0.5*ones(length(p0),1);
 ub = 2*ones(length(p0),1);
 
@@ -52,45 +49,75 @@ end
 %% plot the best solution over an extended time
 [~,bestIdx] = min(objVals);
 pBest = randPop(bestIdx,:).*p0';
-% load PSO_15-Mar-2024_NEW.mat pSol
-%pVec = pSol;
-% pSol(end+1) = 1;
-% pBest = pSol(:) .* p0(:);
-% pBest(43) = p0(43);
-[TimeSS,ySS] = SkelMuscleCa1_SS([0 1000],0, 0, yinit, pBest, tic, 10);
-[Time,Y, ~, fluxes] = SkelMuscleCa1_SS([0 150], 50, 0, ySS(end,:), pBest, tic, 10);
+%load PSO_15-Mar-2024_NEW.mat pSol
+%pBest = pSol(:) .* p0(:);
 
-%% figure 4
-t = [0 : 2.5 : max(Time)];
+[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pBest, tic, 1);
+[Time,Y, ~, fluxes] = SkelMuscleCa_dydt([0 150], 50, 0, ySS(end,:), pBest, tic, 1); 
+
+expt = 2;
+p = pBest;
+[~,ySS_noSOCE] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, expt); % Steady State values of variable 
+[Time_noSOCE,Y_noSOCE, ~, fluxes_noSOCE] = SkelMuscleCa_dydt([0 150], 50, 0, ySS_noSOCE(end,:), p, tic, expt); % Dynamics computation
+
+% Figure 3
+Fig3a(Time,Y(:,5),Y(:,8))
+Fig3b(Time,Y(:,5),Y(:,8)) % V_SL vs Ca2+_Myo Zoomedin
+Fig3c(Time,Y(:,1),Y(:,2)) % Density of activated Orai1 channel vs SR [Ca^{2+}] 
+Fig3d(Time,[fluxes(:,4), fluxes(:,3)]) % DHPR and NCX Myo Fluxes
+Fig3e(Time,[fluxes(:,6), fluxes(:,7), fluxes(:,8)]) % SR fluxes
+
+%% Figure 4
+t = 0 : 2.5 : max(Time);
+
+% Peak Ca2+ per stimulus plot
 MaxCa = zeros(length(t),1);
+MaxCa_noSOCE = zeros(length(t),1);
 for j = 1 : (length(t) - 1)
     t_index = (Time > t(j)) & (Time < t(j+1));
     timepts = Time(t_index);
-    MaxCa(j) = max(Y(t_index,8));   
-end
-figure
-scatter(t(2:end),MaxCa(1:end-1))
+    MaxCa(j) = max(Y(t_index,8));  
 
+    t_index_noSOCE = (Time_noSOCE > t(j)) & (Time_noSOCE < t(j+1));
+    timepts_noSOCE = Time_noSOCE(t_index_noSOCE);
+    MaxCa_noSOCE(j) = max(Y_noSOCE(t_index_noSOCE,8));  
+end
+
+figure
+subplot1 = subplot(2,1,1);
+scatter(t(2:end),MaxCa(1:end-1),'filled')
+hold on
+scatter(t(2:end),MaxCa_noSOCE(1:end-1),'filled')
+xlabel('Time (s)','FontSize',16);
+ylabel('Max [Ca^{2+}_{myo}] (\muM)','FontSize',16);
+title ('Max [Ca^{2+}_{myo}] per stimulus period of 2.5s ','FontSize',16,'FontWeight','bold');
+legend('Control','Orai1 blocked','FontSize',14,'EdgeColor','none');
+set(subplot1,'FontSize',14)
+hold off
+
+% Tail integral per stimulus plot
 AUC = zeros(length(t),1);
+AUC_noSOCE = zeros(length(t),1);
 for k = 1 : (length(t) - 1)
     t_index = (Time >= (t(k) + 0.5)) & (Time < t(k+1));
     timepts = Time(t_index);
     AUC(k) = trapz(timepts,Y(t_index,8));   
+
+    t_index_noSOCE = (Time_noSOCE >= (t(k) + 0.5)) & (Time_noSOCE < t(k+1));
+    timepts_noSOCE = Time_noSOCE(t_index_noSOCE);
+    AUC_noSOCE(k) = trapz(timepts_noSOCE,Y(t_index_noSOCE,8));   
 end
-figure
 
-
-
-%% Plot function
-Fig3a_1(Time,Y(:,5),Y(:,8))
-Fig3a_2(Time,Y(:,5),Y(:,8)) % V_SL vs Ca2+_Myo Zoomedin
-Fig3b(Time,Y(:,1),Y(:,2)) % Density of activated Orai1 channel vs SR [Ca^{2+}] 
-Fluxes_myo = fluxes(:,1) + fluxes(:,2)+fluxes(:,3) + fluxes(:,4)+ fluxes(:,5);
-Fluxes_SR = fluxes(:,6) + fluxes(:,7)+ fluxes(:,8);
-Fig3c(Time,Fluxes_myo,Fluxes_SR) % Myo vs SR fluxes
-Fig3d(Time,[fluxes(:,6), fluxes(:,7), fluxes(:,8)]) % SR fluxes
-Fig3e(Time,[fluxes(:,4), fluxes(:,3)]) % DHPR and NCX Myo Fluxes
-
+subplot2 = subplot(2,1,2);
+scatter(t(2:end),AUC(1:end-1),'filled')
+hold on
+scatter(t(2:end),AUC_noSOCE(1:end-1),'filled')
+xlabel('Time (s)','FontSize',16);
+ylabel('Tail Integral of [Ca^{2+}]_{myo} (\muM)','FontSize',16);
+title ('Tail Integral of [Ca^{2+}]_{myo} per stimulus period of 2.5s ','FontSize',16,'FontWeight','bold')
+legend('Control','Orai1 blocked','FontSize',14,'EdgeColor','none')
+set(subplot2,'FontSize',14)
+hold off
 
 function [objVal, simSaved, fluxesSaved] = pToObj(pVec, p_est, yinit) % Obj function should be scalar
 
@@ -102,7 +129,6 @@ Expt_t = cell(1,9);
 InterpComp = cell(1,9);
 CompV = cell(1,5);
 CompC = cell(1,5);
-%yinf_ratio = zeros(9,17);
 
 load Exptdata.mat Expt
 %Expt = {[R_t R_C],[R_MP_t R_MP_C] [HB_t HB_C], [H_t H_C],[HB_MP_t HB_MP_C], [K_t K_V], [B_t B_V] , [M_t M_V], [W_t W_V], [MJ_T MJ_V]};
@@ -112,7 +138,7 @@ expt_title = ["Rincon","Rincon", "Baylor & Hollingworth", "Hollingworth", "Baylo
 param = p_est(:) .* pVec(:);
 tSS = 0:1000;
 
-expt_n = [4 5 7 8]; % 1:9; % [1 8];%
+expt_n = [1 5 7 8]; 
 
 %Interpolating experimental values
 for m_index = 1 :length(expt_n) %:9
@@ -126,33 +152,28 @@ for m_index = 1 :length(expt_n) %:9
 end
 
 penaltyVal = 100000;
-count = 0;
 simSaved = cell(length(expt_n), 1);
 fluxesSaved = cell(length(expt_n), 1);
 for n_index = 1 :length(expt_n) %:9
     n = expt_n(n_index);
 
-    %% Compute SS with ode15s
-    [TimeSS,ySS] = SkelMuscleCa1_SS(tSS,0, 0, yinit, param,StartTimer,n);
+    % Compute SS with ode15s
+    [~,ySS] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, param,StartTimer,n);
     if size(ySS,1) < length(tSS)
         objVal = penaltyVal;
-        count = count+1;
         return
     end
     if any(isnan(ySS))
         objVal = penaltyVal;
-        count = count+1;
         return
     end
     yinf = ySS(end,:);
 
-    %% Calculate Dynamics
+    % Calculate Dynamics
     t = 0:0.0001:T_max(n);
-    [Time,y,~,fluxes] = SkelMuscleCa1_SS(t,freq(n), 0, yinf, param,StartTimer,n);
-    %[Time,y] = SkelMuscleCa1_SS([0 t(n)],freq(n), 0, yinit, p,tic,n);
+    [Time,y,~,fluxes] = SkelMuscleCa_dydtEst(t,freq(n), 0, yinf, param,StartTimer,n);
     if size(y,1) < length(t)
         objVal = penaltyVal;
-        count = count+1;
         return
     end
     if n <= 5
@@ -162,8 +183,6 @@ for n_index = 1 :length(expt_n) %:9
         InterpComp{n} = y(:,5); % Voltage Calculations
         CompC{n} = y(:,8);
     end
-    %InterpComp{n} = interp1(Time,Comp,0:0.0001:T_max(n));
-    %yinit = yinf;
     simSaved{n} = [t', InterpComp{n}];
     fluxesSaved{n} = [t', fluxes];
 end
@@ -173,19 +192,18 @@ delta = cell(1,9);
 sum_delta = zeros(1,9);
 Error = cell(1,9);
 
-for j_index = 1 :length(expt_n) %:9
+for j_index = 1 :length(expt_n) 
     j = expt_n(j_index);
     weight = length(InterpExpt{j}) ;
-    sigma_C = 0.5; %(0.05 * InterpExpt{j}); %
+    sigma_C = 0.5; 
     sigma_V = 5 ;
     delta{j} = InterpComp{j}' - InterpExpt{j};
     if j < 6
-        Error{j} = ((delta{j} ./ sigma_C ) .^ 2 )./ weight; %     (((InterpComp{j}' - InterpExpt{j})./sigma_C).^2)./weight ;
+        Error{j} = ((delta{j} ./ sigma_C ) .^ 2 )./ weight; 
     elseif j > 5
-        Error{j} = ((delta{j} ./ sigma_V ) .^ 2 )./ weight; % (((InterpComp{j}' - InterpExpt{j}) ./ sigma_V).^2) ./ weight;
+        Error{j} = ((delta{j} ./ sigma_V ) .^ 2 )./ weight; 
     end
     sum_delta(j) = sum(Error{j});
-
 end
 
 objVal = sum(sum_delta);
