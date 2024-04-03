@@ -1,4 +1,4 @@
-function [Time,Y,currtime,fluxes] = SkelMuscleCa_dydtEst(tSpan,freq, lowATP, yinit, p,StartTimer,expt)
+function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydtEst(tSpan,freq, lowATP, yinit, p,StartTimer,expt)
 % Function for solving the system of ODEs
 %
 % input:
@@ -18,32 +18,22 @@ function [Time,Y,currtime,fluxes] = SkelMuscleCa_dydtEst(tSpan,freq, lowATP, yin
 %            in units of uM/s (in terms of myoplasmic conc)
 % -------------------------------------------------------------------------
 
-timeSpan = [0.0 1.0];
-
-if nargin >= 1
-    if ~isempty(tSpan)
-        %
-        % TimeSpan overridden by function arguments
-        %
-        tSpan = timeSpan ;
-    end
-end
-
 if freq == 0
-    options = odeset('RelTol',1e-3,'NonNegative',[1:4,6:16]);
+    options = odeset('RelTol',1e-3,'NonNegative',[1:4,6:17]);
 else
-    options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:16]); %,'OutputFcn',@odeplot);
+    options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:17]); %,'OutputFcn',@odeplot);
 end
 [Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP);
 
-fluxes = zeros(length(Time), 9);
+fluxes = zeros(length(Time), 8);
+currents = zeros(length(Time), 13);
 for i = 1:length(Time)
-    [~, fluxes(i,:)] = f(Time(i), Y(i,:), p, freq, lowATP);
+    [~, fluxes(i,:), currents(i,:)] = f(Time(i), Y(i,:), p, freq, lowATP);
 end
 
 % -------------------------------------------------------
 
-    function [dydt, fluxes] = f(t,y,p,freq,lowATP)
+    function [dydt, fluxes, currents] = f(t,y,p,freq,lowATP)
 
         % State Variables
         SOCEProb = y(1);
@@ -63,6 +53,7 @@ end
         CaParv = y(14);
         MgParv = y(15);
         CATP = y(16);
+        CaTrop = y(17);
 
         %% Parameters
         A_a = p(1);
@@ -109,6 +100,7 @@ end
         nu_SERCA = p(42);
         g_PMCA = p(43);
         nu_leakSR = p(44);
+        g_leakNa = p(45);
 
         %% Constants
         vol_SA_ratio = 0.01 ;
@@ -218,7 +210,7 @@ end
         volFactor = (vol_myo ./ (PI .* 0.26));
         nu_SERCA = nu_SERCA .* volFactor; %4875.0 .* volFactor;
         LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i));
-        I_Na = ((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit) * (E_Na - Voltage_SL)) * (1.0 + (0.1 .* TTFrac)));
+        I_Na = (((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit)) * (1.0 + (0.1 .* TTFrac))) + g_leakNa) * (E_Na - Voltage_SL);
         J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
         fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
@@ -333,12 +325,18 @@ end
         Parv = Parv_itot - CaParv - MgParv;
         Mg = 1000;              %(uM) constant concentration
 
+        Trop_tot = 140;
+        Trop = Trop_tot - CaTrop;
+        k_offTrop = 0.115;
+        k_onTrop = 0.0885;
+        dCT = k_onTrop*c_i*Trop - k_offTrop*CaTrop;
+
         dCP = k_onParvCa*c_i*Parv - k_offParvCa*CaParv;
         dMP = k_onParvMg*Mg * Parv - k_offParvMg*MgParv;    
         dCA = k_onATP*c_i*ATP - k_offATP*CATP;
 
         B_SRtot = 31000;        %(uM)
-        K_SRBuffer = 500;       % k_off/k_on
+        K_SRBuffer = 800;       % k_off/k_on
         f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2)); % Rapid buffering in SR
 
         currtime = toc(StartTimer);
@@ -390,10 +388,11 @@ end
 
         %% Rates
 
-        Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1]; %Normalization factor
+        Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1]; %Normalization factor
         if freq == 0 && currtime > 10
-            dydt = zeros(16,1);
-            fluxes = zeros(1,9);
+            dydt = zeros(17,1);
+            fluxes = zeros(1,8);
+            currents = zeros(1,13);
             return;
         end
         dydt = [
@@ -413,19 +412,23 @@ end
             dCP;     % Rate for Parvalbumin bound Ca2+ (14)
             dMP;     % Rate for Parvalbumin bound Mg2+ (15)
             dCA;     % Rate for ATP bound Ca2+ (16)
+            dCT;     % Rate for Trop bound Ca2+ (17)
             ];
 
         R = abs(dydt ./ Nf); 
         if all(R < 0.00001) && freq==0
-            dydt = zeros(16,1);
-            fluxes = zeros(1,9);
+            dydt = zeros(17,1);
+            fluxes = zeros(1,8);
+            currents = zeros(1,13);
             return
         end
 
-        fluxes = [J_SOCE, J_CaLeak_SL, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR,I_SL];
+        fluxes = [J_SOCE, J_CaLeak_SL, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];
         % convert all fluxes to uM/s
         fluxes(1:5) = fluxes(1:5) * KFlux_SL_myo;
-        fluxes(6:8) = fluxes(6:8) * KMOLE / vol_myo;
+        fluxes(6:end) = fluxes(6:end) * KMOLE / vol_myo;
+        currents = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, I_NCX_N, I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL];
+        currents(1:end-1) = SA_SL * currents(1:end-1);
 
     end
 end

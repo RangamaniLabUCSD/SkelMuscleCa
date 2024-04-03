@@ -17,14 +17,14 @@
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(~,lb,ub,yinit,p,Createplot)
 
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations',100);%, 'SwarmSize',20);
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 24);
 
 numParam = length(lb);
 pVec = ones(1,numParam); 
 pToObj(pVec);
 
 delete(gcp('nocreate'))
-parpool(50)
+% parpool(50)
 [pSol,fval,exitflag] = particleswarm(@pToObj,numParam,lb,ub,psOptions);
 pToObj(pSol)
 filename = "PSO_" + date +".mat";
@@ -55,7 +55,7 @@ save(filename);
         load Exptdata.mat Expt
         freq = [100, 100, 67, 67,67, 60, 60, 60,60];
         expt_title = ["Rincon","Rincon", "Baylor & Hollingworth", "Hollingworth", "Baylor & Hollingworth", "Yonemura","Bibollet", "Miranda","Wallinga"];
-        expt_n = [1 5 7 8]; % Index of the experimental used for estimation
+        expt_n = [1 2 7 8]; % Index of the experimental used for estimation
 
         %Interpolating experimental values
         for m_index = 1 :length(expt_n) %:9
@@ -81,12 +81,15 @@ save(filename);
             if any(isnan(ySS))
                 objVal = penaltyVal;
                 return
+            elseif ySS(end,2) < 800 || ySS(end,2) > 2000
+                objVal = penaltyVal;
+                return
             end
             yinf = ySS(end,:);
 
             % SS plots
 
-            if Createplot == 1
+            if Createplot
                 figure
                 SS_index = [6,7,13,5,8];
                 for a = 1:length(SS_index)
@@ -110,7 +113,7 @@ save(filename);
 
             %% Calculate Dynamics
             t = 0:0.0001:T_max(n);
-            [~,y] = SkelMuscleCa_dydt(t,freq(n), 0, yinf, param,StartTimer,n);
+            [~,y] = SkelMuscleCa_dydtEst(t,freq(n), 0, yinf, param,StartTimer,n);
             if size(y,1) < length(t)
                 objVal = penaltyVal;
                 return
@@ -132,7 +135,7 @@ save(filename);
         for j_index = 1 :length(expt_n) %:9
             j = expt_n(j_index);
             weight = length(InterpExpt{j}) ;
-            sigma_C = (0.05 * InterpExpt{j}); %
+            sigma_C = 0.5;
             sigma_V = 5 ;
             delta{j} = InterpComp{j}' - InterpExpt{j};
             if j < 6
@@ -147,7 +150,7 @@ save(filename);
         objVal = sum(sum_delta);
 
         %% Plots
-        if Createplot == 1
+        if Createplot
             figure
             subplot(1,2,1)
             plot(0:0.0001:T_max(1),CompV{1},'b','LineWidth',2)
