@@ -362,7 +362,7 @@ end
         Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1]; %Normalization factor
         if freq == 0 && currtime > 60
             dydt = zeros(17,1);
-            fluxes = zeros(1,9);
+            fluxes = zeros(1,8);
             currents = zeros(1,13);
             return;
         end
@@ -389,7 +389,7 @@ end
         R = abs(dydt ./ Nf); 
         if all(R < 0.00001) && freq==0
            dydt = zeros(17,1);
-           fluxes = zeros(1,9);
+           fluxes = zeros(1,8);
            currents = zeros(1,13);
            return
         end
