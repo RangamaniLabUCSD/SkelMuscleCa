@@ -17,7 +17,7 @@ plot1 = plot(X1,YMatrix1,'LineWidth',2);
 set(plot1(1),'DisplayName','DHPR');
 set(plot1(2),'DisplayName','NCX');
 
-ylabel('Ca^{2+} flux (\muM/s)','FontWeight','bold','FontSize',16);
+ylabel('Ca^{2+} flux (μM/s)','FontWeight','bold','FontSize',16);
 xlabel('Time (s)','FontWeight','bold','FontSize',16);
 xlim(axes1,[0 0.5]);
 %ylim(axes1,[-1708.8948787062 7291.1051212938]);

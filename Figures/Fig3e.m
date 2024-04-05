@@ -18,7 +18,7 @@ set(semilogy1(2),'DisplayName','SERCA');
 set(semilogy1(3),'DisplayName','Ca^{2+}_{LeakSR}');
 
 % Create ylabel
-ylabel('Ca^{2+} flux (\muM/s)','FontWeight','bold','FontSize',16);
+ylabel('Ca^{2+} flux (μM/s)','FontWeight','bold','FontSize',16);
 
 % Create xlabel
 xlabel('Time (s)','FontWeight','bold','FontSize',16);

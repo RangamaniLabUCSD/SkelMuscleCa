@@ -15,7 +15,7 @@ ylabel('V_{SL} (mV)','FontWeight','bold','Color',[0.188235294117647 0.8196078431
 yyaxis(axes1,'right');
 set(axes1,'YColor',[0 0 0]);
 plot(X,Y2,'LineWidth',2,'Color',[0.635294117647059 0.0784313725490196 0.184313725490196]); 
-ylabel('[Ca^{2+}]_{myo} (\muM)','FontWeight','bold','FontSize',16,'Color',[0.635294117647059 0.0784313725490196 0.184313725490196],'FontSmoothing','on');
+ylabel('[Ca^{2+}]_{myo} (μM)','FontWeight','bold','FontSize',16,'Color',[0.635294117647059 0.0784313725490196 0.184313725490196],'FontSmoothing','on');
 
 xlabel('Time (s)','FontWeight','bold','FontSize',16,'FontSmoothing','on');
 xlim(axes1,[0.05 0.15]);

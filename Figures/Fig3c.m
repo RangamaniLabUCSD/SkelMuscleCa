@@ -9,15 +9,15 @@ figure; %('OuterPosition',[1289 392 1086 872]);
 axes1 = axes('Position',[0.109439252336449 0.111283697047497 0.775 0.815]);
 hold(axes1,'on');
 
-yyaxis left %(axes1,'left');
+yyaxis left 
 plot(X,Y1,'Color',[0 0.447058823529412 0.741176470588235]);
 ylabel('p_{Orai1}^{open}','FontSize',16,'Color',[0 0.447058823529412 0.741176470588235]);
 
 
-yyaxis right %(axes1,'right');
-plot(X,Y2)%,'Color',[0.494117647058824 0.184313725490196 0.556862745098039]);
-ylabel('[Ca^{2+}]_{SR}','FontSize',16) %,'Color',[0.494117647058824 0.184313725490196 0.556862745098039]);
-
+yyaxis right
+plot(X,Y2,'Color',[0.49,0.18,0.56]);
+ylabel('[Ca^{2+}]_{SR} (μM)','FontSize',16,'Color',[0.49,0.18,0.56]);
+set(axes1,'YColor',[0.49,0.18,0.56]);
 
 xlabel({'Time (s)'},'FontWeight','bold');
 box(axes1,'on');
