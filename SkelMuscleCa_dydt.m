@@ -205,17 +205,17 @@ end
         fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_N = ( - (3.0 .* (fPump_NKX_N .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
 
-        if expt == 0
-            g_SOCE = 0;
-        elseif expt >= 1
+        if any(expt == [1,2])
             g_SOCE = (0.01 ./ 210.44);
+        else
+            g_SOCE = 0;
         end
 
-        if expt == 2
+        if any(expt == [2,4]
             continuousStim = true;
         else
             continuousStim = false;
-        end
+        end        
 
         c_EC = c_EC_init_uM;
         E_Ca = (log((c_EC ./ c_i)) .* (R .* T) ./ (2.0 .* F));
