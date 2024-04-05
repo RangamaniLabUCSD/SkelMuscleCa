@@ -37,11 +37,119 @@ expt = 2;
 [Time_noSOCE,Y_noSOCE, ~, fluxes_noSOCE] = SkelMuscleCa_dydt([0 60], 50, 0, ySS_noSOCE(end,:), p, tic, expt);   % Dynamics computation
 
 %% Figure 3 ---------------------------------------------------------------
-Fig3a(Time,Y(:,5),Y(:,8))                           % V_SL and [Ca^2+]_myo over time
-Fig3b(Time,Y(:,5),Y(:,8))                           % V_SL vs Ca2+_Myo Zoomedin
-Fig3c(Time,Y(:,1),Y(:,2))                           % Density of activated Orai1 channel vs SR [Ca^{2+}]
-Fig3d(Time,[fluxes(:,4), fluxes(:,3)])              % DHPR and NCX Myo Fluxes
-Fig3e(Time,[fluxes(:,6), fluxes(:,7), fluxes(:,8)]) % SR fluxes
+% 
+% Fig3a(Time,Y(:,5),Y(:,8))                           % V_SL and [Ca^2+]_myo over time
+% Fig3b(Time,Y(:,5),Y(:,8))                           % V_SL vs Ca2+_Myo Zoomedin
+% Fig3c(Time,Y(:,1),Y(:,2))                           % Density of activated Orai1 channel vs SR [Ca^{2+}]
+% Fig3d(Time,[fluxes(:,4), fluxes(:,3)])              % DHPR and NCX Myo Fluxes
+% Fig3e(Time,[fluxes(:,6), fluxes(:,7), fluxes(:,8)]) % SR fluxes
+
+%Fluxes = [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR]
+%currents = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, I_NCX_N, I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL];
+%Only expt 2 is used for fig3. 
+
+Fig3a(Time2,Y2(:,5),Y2(:,8))                            % V_SL and [Ca^2+]_myo over time
+
+%% Stimulus Plot 
+plot1 = figure;
+axes1  = axes('Parent',plot1);
+plot(Time2,currents2(:,13),"LineWidth",2)
+ylabel('I_{SL} (pA)','Fontsize',16)
+%xlim(axes1,[0 0.1])
+set(axes1,'FontSize',16,'Box', 'off','FontSmoothing','on');
+set(plot1,"Renderer","painters");
+
+%% Myoplasmic Calcium zoomed in [0 0.1]
+plot2 = figure;
+axes2 = axes('Parent', plot2);
+plot(Time2,Y2(:,8),'LineWidth',2,'Color',[0.635294117647059 0.0784313725490196 0.184313725490196]);                           % Ca2+_Myo Zoomedin
+xlim(axes2,[0 0.1])
+%xlabel('Time (s)', 'Fontsize',16)
+ylabel('[Ca^{2+}]_{myo} (μM)','Fontsize',16,'FontSmoothing','on')
+set(axes2,'FontSize',16,'Box','off','FontSmoothing','on')
+set(plot2,"Renderer","painters");
+
+%% Fluxes plots zoomed in [0 0.1]
+plot3 = figure;
+axes3 = axes('Parent', plot3);
+plot(Time2,fluxes2(:,1),'LineWidth',2,'Color',[0.72,0.27,1.00])
+hold on
+plot(Time2,fluxes2(:,2),'LineWidth',2,'Color',[0.93,0.69,0.13])
+hold on
+plot(Time2,fluxes2(:,3),'LineWidth',2,'Color',[0.77,0.11,0.23])
+hold on
+plot(Time2,fluxes2(:,5),'LineWidth',2,'Color',[0.49,0.18,0.56])
+hold off
+xlim([0 0.1])
+xlabel('Time (s)', 'Fontsize',16)
+ylabel('Flux (μM/s)','Fontsize',16)
+legend('SOCE','Leak_{myo}','NCX','PMCA','Fontsize',14,'Edgecolor','none', 'Color','none')
+set(axes3,'FontSize',16,'Box','off','FontSmoothing','on')
+set(plot3,"Renderer","painters");
+%-------------------------------------------------------------------------------
+plot4 = figure;
+axes4 = axes('Parent', plot4);
+plot(Time2,fluxes2(:,4),'LineWidth',2);
+hold on
+plot(Time2,fluxes2(:,6),'LineWidth',2)
+hold off
+xlim([0 0.1])
+xlabel('Time (s)', 'Fontsize',16)
+ylabel('Flux (μM/s)','Fontsize',16)
+legend('DHPR','RyR','Fontsize',14,'Edgecolor','none', 'Color','none')
+set(axes4,'FontSize',16,'Box','off','FontSmoothing','on')
+set(plot4,"Renderer","painters");
+%-------------------------------------------------------------------------------
+plot5 = figure;
+axes5 = axes('Parent', plot5);
+plot(Time2,fluxes2(:,7),'LineWidth',2)
+hold on
+plot(Time2,fluxes2(:,8),'LineWidth',2)
+hold off
+xlim([0 0.1])
+xlabel('Time (s)', 'Fontsize',16)
+ylabel('Flux (μM/s)','Fontsize',16)
+legend('SERCA','Leak_{SR}','Fontsize',14,'Edgecolor','none', 'Color','none')
+set(axes5,'FontSize',16,'Box','off','FontSmoothing','on')
+set(plot5,"Renderer","painters");
+%% SR Calcium over time
+plot6 = figure;
+axes6 = axes('Parent', plot6);
+plot(Time2,Y2(:,2),'LineWidth',2);                           
+xlabel('Time (s)', 'Fontsize',16)
+ylabel('[Ca^{2+}]_{SR} (μM)','Fontsize',16,'FontSmoothing','on')
+set(axes6,'FontSize',16,'Box','off','FontSmoothing','on')
+set(plot6,"Renderer","painters");
+
+%% Figure 4 Plots
+% Cont stimulus (expt 2 and 4)
+plot7 = figure;
+axes7 = axes('Parent', plot7);
+plot(Time2,Y2(:,2),'LineWidth',2);
+hold on 
+plot(Time_noSOCE4,Y_noSOCE4(:,2),'LineWidth',2);
+xlabel('Time (s)', 'Fontsize',16)
+ylabel('[Ca^{2+}]_{SR} (μM)','Fontsize',16,'FontSmoothing','on')
+set(axes7,'FontSize',16,'Box','off','FontSmoothing','on')
+set(plot7,"Renderer","painters");
+%-------------------------------------------------------------------------------
+plot8 = figure;
+axes8 = axes('Parent', plot8);
+plot(Time2,fluxes2(:,4),'LineWidth',2);
+hold on
+plot(Time_noSOCE4,fluxes_noSOCE4(:,4),'LineWidth',2)
+hold off
+%xlim([0 0.1])
+xlabel('Time (s)', 'Fontsize',16)
+ylabel('Flux (μM/s)','Fontsize',16)
+legend('Control','Orai1 Blocked','Fontsize',14,'Edgecolor','none', 'Color','none')
+set(axes8,'FontSize',16,'Box','off','FontSmoothing','on')
+set(plot8,"Renderer","painters");
+
+
+% Wei-LaPierre Expt 50Hz 0.5s every 2.5s (expt 0 and 1)
+
+
 
 %% Subplot for flux comparision of different channels in SRM and Sarcolemma
 figure
