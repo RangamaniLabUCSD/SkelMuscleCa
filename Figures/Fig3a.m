@@ -14,7 +14,11 @@ plot(X,Y1,'Color',[0.188235294117647 0.819607843137255 0.788235294117647]);
 ylabel({'V_{SL} (mV)'},'FontSize',16);
 
 hold(subplot1,'off');
+<<<<<<< Updated upstream
 set(subplot1,'FontSize',16,'LineWidth',1,'TickDir','none','XGrid','on','XTickLabel','','YTick',[-80 -60 -40 -20 0 20 40]);
+=======
+set(subplot1,'FontSize',14,'LineWidth',1,'XGrid','on','XTickLabel','','YTick',[-80 -60 -40 -20 0 20 40 60 80]);
+>>>>>>> Stashed changes
 axes1 = axes('Position',[0.130000000000001 0.239277566539922 0.775 0.347794676806084]);
 hold(axes1,'on');
 

@@ -222,6 +222,15 @@ end
             g_SOCE = 0;
         end
 
+<<<<<<< Updated upstream
+=======
+        if any(expt == [2,4])
+            continuousStim = true;
+        else
+            continuousStim = false;
+        end        
+
+>>>>>>> Stashed changes
         c_EC = c_EC_init_uM;
         E_Ca = (log((c_EC ./ c_i)) .* (R .* T) ./ (2.0 .* F));
         I_SOCE = ((g_SOCE .* (E_Ca - Voltage_SL ) .* (SOCEProb ./ SOCEProbUnit)) .* (1.0 + TTFrac));

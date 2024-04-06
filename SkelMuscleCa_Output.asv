@@ -124,12 +124,6 @@ ylabel('[Ca^{2+}]_{SR} (μM)','Fontsize',16,'FontSmoothing','on')
 set(axes6,'FontSize',16,'Box','off','FontSmoothing','on')
 set(plot6,"Renderer","painters");
 
-<<<<<<< Updated upstream
-%%
-Fig3c(Time2,Y2(:,1),Y2(:,2))                           % Density of activated Orai1 channel vs SR [Ca^{2+}]
-Fig3d(Time2,[fluxes2(:,4), fluxes2(:,3)])              % DHPR and NCX Myo Fluxes
-Fig3e(Time2,[fluxes2(:,6), fluxes2(:,7), fluxes2(:,8)]) % SR fluxes
-=======
 %% Figure 4 - Control vs SOCE Blocked
 %Cont Stimulus - 10Hz 30s Expt 2 and 4
 plot7 = figure;
@@ -145,9 +139,9 @@ set(plot7,"Renderer","painters");
 %% -------------------------------------------------------------------------------
 plot8 = figure; % DHPR flux Plot
 axes8 = axes('Parent', plot8);
-semilogy(Time2,fluxes2(:,4),'LineWidth',2,'Color',[0.49,0.18,0.56]);
+plot(Time2,fluxes2(:,4),'LineWidth',2);
 hold on
-semilogy(Time_noSOCE4,fluxes_noSOCE4(:,4),'LineWidth',2,'Color',[0.10,0.85,0.83],'LineStyle','--')
+plot(Time_noSOCE4,fluxes_noSOCE4(:,4),'LineWidth',2)
 hold off
 xlim([0 0.1])
 xlabel('Time (s)', 'Fontsize',16)
@@ -186,9 +180,9 @@ end
 
 plot10 = figure; 
 axes10  = axes('Parent',plot10);
-scatter(1:length(MaxCa)-1,MaxCa(1:end-1),'filled', 'o','MarkerFaceColor',[0.635294117647059 0.0784313725490196 0.184313725490196]) 
+scatter(1:length(MaxCa)-1,MaxCa(1:end-1),'filled', 'o',Col) 
 hold on
-scatter(1:length(MaxCa_noSOCE)-1,MaxCa_noSOCE(1:end-1),'filled','o','MarkerFaceColor',[0.10,0.85,0.83])
+scatter(1:length(MaxCa_noSOCE)-1,MaxCa_noSOCE(1:end-1),'filled')
 hold off
 xlabel('Consecutive stimuli','FontSize',16); %Time (s)
 ylabel('Max [Ca^{2+}_{myo}] (\muM)','FontSize',16);
@@ -196,7 +190,6 @@ ylabel('Max [Ca^{2+}_{myo}] (\muM)','FontSize',16);
 legend('Control','SOCE blocked','FontSize',14,'EdgeColor','none');
 set(axes10,'FontSize',16,'Box', 'off','FontSmoothing','on');
 set(plot10,"Renderer","painters");
->>>>>>> Stashed changes
 
 %% Subplot for flux comparision of different channels in SRM and Sarcolemma
 % figure
@@ -249,7 +242,6 @@ xlim([0 0.01])
 xlabel('Time (s)', 'Fontsize',16)
 ylabel('Flux (\muM/s)','Fontsize',16)
 legend('Control_{RyR}','Control_{SERCA}','Control_{SRLeak}','Orai1 Blocked_{RyR}','Orai1 Blocked_{SERCA}','Orai1 Blocked_{SRLeak}','Fontsize',14,'Edgecolor','none','Color','none')
-<<<<<<< Updated upstream
 
 figure
 % subplot(1,3,1)
@@ -267,55 +259,8 @@ ylabel('Flux (\muM/s)','Fontsize',16)
 legend('Control_{DHPR}','Control_{NCX}','Orai1 Blocked_{DHPR}','Orai1 Blocked_{NCX}','Fontsize',14,'Edgecolor','none','Color','none')
 
 %% Figure 4 ---------------------------------------------------------------
-t = 0 : 2.5 : max(Time);
-%t = 0:max(Time);
-
-% Peak Ca2+ per stimulus plot----------------------------------------------
-MaxCa = zeros(length(t),1);
-MaxCa_noSOCE = zeros(length(t),1);
-for j = 1 : (length(t) - 1)
-    t_index = (Time > t(j)) & (Time < t(j+1));
-    timepts = Time(t_index);
-    MaxCa(j) = max(Y(t_index,8));
-    % When Orai1 channel is blocked
-    t_index_noSOCE = (Time_noSOCE > t(j)) & (Time_noSOCE < t(j+1));
-    timepts_noSOCE = Time_noSOCE(t_index_noSOCE);
-    MaxCa_noSOCE(j) = max(Y_noSOCE(t_index_noSOCE,8));
-end
-
-subplot1 = figure; %subplot(2,1,1);
-scatter(1:length(MaxCa)-1,MaxCa(1:end-1),'filled') %t(2:end)
-hold on
-scatter(1:length(MaxCa_noSOCE)-1,MaxCa_noSOCE(1:end-1),'filled')
-xlabel('Consecutive stimuli','FontSize',16); %Time (s)
-ylabel('Max [Ca^{2+}_{myo}] (\muM)','FontSize',16);
-title ('Max [Ca^{2+}_{myo}] per stimulus period of 2.5s ','FontSize',16,'FontWeight','bold');
-legend('Control','Orai1 blocked','FontSize',14,'EdgeColor','none');
-set(subplot1,'FontSize',14)
-=======
-
-figure
-% subplot(1,3,1)
-plot(Time,fluxes(:,4))
-hold on
-plot(Time,fluxes(:,3))
-hold on
-plot(Time_noSOCE,fluxes_noSOCE(:,4))
-hold on
-plot(Time_noSOCE,fluxes_noSOCE(:,3))
->>>>>>> Stashed changes
-hold off
-xlim([0 0.01])
-xlabel('Time (s)', 'Fontsize',16)
-ylabel('Flux (\muM/s)','Fontsize',16)
-legend('Control_{DHPR}','Control_{NCX}','Orai1 Blocked_{DHPR}','Orai1 Blocked_{NCX}','Fontsize',14,'Edgecolor','none','Color','none')
-
-<<<<<<< Updated upstream
-=======
-%% Figure 4 ---------------------------------------------------------------
 
 
->>>>>>> Stashed changes
 %% Tail integral per stimulus plot -----------------------------------------
 AUC = zeros(length(t),1);
 AUC_noSOCE = zeros(length(t),1);
