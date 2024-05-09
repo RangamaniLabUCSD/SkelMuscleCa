@@ -196,7 +196,9 @@ end
         volFactor = (vol_myo ./ (PI .* 0.26));
         nu_SERCA = nu_SERCA .* volFactor;  
         LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i));
-        I_Na = (((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit)) * (1.0 + (0.1 .* TTFrac))) + g_leakNa) * (E_Na - Voltage_SL);
+        I_Na = (((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit)) * (1.0 + (0.1 .* TTFrac))) + g_leakNa ) * (E_Na - Voltage_SL); %
+        % I_leakNa = g_leakNa * (E_Na - Voltage_SL); 
+        % J_leakNa = ((I_leakNa ./ (carrierValence_Na .* F)) .* 1E09);
         J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
         fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
@@ -205,13 +207,13 @@ end
         fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         I_NKX_N = ( - (3.0 .* (fPump_NKX_N .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
 
-        if any(expt == [1,2])
+        if any(expt == [1,2,5,7])
             g_SOCE = (0.01 ./ 210.44);
         else
             g_SOCE = 0;
         end
-
-        if any(expt == [2,4]
+        % Expt 3,4,6,8 is no SOCE. Expt 2, 4,5,6 is cont stimulus. 
+        if any(expt == [2,4,5,6])
             continuousStim = true;
         else
             continuousStim = false;
@@ -346,23 +348,32 @@ end
                     I_SL = - ClampCurrent;
                 end
             else
-                period = 2.5;
-                numPeriods = floor(t / period);
-                timeInCurrentPeriod = t - numPeriods * period;
-                if timeInCurrentPeriod <= 0.5
-                    if (mod(timeInCurrentPeriod,1/freq) < pulsewidth)
-                        I_SL = - ClampCurrent;
+                if any(expt == [1,3])
+                    period = 2.5;
+                    numPeriods = floor(t / period);
+                    timeInCurrentPeriod = t - numPeriods * period;
+                    if timeInCurrentPeriod <= 0.5
+                        if (mod(timeInCurrentPeriod,1/freq) < pulsewidth)
+                            I_SL = - ClampCurrent;
+                        end
+                    end
+                elseif any(expt == [7,8])
+                    if (t > 0 && t <= 60) || (t > 180 && t <= 240) || (t > 360  && t <= 420)  
+                        if (mod(t,1/freq) < pulsewidth)
+                            I_SL = - ClampCurrent;
+                        end
                     end
                 end
             end
         end
+
 
         %% Rates
 
         Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1]; %Normalization factor
         if freq == 0 && currtime > 60
             dydt = zeros(17,1);
-            fluxes = zeros(1,9);
+            fluxes = zeros(1,8);
             currents = zeros(1,13);
             return;
         end
@@ -389,7 +400,7 @@ end
         R = abs(dydt ./ Nf); 
         if all(R < 0.00001) && freq==0
            dydt = zeros(17,1);
-           fluxes = zeros(1,9);
+           fluxes = zeros(1,8);
            currents = zeros(1,13);
            return
         end
