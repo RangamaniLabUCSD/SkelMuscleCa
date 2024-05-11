@@ -13,12 +13,20 @@ p = p(:) .* pSol(:);
 
 f_HIIT = 60:10:180;
 l_HIIT = length(f_HIIT);
+
 Time7 = cell(l_HIIT,1);
 Ca7 = cell(l_HIIT,1);
 CaSR7 = cell(l_HIIT,1);
 SOCEProb7 = cell(l_HIIT,1);
 Flux7 = cell(l_HIIT,1);
 Current7 = cell(l_HIIT,1);
+
+Time_noSOCE8 = cell(l_HIIT,1);
+Ca_noSOCE8 = cell(l_HIIT,1);
+CaSR_noSOCE8 = cell(l_HIIT,1);
+SOCEProb_noSOCE8 = cell(l_HIIT,1);
+Flux_noSOCE8 = cell(l_HIIT,1);
+Current_noSOCE8 = cell(l_HIIT,1);
 
 %% Steady State calculation -----------------------------------------------
 [~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, 1);                    % Steady State values of variable
@@ -37,9 +45,18 @@ parfor i = 1:l_HIIT
     SOCEProb7{i} = Y(:,1);
     Flux7{i} = fluxes;
     Current7{i} = currents;
+
+    expt = 8;
+    [Time_noSOCE,Y_noSOCE, ~, fluxes_noSOCE,currents_noSOCE] = SkelMuscleCa_dydt([0 60], freq, 0, yinf_noSOCE, p, tic, expt);   % Dynamics computation
+    Time_noSOCE8{i} = Time_noSOCE;
+    Ca_noSOCE8{i} = Y_noSOCE(:,8);
+    CaSR_noSOCE8{i} = Y_noSOCE(:,2);
+    SOCEProb_noSOCE8 = Y_noSOCE(:,1);
+    Flux_noSOCE8{i} = fluxes_noSOCE;
+    Current_noSOCE8{i} = currents_noSOCE;
     
 end
 
-save('HIIT7_5-9.mat');
+save('HIIT_5-9.mat');
 
 

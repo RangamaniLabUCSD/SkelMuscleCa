@@ -43,7 +43,6 @@ save(filename);
         InterpExpt = cell(1,9);
         Expt_t = cell(1,9);
         InterpComp = cell(1,9);
-        InterpComp_base = cell(1,9);
         CompV = cell(1,5);
         CompC = cell(1,5);
         StartTimer = tic;
@@ -119,23 +118,18 @@ save(filename);
                 objVal = penaltyVal;
                 return
             end
-
-            % Baseline model prediction
-            % SS computation
-            [TimeSS_base,ySS_base] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, p(:),StartTimer,n);
-            [~,Y_base] = SkelMuscleCa_dydtEst(t,freq(n), 0, ySS_base(end,:), p(:), StartTimer,n);
-
             if n <= 5
                 InterpComp{n} = y(:,8) ; % Calcium Calculations
                 CompV{n} = y(:,5) ;
-                InterpComp_base{n} = Y_base(:,8);
             elseif n > 5
                 InterpComp{n} = y(:,5); % Voltage Calculations
                 CompC{n} = y(:,8);
-                InterpComp_base{n} = Y_base(:,5);
             end
 
-          
+            %% Baseline model prediction
+            % SS computation
+            [TimeSS_base,ySS_base] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, p(:),StartTimer,n);
+            [Time_base,Y_base] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, p(:),StartTimer,n);
         end
 
 

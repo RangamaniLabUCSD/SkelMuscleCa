@@ -212,8 +212,8 @@ end
         else
             g_SOCE = 0;
         end
-        % Expt 2,4,6,8 is no SOCE. Expt 1,2,5,6 is cont stimulus. 
-        if any(expt == [1,2,5,6])
+        % Expt 3,4,5,6 is no SOCE. Expt 1,2,7,8 is cont stimulus. 
+        if any(expt == [1,2,7,8])
             continuousStim = true;
         else
             continuousStim = false;
@@ -357,7 +357,7 @@ end
                             I_SL = - ClampCurrent;
                         end
                     end
-                elseif any(expt == [7,8])
+                elseif any(expt == [5,6])
                     if (t > 0 && t <= 60) || (t > 180 && t <= 240) || (t > 360  && t <= 420)  
                         if (mod(t,1/freq) < pulsewidth)
                             I_SL = - ClampCurrent;
