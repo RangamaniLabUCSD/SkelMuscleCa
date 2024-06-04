@@ -18,7 +18,7 @@
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(~,lb,ub,yinit,p,Createplot)
 
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 24);
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 48);
 
 % pSol Results
 % load PSO_25-Apr-2024.mat pSol
@@ -168,18 +168,6 @@ save(filename);
         %% Plots
         if Createplot
 
-            % figure
-            % subplot(1,2,1)
-            % plot(0:0.0001:T_max(1),CompV{1},'b','LineWidth',2)
-            % subplot(1,2,2)
-            % plot(0:0.0001:T_max(5),CompV{5},'b','LineWidth',2)
-            % %plot (Time,InterpComp{1},'r')
-            % hold off
-            % xlabel('Time (s)', 'FontSize',15);
-            % title('V_{SL} for expt 1 vs 5', 'FontSize',16);
-
-
-
             figure
             for index = 1:2 % Update according to the number of Calcium expts used
                 i = expt_n(index);
@@ -199,8 +187,6 @@ save(filename);
 
             end
 
-
-          
             for index = 3:4
                 i = expt_n(index); %% Update according to the number of Voltage expts used
                 subplot(2,2,index)
@@ -214,7 +200,6 @@ save(filename);
                 plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',2)
                 fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
                 xlabel('Time (s)', 'FontSize',18);
-                %legend('Computational','Experimental', '95% Confidence Interval', 'FontSize',18)
                 ylabel('Membrane Potential (mV)', 'FontSize',18);
                 title('V_{SL} for expt - '+ expt_title(i), 'FontSize',18);
 

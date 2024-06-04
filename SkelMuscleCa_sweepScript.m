@@ -21,7 +21,6 @@ yinit = [
 
 % Parameter values
 param = importdata('InputParam1.xlsx');
-p0 =  param.data;
 
 %%
 p0 =  param.data;
@@ -54,8 +53,8 @@ figure
 plot(Time, Y(:,8))
 
 %% plot the solution from PSO over time
-load PSO_02-Apr-2024.mat pSol
-pSol(7) = 1;
+p0 =  param.data;
+load PSO_03-Apr-2024.mat pSol
 pPSO = pSol.*p0';
 fprintf("Objective value from PSO is %.3f\n", pToObj(pSol, p0, yinit, false))
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2);
@@ -178,15 +177,6 @@ objVal = sum(sum_delta);
 
 % Plots
 if Createplot
-    figure
-    subplot(1,2,1)
-    plot(0:0.0001:T_max(1),CompV{1},'b','LineWidth',2)
-    subplot(1,2,2)
-    plot(0:0.0001:T_max(5),CompV{5},'b','LineWidth',2)
-    %plot (Time,InterpComp{1},'r')
-    hold off
-    xlabel('Time (s)', 'FontSize',15);
-    title('V_{SL} for expt 1 vs 5', 'FontSize',16);
 
     figure
     for index = 1:2 % Update according to the number of Calcium expts used
@@ -202,8 +192,6 @@ if Createplot
 
     end
 
-
-    figure
     for index = 3:4
         i = expt_n(index); %% Update according to the number of Voltage expts used
         subplot(2,2,index)

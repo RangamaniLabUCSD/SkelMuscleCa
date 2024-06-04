@@ -428,10 +428,10 @@ end
         Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1]; %Normalization factor
         R = abs(dydt ./ Nf);
         if all(R < 0.00001) && freq==0
-            dydt = zeros(17,1);
-            fluxes = zeros(1,8);
-            currents = zeros(1,13);
-            return
+           dydt = zeros(17,1);
+           fluxes = zeros(1,8);
+           currents = zeros(1,13);
+           return
         end
 
         fluxes = [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];

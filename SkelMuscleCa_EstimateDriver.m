@@ -21,7 +21,7 @@
  
 % Importing parameters 
 param = importdata('InputParam1.xlsx');
-p =  param.data; 
+p =  param.data;
 
 % Setting bounds for parameters
 lb = 0.8*ones(length(p),1); 
@@ -32,10 +32,6 @@ ub([20, 42, 43]) = 1.0;
 % limits for SR Ca2+ leak
 lb(44) = 0.1;
 ub(44) = 0.4;
-% limits for alpha_w (controls timescale of Ca2+-dependent inactivation of
-% DHPR and RyR)
-lb(7) = 5.0;
-ub(7) = 20.0;
 % limits for sodium leak through SL
 lb(45) = 0;
 ub(45) = 2.5;
