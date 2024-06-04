@@ -1,11 +1,12 @@
 %% Function for estimating parameters using Particle swarm estimation 
 % Input:
-%       yinit - Baseline values of variables
+%       yinit - Default state variable values
 %       expPeaks - Experimental values for ion concentrations
 %       lb - Lower bound for estimation
 %       ub - upper bound for estimation
-%       p_est - baseline input parameters
-%       Createplot - 
+%       p_est - Default input parameters
+%       Createplot - Logic command to output plots. 1 - Creates plot. 0 -
+%       Omits plots
 %
 % Output:
 %       pSol - Particle swarm solution
@@ -19,8 +20,12 @@ function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(~,lb,ub,yinit,p,Createplot
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
     'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 24);
 
+% pSol Results
+% load PSO_25-Apr-2024.mat pSol
+
+% To check default parameter behavior
 numParam = length(lb);
-pVec = ones(1,numParam); 
+pVec = ones(1,numParam) ; 
 pToObj(pVec);
 
 delete(gcp('nocreate'))
@@ -31,12 +36,12 @@ filename = "PSO_" + date +".mat";
 save(filename);
 
     function objVal = pToObj(pVec)
-    %% Function for calculating the objective value for estimation 
-    % Input:
-    %       pVec - Vector of particles
-    % Output:
-    %       objVal - Minimum error between the experimental and model
-    %       output
+        %% Function for calculating the objective value for estimation
+        % Input:
+        %       pVec - Vector of particles
+        % Output:
+        %       objVal - Minimum error between the experimental and model
+        %       output
 
         %Initialize values
         T_max = zeros(1,9);
@@ -47,16 +52,16 @@ save(filename);
         CompV = cell(1,5);
         CompC = cell(1,5);
         StartTimer = tic;
-        param = p(:) .* pVec(:);       
+        param = p(:) .* pVec(:);
         tSS = 0:1000;
         penaltyVal = 100000;
-        
+
         %Experimental Data
         %Expt = {[R_t R_C],[R_MP_t R_MP_C] [HB_t HB_C], [H_t H_C],[HB_MP_t HB_MP_C], [K_t K_V], [B_t B_V] , [M_t M_V], [W_t W_V], [MJ_T MJ_V]};
         load Exptdata.mat Expt
-        freq = [100, 100, 67, 67,67, 60, 60, 60,60];
-        expt_title = ["Rincon","Rincon", "Baylor & Hollingworth", "Hollingworth", "Baylor & Hollingworth", "Yonemura","Bibollet", "Miranda","Wallinga"];
-        expt_n = [1 2 7 8]; % Index of the experimental used for estimation
+        freq = [100, 100, 67, 67,67,60, 60, 60,60];
+        expt_title = ["Rincon","Calderon et al. (2010)", "Baylor et al. (2007)", "Hollingworth", "Baylor & Hollingworth", "Yonemura","Bibollet et al. (2023)", "Miranda et al.(2020)","Wallinga"];
+        expt_n = [3 2 7 8]; % Index of the experimental used for estimation
 
         %Interpolating experimental values
         for m_index = 1 :length(expt_n) %:9
@@ -72,7 +77,7 @@ save(filename);
 
         for n_index = 1 :length(expt_n)
             n = expt_n(n_index);
-            
+
             % Compute SS with ode15s
             [TimeSS,ySS] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, param,StartTimer,n);
             if size(ySS,1) < length(tSS)
@@ -106,7 +111,7 @@ save(filename);
             %             legend('V_{SL} (mV)', '[Ca^{2+}] (\muM');
             %         end
             %         title('Variables during steady state', 'FontSize',16);
-            %         xlabel('Time (s)', 'FontSize',15);                    
+            %         xlabel('Time (s)', 'FontSize',15);
             %     end
             %     hold off
             % end
@@ -135,12 +140,10 @@ save(filename);
                 InterpComp_base{n} = Y_base(:,5);
             end
 
-          
+
         end
 
-
-
-         %% Objective Value Calc
+        %% Objective Value Calc
         delta = cell(1,9);
         sum_delta = zeros(1,9);
         Error = cell(1,9);
@@ -152,9 +155,9 @@ save(filename);
             sigma_V = 5 ;
             delta{j} = InterpComp{j}' - InterpExpt{j};
             if j < 6
-                Error{j} = ((delta{j} ./ sigma_C ) .^ 2 )./ weight; %     (((InterpComp{j}' - InterpExpt{j})./sigma_C).^2)./weight ;
+                Error{j} = ((delta{j} ./ sigma_C ) .^ 2 )./ weight;
             elseif j > 5
-                Error{j} = ((delta{j} ./ sigma_V ) .^ 2 )./ weight; % (((InterpComp{j}' - InterpExpt{j}) ./ sigma_V).^2) ./ weight;
+                Error{j} = ((delta{j} ./ sigma_V ) .^ 2 )./ weight; 
             end
             sum_delta(j) = sum(Error{j});
 
@@ -164,45 +167,60 @@ save(filename);
 
         %% Plots
         if Createplot
-            figure
-            subplot(1,2,1)
-            plot(0:0.0001:T_max(1),CompV{1},'b','LineWidth',2)
-            subplot(1,2,2)
-            plot(0:0.0001:T_max(5),CompV{5},'b','LineWidth',2)
-            %plot (Time,InterpComp{1},'r')
-            hold off
-            xlabel('Time (s)', 'FontSize',15);
-            title('V_{SL} for expt 1 vs 5', 'FontSize',16);
+
+            % figure
+            % subplot(1,2,1)
+            % plot(0:0.0001:T_max(1),CompV{1},'b','LineWidth',2)
+            % subplot(1,2,2)
+            % plot(0:0.0001:T_max(5),CompV{5},'b','LineWidth',2)
+            % %plot (Time,InterpComp{1},'r')
+            % hold off
+            % xlabel('Time (s)', 'FontSize',15);
+            % title('V_{SL} for expt 1 vs 5', 'FontSize',16);
+
+
 
             figure
             for index = 1:2 % Update according to the number of Calcium expts used
                 i = expt_n(index);
                 subplot(2,2,index)
-                plot(0:0.0001:T_max(i),InterpComp{i},'b','LineWidth',2)
+                x = 0:0.0001:T_max(i);
+                Time_Comp = [x, fliplr(x)];
+                Ca_Comp = [InterpExpt{i} + 2*sigma_C, fliplr(InterpExpt{i} - 2*sigma_C)];
+                plot(0:0.0001:T_max(i),InterpComp{i},'LineWidth',2, 'color',[0.00,0.00,1.00]) %'b',
                 hold on
-                plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2)
-                xlabel('Time (s)', 'FontSize',15);
-                legend('Computational','Experimental', 'FontSize',15)
-                title('Computational vs expt \Delta[Ca^{2+}] concentration for expt - '+ expt_title(i), 'FontSize',16);
-                ylabel('\Delta[Ca^{2+}] Concentration (uM)', 'FontSize',15);
+                plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+                hold on
+                plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2,'Linestyle','--')
+                fill(Time_Comp,Ca_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)
+                xlabel('Time (s)', 'FontSize',18);                
+                title('[Ca^{2+}] for '+ expt_title(i), 'FontSize',18);
+                ylabel('Concentration (uM)', 'FontSize',18);
 
             end
 
 
-            figure
+          
             for index = 3:4
                 i = expt_n(index); %% Update according to the number of Voltage expts used
                 subplot(2,2,index)
-                plot(0:0.0001:T_max(i),InterpComp{i},'b','LineWidth',2)
+                x = 0:0.0001:T_max(i);
+                Time_Comp = [x, fliplr(x)];
+                V_Comp = [InterpExpt{i} + 2*sigma_V, fliplr(InterpExpt{i} - 2*sigma_V)];
+                plot(0:0.0001:T_max(i),InterpComp{i},'LineWidth',2, 'color',[0.49,0.18,0.56] ) %'b',
                 hold on
-                plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2)
-                xlabel('Time (s)', 'FontSize',15);
-                legend('Computational','Experimental', 'FontSize',15)
-                ylabel('V_{PM} (mV)', 'FontSize',15);
-                title('Computational vs expt V_{PM} for expt - '+ expt_title(i), 'FontSize',16);
+                plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+                hold on
+                plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',2)
+                fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
+                xlabel('Time (s)', 'FontSize',18);
+                %legend('Computational','Experimental', '95% Confidence Interval', 'FontSize',18)
+                ylabel('Membrane Potential (mV)', 'FontSize',18);
+                title('V_{SL} for expt - '+ expt_title(i), 'FontSize',18);
 
             end
-        end       
+            legend('Calibrated','Pre-Calibarated','Experiment', '95% Confidence Interval', 'FontSize',18)
+        end
     end
 end
 

@@ -427,8 +427,8 @@ end
             currents = zeros(1,13);
             return
         end
-
-        fluxes = [J_SOCE, J_CaLeak_SL, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];
+        J_Trop = dCT / Trop_tot;
+        fluxes = [J_SOCE, J_CaLeak_SL, J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_Trop]; %J_CaLeak_SR,
         % convert all fluxes to uM/s
         fluxes(1:5) = fluxes(1:5) * KFlux_SL_myo;
         fluxes(6:end) = fluxes(6:end) * KMOLE / vol_myo;

@@ -19,13 +19,11 @@
             10.004;    % yinit(17) is the initial condition for 'CaTrop'
             ];
  
-% Parameter values
+% Importing parameters 
 param = importdata('InputParam1.xlsx');
 p =  param.data; 
 
-% ClampCurrent = p(1) ;K_S = p(2) ;delta = p(3) ;beta_m0 = p(4) ;K_betam = p(5) ;alpha_m0 = p(6) ;K_alpham = p(7) ;K_RyR = p(8) ;f_RyR = p(9) ;
-%p = [-25000, 1000000, 0.4, 1380, 18, 288, 10, 4.5, 0.2]' ;%.* pSol_LM';
-
+% Setting bounds for parameters
 lb = 0.8*ones(length(p),1); 
 ub = 1.25*ones(length(p),1);
 % limits for NCX, SERCA, PMCA
@@ -42,10 +40,13 @@ ub(7) = 20.0;
 lb(45) = 0;
 ub(45) = 2.5;
 
-%% LM + ode15s
+tSpan = [0 1];
+Createplot = 1; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
 timer1 = tic;
-Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
+
+% Particle Swarm Optimization 
 [pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst(tSpan,lb, ub, yinit, p,Createplot);
+
 toc(timer1)
 filename_fig = "BestFnva"+ date + ".jpg";
 saveas(gcf,filename_fig)
