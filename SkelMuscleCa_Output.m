@@ -23,16 +23,16 @@ yinit = [
 param = importdata('InputParam1.xlsx');
 p =  param.data;
 
-load PSO_15-Mar-2024_NEW.mat pSol
+load PSO_03-Apr-2024.mat pSol
 p = p(:) .* pSol(:);
 
 %% Steady State and Dynamics calculation ----------------------------------
 expt = 1;
 [~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, expt);                    % Steady State values of variable
-[Time,Y, ~, fluxes] = SkelMuscleCa_dydt([0 60], 50, 0, ySS(end,:), p, tic, expt);   % Dynamics computation
+[Time,Y, ~, fluxes] = SkelMuscleCa_dydt([0 150], 50, 0, ySS(end,:), p, tic, expt);   % Dynamics computation
 
 %% Steady State and Dynamics calculation without any SOCE -----------------
-expt = 2;
+expt = 0;
 [~,ySS_noSOCE] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, expt);                                         % Steady State values of variable
 [Time_noSOCE,Y_noSOCE, ~, fluxes_noSOCE] = SkelMuscleCa_dydt([0 60], 50, 0, ySS_noSOCE(end,:), p, tic, expt);   % Dynamics computation
 

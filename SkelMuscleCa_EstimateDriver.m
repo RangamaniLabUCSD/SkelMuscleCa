@@ -21,10 +21,7 @@
  
 % Parameter values
 param = importdata('InputParam1.xlsx');
-p =  param.data; 
-
-% ClampCurrent = p(1) ;K_S = p(2) ;delta = p(3) ;beta_m0 = p(4) ;K_betam = p(5) ;alpha_m0 = p(6) ;K_alpham = p(7) ;K_RyR = p(8) ;f_RyR = p(9) ;
-%p = [-25000, 1000000, 0.4, 1380, 18, 288, 10, 4.5, 0.2]' ;%.* pSol_LM';
+p =  param.data;
 
 lb = 0.8*ones(length(p),1); 
 ub = 1.25*ones(length(p),1);
@@ -34,10 +31,6 @@ ub([20, 42, 43]) = 1.0;
 % limits for SR Ca2+ leak
 lb(44) = 0.1;
 ub(44) = 0.4;
-% limits for alpha_w (controls timescale of Ca2+-dependent inactivation of
-% DHPR and RyR)
-lb(7) = 5.0;
-ub(7) = 20.0;
 % limits for sodium leak through SL
 lb(45) = 0;
 ub(45) = 2.5;

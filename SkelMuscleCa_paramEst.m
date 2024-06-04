@@ -17,7 +17,7 @@
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(~,lb,ub,yinit,p,Createplot)
 
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 24);
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 48);
 
 numParam = length(lb);
 pVec = ones(1,numParam); 
@@ -152,16 +152,6 @@ save(filename);
         %% Plots
         if Createplot
             figure
-            subplot(1,2,1)
-            plot(0:0.0001:T_max(1),CompV{1},'b','LineWidth',2)
-            subplot(1,2,2)
-            plot(0:0.0001:T_max(5),CompV{5},'b','LineWidth',2)
-            %plot (Time,InterpComp{1},'r')
-            hold off
-            xlabel('Time (s)', 'FontSize',15);
-            title('V_{SL} for expt 1 vs 5', 'FontSize',16);
-
-            figure
             for index = 1:2 % Update according to the number of Calcium expts used
                 i = expt_n(index);
                 subplot(2,2,index)
@@ -175,8 +165,6 @@ save(filename);
 
             end
 
-
-            figure
             for index = 3:4
                 i = expt_n(index); %% Update according to the number of Voltage expts used
                 subplot(2,2,index)
