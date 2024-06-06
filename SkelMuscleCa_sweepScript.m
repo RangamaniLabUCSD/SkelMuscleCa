@@ -54,12 +54,13 @@ plot(Time, Y(:,8))
 
 %% plot the solution from PSO over time
 p0 =  param.data;
-load PSO_03-Apr-2024.mat pSol
+load PSO_25-Apr-2024.mat pSol
+% pSol(12) = pSol(12)*0.2;
 pPSO = pSol.*p0';
 fprintf("Objective value from PSO is %.3f\n", pToObj(pSol, p0, yinit, false))
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2);
-tSol = 0:.0001:10;
-[Time,Y] = SkelMuscleCa_dydt(tSol, 50, 0, ySS(end,:), pPSO, tic, 2);
+tSol = 0:.0001:100;
+[Time,Y] = SkelMuscleCa_dydt(tSol, 10, 0, ySS(end,:), pPSO, tic, 1);
 figure
 plot(Time, Y(:,8))
 
