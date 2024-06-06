@@ -1,6 +1,6 @@
 clc
 clear
-delete(gcp('nocreate'))
+%delete(gcp('nocreate'))
 
 load PSO_25-Apr-2024.mat p pSol yinit
 p = p(:) .* pSol(:);
@@ -58,7 +58,7 @@ Ca50 = 1.1694; % Calcium conc at 50% max force.
 c0 = 1.03167e-04 ; % Vertical shift 
 %% Steady State calculation -----------------------------------------------
 [~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, 1);                    % Steady State values of variable
-yinf = ySS(:,end);
+yinf = ySS(end,:);
 [~,ySS_noSOCE] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p, tic, 2);  
 yinf_noSOCE = ySS_noSOCE(end,:);
 
@@ -83,7 +83,7 @@ parfor i = 1:l_HIIT
     
 end
 
-% Max and Avg
+%% Max and Avg
 for i = 1:l_HIIT
     time_start7 = find(Time7{i} < 1);
     start_index7 = length(time_start7);
@@ -129,16 +129,20 @@ parfor i = 1:l_Resistance
     
 end
 
-% Max and Avg
+%% Max and Avg
 for i = 1:l_Resistance
 
     indices5 = (Time5{i} >=8 & Time5{i} <= 60)| (Time5{i} >= 188 & Time5{i} <= 240) | (Time5{i} >= 368 & Time5{i} <= 420);
     indices6 = (Time_noSOCE6{i} >= 8 & Time_noSOCE6{i} <= 60)| (Time_noSOCE6{i}  >= 188 & Time_noSOCE6{i}  <= 240) | (Time_noSOCE6{i}  >= 368 & Time_noSOCE6{i}  <= 420);
     MaxCa5(i) = max(Ca5{i}(indices5));
-    AUC5(i) = trapz(Time5{i}(indices5),Ca5{i}(indices5)) / 180;
-
     MaxCa_noSOCE6(i) = max(Ca_noSOCE6{i}(indices6));
-    AUC_noSOCE6(i) = trapz(Time_noSOCE6{i}(indices6),Ca_noSOCE6{i}(indices6)) / 180;
+
+    
+    AUC_indices5 = (Time5{i} >=0 & Time5{i} <= 60)| (Time5{i} >= 180 & Time5{i} <= 240) | (Time5{i} >= 360 & Time5{i} <= 420);
+    AUC_indices6 = (Time_noSOCE6{i} >= 0 & Time_noSOCE6{i} <= 60)| (Time_noSOCE6{i}  >= 180 & Time_noSOCE6{i}  <= 240) | (Time_noSOCE6{i}  >= 360 & Time_noSOCE6{i}  <= 420);
+    StimTime = 180; % Only considering the period of stimulation 
+    AUC5(i) = trapz(Time5{i}(:),Ca5{i}(:)) / StimTime; 
+    AUC_noSOCE6(i) = trapz(Time_noSOCE6{i}(:),Ca_noSOCE6{i}(:)) / StimTime; 
 
 end
 deltaMax_Resistance = MaxCa5 - MaxCa_noSOCE6;

@@ -377,7 +377,7 @@ end
                     I_SL = - ClampCurrent;
                 end
             else
-                if any(expt == [3,4]) % Prescribed stimulus - 500ms at 50Hz every 2.5s 
+                if any(expt == [3,4]) % Prescribed stimulus - 500ms at 50Hz every 2.5s per Wei La-Pierre et al. 
                     period = 2.5;
                     numPeriods = floor(t / period);
                     timeInCurrentPeriod = t - numPeriods * period;

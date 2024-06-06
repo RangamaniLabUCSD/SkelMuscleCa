@@ -1,15 +1,16 @@
 
 load PSO_25-Apr-2024.mat p pSol yinit
 
-load Resistance_noSOCE6_5-9.mat Ca5 Ca_noSOCE6
-load HIIT_5-18.mat Ca7 Ca_noSOCE8
+load Resistance.mat Ca5 Ca_noSOCE6
+load HIIT.mat Ca7 Ca_noSOCE8
 
-%%
-load Force_expt2.mat Ca_expt2 Force_expt2
+%% "Calcium-activated force responses in fast- and slow-twitch skinned muscle fibres of the rat at different temperatures. D G Stephenson and D A Williams (1981)
+% 10.1113/jphysiol.1981.sp013825"		
+load HillModelFit.mat Ca_expt F_expt
+														
 %% 
-Ca_expt = (10 .^(-1 .* Ca_expt2)) ./ (10^ (-6));  %pCa values
+Ca_expt = (10 .^(-1 .* Ca_expt)) ./ (10^ (-6));  %pCa values
 Ca_expt(end) = 0.393;
-F_expt = Force_expt2 ; %Normalized
 Ca_model = Ca5{1}; %pCa conversion
 index = find(F_expt > 0.5);
 Ca50_index = max(index);

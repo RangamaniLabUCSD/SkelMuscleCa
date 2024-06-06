@@ -179,12 +179,12 @@ hold off
 set(plot9_SOCEblocked,"Renderer","painters");
 % -------------------------------------------------------------------------
 
-%% Load exercise data
+%% Load exercise data Resistance.mat HIIT.mat
 %% Resistance Plots
 
 % DeltaMax Resistance ----------------------------------------------------
 plot10 = figure;
-axes10 = axes('Parent', figure1);
+axes10 = axes('Parent', plot10);
 scatter(f_Resistance,deltaMax_Resistance,'filled','MarkerFaceColor',[0.89,0.47,0.97]); 
 xlabel('Frequency (Hz)', 'Fontsize',18)
 ylabel('\Delta Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
@@ -202,7 +202,7 @@ set(plot11,"Renderer","painters");
 
 %  Avg Ca ----------------------------------------------------------------
 plot12 = figure;
-axes12 = axes('Parent', figure12);
+axes12 = axes('Parent', plot12);
 scatter(f_Resistance,AUC5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
 hold on
 scatter(f_Resistance,AUC_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
@@ -225,11 +225,10 @@ set(plot13,"Renderer","painters");
 % Force vs freq -----------------------------------------------------------
 plot14 = figure;
 axes14 = axes('Parent', plot14);
-scatter(f_Resistance,Force_norm5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+scatter(f_Resistance,Force5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
 hold on
-scatter(f_Resistance,Force_norm_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+scatter(f_Resistance,Force_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
 hold off
-%ylim([0 100]);
 xlabel('Frequency (Hz)', 'Fontsize',18)
 ylabel('Force (%)','Fontsize',18)
 title('Average force during Resistance exercise')
@@ -251,13 +250,12 @@ set(plot15,"Renderer","painters");
 
 % DeltaAvg ----------------------------------------------------------------
 plot16 = figure;
-axes16 = axes('Parent', figure16);
+axes16 = axes('Parent', plot16);
 scatter(f_HIIT,deltaAUC_HIIT,'filled','MarkerFaceColor',[0.89,0.47,0.97]); 
 xlabel('Frequency (Hz)', 'Fontsize',18)
 ylabel('\Delta Average [Ca^{2+}]_{myo} (μM)','Fontsize',18)
 set(axes16,'FontSize',18,'Box','off','FontSmoothing','on')
 set(plot16,"Renderer","painters");
-savefig(AUC_HIIT.fig)
 
 % Avg Ca ------------------------------------------------------------------
 plot17 = figure;
