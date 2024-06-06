@@ -37,9 +37,7 @@ lb(45) = 0;
 ub(45) = 2.5;
 timer1 = tic;
 
-
 % Particle Swarm Optimization 
-
 Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
 [pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst([0 1],lb, ub, yinit, p,Createplot);
 
