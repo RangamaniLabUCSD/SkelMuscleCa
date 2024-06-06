@@ -1,7 +1,6 @@
 clc
 clear
 %delete(gcp('nocreate'))
-
 load PSO_25-Apr-2024.mat p pSol yinit
 p = p(:) .* pSol(:);
 % Expt : 
@@ -84,6 +83,7 @@ parfor i = 1:l_HIIT
 end
 
 %% Max and Avg
+
 for i = 1:l_HIIT
     time_start7 = find(Time7{i} < 1);
     start_index7 = length(time_start7);
@@ -130,6 +130,7 @@ parfor i = 1:l_Resistance
 end
 
 %% Max and Avg
+
 for i = 1:l_Resistance
 
     indices5 = (Time5{i} >=8 & Time5{i} <= 60)| (Time5{i} >= 188 & Time5{i} <= 240) | (Time5{i} >= 368 & Time5{i} <= 420);
@@ -137,12 +138,11 @@ for i = 1:l_Resistance
     MaxCa5(i) = max(Ca5{i}(indices5));
     MaxCa_noSOCE6(i) = max(Ca_noSOCE6{i}(indices6));
 
-    
     AUC_indices5 = (Time5{i} >=0 & Time5{i} <= 60)| (Time5{i} >= 180 & Time5{i} <= 240) | (Time5{i} >= 360 & Time5{i} <= 420);
     AUC_indices6 = (Time_noSOCE6{i} >= 0 & Time_noSOCE6{i} <= 60)| (Time_noSOCE6{i}  >= 180 & Time_noSOCE6{i}  <= 240) | (Time_noSOCE6{i}  >= 360 & Time_noSOCE6{i}  <= 420);
     StimTime = 180; % Only considering the period of stimulation 
-    AUC5(i) = trapz(Time5{i}(:),Ca5{i}(:)) / StimTime; 
-    AUC_noSOCE6(i) = trapz(Time_noSOCE6{i}(:),Ca_noSOCE6{i}(:)) / StimTime; 
+    AUC5(i) = trapz(Time5{i}(AUC_indices5),Ca5{i}(AUC_indices5)) / StimTime; 
+    AUC_noSOCE6(i) = trapz(Time_noSOCE6{i}(AUC_indices6),Ca_noSOCE6{i}(AUC_indices6)) / StimTime; 
 
 end
 deltaMax_Resistance = MaxCa5 - MaxCa_noSOCE6;

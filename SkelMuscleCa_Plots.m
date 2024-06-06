@@ -180,6 +180,7 @@ set(plot9_SOCEblocked,"Renderer","painters");
 % -------------------------------------------------------------------------
 
 %% Load exercise data Resistance.mat HIIT.mat
+
 %% Resistance Plots
 
 % DeltaMax Resistance ----------------------------------------------------
