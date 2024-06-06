@@ -38,7 +38,7 @@ ub(45) = 2.5;
 %% LM + ode15s
 timer1 = tic;
 Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
-[pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst(tSpan,lb, ub, yinit, p,Createplot);
+[pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst([0 1],lb, ub, yinit, p,Createplot);
 toc(timer1)
 filename_fig = "BestFnva"+ date + ".jpg";
 saveas(gcf,filename_fig)

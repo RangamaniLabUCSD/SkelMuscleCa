@@ -17,7 +17,7 @@
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(~,lb,ub,yinit,p,Createplot)
 
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 48);
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 20, 'SwarmSize', 32);
 
 numParam = length(lb);
 pVec = ones(1,numParam); 
@@ -81,7 +81,7 @@ save(filename);
             if any(isnan(ySS))
                 objVal = penaltyVal;
                 return
-            elseif ySS(end,2) < 800 || ySS(end,2) > 2000
+            elseif ySS(end,2) < 800 || ySS(end,2) > 2000 || param(12) > 0.4*ySS(end,2)
                 objVal = penaltyVal;
                 return
             end
