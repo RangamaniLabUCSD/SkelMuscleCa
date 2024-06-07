@@ -61,6 +61,7 @@ fprintf("Objective value from PSO is %.3f\n", pToObj(pSol, p0, yinit, false))
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2);
 tSol = 0:.0001:100;
 [Time,Y] = SkelMuscleCa_dydt(tSol, 10, 0, ySS(end,:), pPSO, tic, 1);
+
 figure
 plot(Time, Y(:,8))
 

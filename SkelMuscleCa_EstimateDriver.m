@@ -19,10 +19,11 @@
             10.004;    % yinit(17) is the initial condition for 'CaTrop'
             ];
  
-% Parameter values
+% Importing parameters 
 param = importdata('InputParam1.xlsx');
 p =  param.data;
 
+% Setting bounds for parameters
 lb = 0.8*ones(length(p),1); 
 ub = 1.25*ones(length(p),1);
 % limits for NCX, SERCA, PMCA
@@ -34,11 +35,13 @@ ub(44) = 0.4;
 % limits for sodium leak through SL
 lb(45) = 0;
 ub(45) = 2.5;
-
-%% LM + ode15s
 timer1 = tic;
+
+% Particle Swarm Optimization 
 Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
 [pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst([0 1],lb, ub, yinit, p,Createplot);
+
+
 toc(timer1)
 filename_fig = "BestFnva"+ date + ".jpg";
 saveas(gcf,filename_fig)
