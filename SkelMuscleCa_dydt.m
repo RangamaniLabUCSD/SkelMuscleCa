@@ -1,6 +1,4 @@
 function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, lowATP, yinit, p,StartTimer,expt)
-% [T,Y,yinit,param] = SkelMuscleCa_AK(argTimeSpan,argYinit,argParam)
-%
 % input:
 %     tSpan is a vector of start and stop times
 %     freq is a vector of test frequencies
