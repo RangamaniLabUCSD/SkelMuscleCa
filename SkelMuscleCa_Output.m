@@ -124,12 +124,12 @@ ylabel('[Ca^{2+}]_{SR} (μM)','Fontsize',16,'FontSmoothing','on')
 set(axes6,'FontSize',16,'Box','off','FontSmoothing','on')
 set(plot6,"Renderer","painters");
 
-<<<<<<< Updated upstream
+
 %%
 Fig3c(Time2,Y2(:,1),Y2(:,2))                           % Density of activated Orai1 channel vs SR [Ca^{2+}]
 Fig3d(Time2,[fluxes2(:,4), fluxes2(:,3)])              % DHPR and NCX Myo Fluxes
 Fig3e(Time2,[fluxes2(:,6), fluxes2(:,7), fluxes2(:,8)]) % SR fluxes
-=======
+
 %% Figure 4 - Control vs SOCE Blocked
 %Cont Stimulus - 10Hz 30s Expt 2 and 4
 plot7 = figure;
@@ -196,7 +196,7 @@ ylabel('Max [Ca^{2+}_{myo}] (\muM)','FontSize',16);
 legend('Control','SOCE blocked','FontSize',14,'EdgeColor','none');
 set(axes10,'FontSize',16,'Box', 'off','FontSmoothing','on');
 set(plot10,"Renderer","painters");
->>>>>>> Stashed changes
+
 
 %% Subplot for flux comparision of different channels in SRM and Sarcolemma
 % figure
@@ -249,7 +249,7 @@ xlim([0 0.01])
 xlabel('Time (s)', 'Fontsize',16)
 ylabel('Flux (\muM/s)','Fontsize',16)
 legend('Control_{RyR}','Control_{SERCA}','Control_{SRLeak}','Orai1 Blocked_{RyR}','Orai1 Blocked_{SERCA}','Orai1 Blocked_{SRLeak}','Fontsize',14,'Edgecolor','none','Color','none')
-<<<<<<< Updated upstream
+
 
 figure
 % subplot(1,3,1)
@@ -292,7 +292,7 @@ ylabel('Max [Ca^{2+}_{myo}] (\muM)','FontSize',16);
 title ('Max [Ca^{2+}_{myo}] per stimulus period of 2.5s ','FontSize',16,'FontWeight','bold');
 legend('Control','Orai1 blocked','FontSize',14,'EdgeColor','none');
 set(subplot1,'FontSize',14)
-=======
+
 
 figure
 % subplot(1,3,1)
@@ -310,12 +310,9 @@ xlabel('Time (s)', 'Fontsize',16)
 ylabel('Flux (\muM/s)','Fontsize',16)
 legend('Control_{DHPR}','Control_{NCX}','Orai1 Blocked_{DHPR}','Orai1 Blocked_{NCX}','Fontsize',14,'Edgecolor','none','Color','none')
 
-<<<<<<< Updated upstream
-=======
+
 %% Figure 4 ---------------------------------------------------------------
 
-
->>>>>>> Stashed changes
 %% Tail integral per stimulus plot -----------------------------------------
 AUC = zeros(length(t),1);
 AUC_noSOCE = zeros(length(t),1);
