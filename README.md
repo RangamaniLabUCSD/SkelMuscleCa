@@ -17,6 +17,6 @@ Files summary:
 
 Dependencies:
 
-Our sensitivity analysis relies on UQLab, which can be (downloaded for free)[https://uqlab.com/download].
+Our sensitivity analysis relies on UQLab, which can be [downloaded for free](https://uqlab.com/download).
 Our optimization uses the Optimization Toolbox and Global optimization Toolbox in MATLAB.
 To run sensitivity analysis and optimization in parallel, the Parallel Computing Toolbox is required.
