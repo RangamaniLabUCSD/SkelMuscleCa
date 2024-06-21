@@ -15,8 +15,8 @@ yinit = [
     154500.0;	% yinit(13) is the initial condition for 'K_i'
     387;        % yinit(14) is the initial condition for 'CaParv'
     1020;       % yinit(15) is the initial condition for 'MgParv'
-    0.3632;    % yinit(16) is the inital consition for 'CATP'
-    10.004;    % yinit(17) is the initial condition for 'CaTrop'
+    0.3632;     % yinit(16) is the inital consition for 'CATP'
+    10.004;     % yinit(17) is the initial condition for 'CaTrop'
     ];
 
 % Parameter values
@@ -53,13 +53,14 @@ figure
 plot(Time, Y(:,8))
 
 %% plot the solution from PSO over time
+param = importdata('InputParam1.xlsx');
 p0 =  param.data;
 load PSO_25-Apr-2024.mat pSol
 % pSol(12) = pSol(12)*0.2;
 pPSO = pSol.*p0';
 fprintf("Objective value from PSO is %.3f\n", pToObj(pSol, p0, yinit, false))
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2);
-tSol = 0:.0001:100;
+tSol = 0:.0001:10;
 [Time,Y] = SkelMuscleCa_dydt(tSol, 10, 0, ySS(end,:), pPSO, tic, 1);
 
 figure

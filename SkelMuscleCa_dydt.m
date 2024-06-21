@@ -29,7 +29,7 @@ end
 
 fluxes = zeros(length(Time), 8);
 currents = zeros(length(Time), 13);
-% Fulx and ionic current through differnt pathways.
+% Flux and ionic current through different pathways.
 for i = 1:length(Time)
     [~, fluxes(i,:), currents(i,:)] = f(Time(i), Y(i,:), p, freq, lowATP);
 
@@ -57,6 +57,12 @@ end
         MgParv = y(15);
         CATP = y(16);
         CaTrop = y(17);
+        CaCaTrop = y(18);
+        D_0 = y(19);
+        D_1 = y(20);
+        D_2 = y(21);
+        Pre_Pow = y(22);
+        Post_Pow = y(23);
 
         %% Variable Parameters
         A_a = p(1);
@@ -348,16 +354,37 @@ end
         ATP = ATP_itot - CATP;
         Parv = Parv_itot - CaParv - MgParv;
         Mg = 1000;                  %(µM) constant concentration
-
+        
+        %Crossbrdige Cycling (Calcium and Troponin Binding Process) 
+        k_onTrop = 0.0885*1000;     %(µM/s)
+        k_offTrop = 0.115*1000;     %s^-1
+        k_on0 = 0;                  %s^-1 RU activation rate w/ no c_i bound
+        k_off0 = 0.15*1000;         %s^-1 RU deactivation rate w/ no c_i bound
+        k_onCa = 0.15*1000;         %s^-1 RU activation rate w/ 2 c_i bound
+        k_offCa = 0.05*1000;        %s^-1 RU deactivation rate w/ 2 c_i bound
+        f0 = 1.5*1000;              %s^-1 rate of crossbridge attachment 
+        fP = 15*1000;               %s^-1 rate of Pre_Pow stroke crossbridge detachment 
+        h0 = 0.24*1000;             %s^-1 forward rate of power stroke 
+        hP = 0.18*1000;             %s^-1 backward rate of power stroke 
+        g0 = 0.12*1000;             %s^-1 rate of Post_pow crossbridge detachment 
+        
+        %Calcium system 
         Trop_tot = 140;
-        Trop = Trop_tot - CaTrop;
-        k_offTrop = 0.115;
-        k_onTrop = 0.0885;
-        dCT = k_onTrop*c_i*Trop - k_offTrop*CaTrop; % Calcium buffering with Troponin
+        Trop = Trop_tot - CaTrop - CaCaTrop - D_0 - D_1 - D_2 - Pre_Pow - Post_Pow;
+        dCT = k_onTrop*c_i*Trop - k_offTrop*CaTrop - k_onTrop*c_i*CaTrop + k_offTrop*CaCaTrop - k_on0*CaTrop + k_off0*D_1; % Calcium buffering with Troponin
         dCA = k_onATP*c_i*ATP - k_offATP*CATP; % Calcium buffering with ATP
         dCP = k_onParvCa*c_i*Parv - k_offParvCa*CaParv; % Calcium buffering with Parvalbumin
         dMP = k_onParvMg*Mg * Parv - k_offParvMg*MgParv; % Mg buffering with Troponin
+        dCCT = k_onTrop*c_i*CaTrop - k_offTrop*CaCaTrop - k_onCa*CaCaTrop + k_offCa*D_2;
+       
+        %Crossbridge attach/detachment 
+        dD0 = -k_onTrop*c_i*D_0 + k_offTrop*D_1 + k_on0*Trop - k_off0*D_0;
+        dD1 = k_onTrop*c_i*D_0 - k_offTrop*D_1 + k_on0*CaTrop - k_off0*D_1 - k_onTrop*c_i*D_1 + k_offTrop*D_2;
+        dD2 = k_onTrop*c_i*D_1 - k_offTrop*D_2 + k_onCa*CaCaTrop - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + g0*Post_Pow;
 
+        %Concentration of Pre/Post Power Stroke Filaments 
+        dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow - h0*Pre_Pow;
+        dPost = -hP*Post_Pow + h0*Pre_Pow - g0*Post_Pow;
 
         % Rapid buffering with CaSQ
         B_SRtot = 31000;
@@ -365,7 +392,7 @@ end
         f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2));
 
         currtime = toc(StartTimer);
-
+       
         %% Input stimulus for different conditions at frequency freq - square pulses of width 1 ms
 
         I_SL = 0;
@@ -393,7 +420,7 @@ end
         end
 
 
-
+   
         %% Rates
         if freq == 0 && currtime > 60
             dydt = zeros(17,1);
@@ -416,16 +443,22 @@ end
             J_r1;    % rate for h (11)
             J_r3;    % rate for S (12)
             KFlux_SL_myo * ( J_K_IR - J_K_DR + J_NKX_K);    % rate for K_i  (13)
-            dCP;     % Rate for Parvalbumin bound Ca2+ (14)
-            dMP;     % Rate for Parvalbumin bound Mg2+ (15)
-            dCA;     % Rate for ATP bound Ca2+ (16)
-            dCT;     % Rate for Trop bound Ca2+ (17)
+            dCP;      % Rate for Parvalbumin bound Ca2+ (14)
+            dMP;      % Rate for Parvalbumin bound Mg2+ (15)
+            dCA;      % Rate for ATP bound Ca2+ (16)
+            dCT;      % Rate for Trop bound Ca2+ (17)
+            dCCT;     % Rate for Ca2+ bound TropCa2+ (18)
+            dD0;      % Rate for Tropomyosin opening from Trop bound (19)
+            dD1;      % Rate for Tropomyo opening from CaT bound (20)
+            dD2;      % Rate for Tropomyo opening from CaCaT bound (21)
+            dPre;     % Rate for Pre-Power Stroke from D_2 bound (22)
+            dPost;    % Rate for Post-Power Strom from A_1 bound (23)
             ];
 
-        Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1]; %Normalization factor
+        Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1;1;1;1;1;1;1]; %Normalization factor
         R = abs(dydt ./ Nf);
         if all(R < 0.00001) && freq==0
-            dydt = zeros(17,1);
+            dydt = zeros(23,1);
             fluxes = zeros(1,8);
             currents = zeros(1,13);
             return
