@@ -63,7 +63,8 @@ end
         D_2 = y(21);
         Pre_Pow = y(22);
         Post_Pow = y(23);
-
+        MgATP = y(24);
+        ATP = y(25); 
         %% Variable Parameters
         A_a = p(1);
         A_hkinf = p(2);
@@ -342,16 +343,27 @@ end
         device_SL.Capacitance = (C_SL .* SA_SL) .* (Q10C_SL .^ QCorr);
 
         %% Calcium buffering in the myoplasm and SR
-        k_onATP = 0.01364*1000;     %(µM s)^-1
-        k_offATP = 30*1000;         %s^-1
+        k_onATP = 0.15*1000;     %(µM s)^-1  % rate of Ca bound to ATP 
+        k_offATP = 0.3*1000;         %s^-1
         k_onParvCa = 41.7;          %(µM s)^-1
         k_offParvCa = 0.5;          %s^-1
         k_onParvMg = 0.033;         %(µM s)^-1
         k_offParvMg = 3;            %s^-1
         Parv_itot = 1500;           %(µM)
-        ATP_itot = 8000;            %(µM)
+        % ATP_itot = 8000;            %(µM)
+        %ATP Addition 
+        k_onMA = 1.5;               %(µM/s)
+        k_offMA = 150;              %s^-1
 
-        ATP = ATP_itot - CATP;
+        if freq == 0
+            kHYD = 0;
+        else
+            kHYD =100;
+        end
+
+        kH = 1000;                  %µM
+
+        % ATP = ATP_itot - CATP;
         Parv = Parv_itot - CaParv - MgParv;
         Mg = 1000;                  %(µM) constant concentration
         
@@ -385,7 +397,13 @@ end
         %Concentration of Pre/Post Power Stroke Filaments 
         dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow - h0*Pre_Pow;
         dPost = -hP*Post_Pow + h0*Pre_Pow - g0*Post_Pow;
-
+        
+        %ATP
+        % Jhyd = kHYD * (ATP / (ATP + kH));
+        Jhyd = 0;
+        dMA = k_onMA*Mg*ATP - k_offMA*MgATP; 
+        dATP = -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP);
+        
         % Rapid buffering with CaSQ
         B_SRtot = 31000;
         K_SRBuffer = 800;           % k_off/k_on
@@ -453,12 +471,14 @@ end
             dD2;      % Rate for Tropomyo opening from CaCaT bound (21)
             dPre;     % Rate for Pre-Power Stroke from D_2 bound (22)
             dPost;    % Rate for Post-Power Strom from A_1 bound (23)
+            dMA;      % Rate for ATP bound Mg2+ (24)
+            dATP;
             ];
 
-        Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1;1;1;1;1;1;1]; %Normalization factor
+        Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1;1;1;1;1;1;1;1;1]; %Normalization factor
         R = abs(dydt ./ Nf);
         if all(R < 0.00001) && freq==0
-            dydt = zeros(23,1);
+            dydt = zeros(25,1);
             fluxes = zeros(1,8);
             currents = zeros(1,13);
             return
