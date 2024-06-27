@@ -23,8 +23,11 @@ yinit = [
     0;	    	% yinit(21) is the initial condition for 'D_2'
     0;	    	% yinit(22) is the initial condition for 'Pre_Pow'
     0;	    	% yinit(23) is the initial condition for 'Post_Pow'
-    0;
-    8000;
+    0;	    	% yinit(24) is the initial condition for 'MgATP'
+    8000;       % yinit(25) is the initial condition for 'ATP'
+    0.01        % yinit(26) is the initial condition for 'p_i_SR' 
+    0.001       % yinit(27) is the initial condition for 'PiCa'
+    0.001       % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
 param = importdata('InputParam1.xlsx'); % load default parameters
@@ -43,13 +46,33 @@ title('time vs Ca2+, freq=100 Hz')
 legend('Calcium ion Conc');  
 xlabel('Time (seconds)');
 ylabel('[Ca2+] (µM)'); 
+% 
+% figure
+% plot(Time, Y(:,17))
+% title('time vs CaTrop, freq=100 Hz')
+% legend('CaTrop Conc');  
+% xlabel('Time (seconds)');
+% ylabel('[CaTrop] (µM)'); 
 
 figure
-plot(Time, Y(:,17))
-title('time vs CaTrop, freq=100 Hz')
-legend('CaTrop Conc');  
+subplot(3,1,1)
+plot(Time, Y(:,26))
+title('time vs p_i_SR, freq=100 Hz')
+legend('p_i_SR');  
 xlabel('Time (seconds)');
-ylabel('[CaTrop] (µM)'); 
+ylabel('[p_i_SR] (µM)'); 
+subplot(3,1,2)
+plot(Time, Y(:,27))
+title('time vs PiCa, freq=100 Hz')
+legend('PiCa Conc');  
+xlabel('Time (seconds)');
+ylabel('[PiCa] (µM)'); 
+subplot(3,1,3)
+plot(Time, Y(:,28))
+title('time vs Pi_Myo, freq=100 Hz')
+legend('Pi_Myo Conc');  
+xlabel('Time (seconds)');
+ylabel('[Pi_Myo] (µM)'); 
 
 
 
@@ -60,6 +83,12 @@ legend('ATP Conc');
 xlabel('Time (seconds)');
 ylabel('[ATP] (µM)'); 
 
+figure
+plot(Time, Y(:,23))
+title('time vs A2')
+legend('ATP Conc');  
+xlabel('Time (seconds)');
+ylabel('[A2] (µM)'); 
 
 figure
 subplot(3,1,1)

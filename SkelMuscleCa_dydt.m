@@ -65,6 +65,11 @@ end
         Post_Pow = y(23);
         MgATP = y(24);
         ATP = y(25); 
+        p_i_SR = y(26);
+        PiCa_SR = y(27);
+        p_i_Myo = y(28);
+       
+
         %% Variable Parameters
         A_a = p(1);
         A_hkinf = p(2);
@@ -235,6 +240,8 @@ end
         J_NKX_N =  - ((I_NKX_N ./ (carrierValence_NKX .* F)) .* 1E09);
         J_NKX_K = ((I_NKX_K ./ (carrierValence_NKX .* F)) .* 1E09);
 
+        J_NKX_tot = J_NKX_N * (SA_SL ./ vol_myo) / 3;
+
         % fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         % I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
         % fPump_NKX_N = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
@@ -344,7 +351,7 @@ end
 
         %% Calcium buffering in the myoplasm and SR
         k_onATP = 0.15*1000;     %(µM s)^-1  % rate of Ca bound to ATP 
-        k_offATP = 0.3*1000;         %s^-1
+        k_offATP = 30*1000;         %s^-1
         k_onParvCa = 41.7;          %(µM s)^-1
         k_offParvCa = 0.5;          %s^-1
         k_onParvMg = 0.033;         %(µM s)^-1
@@ -399,11 +406,40 @@ end
         dPost = -hP*Post_Pow + h0*Pre_Pow - g0*Post_Pow;
         
         %ATP
-        % Jhyd = kHYD * (ATP / (ATP + kH));
-        Jhyd = 0;
+        J_SERCA_tot = LumpedJ_SERCA * KMOLE / vol_myo;
+        J_PMCA_tot = J_PMCA * KFlux_SL_myo;
+        Jhyd = J_NKX_tot + (J_SERCA_tot/2) + J_PMCA_tot + kHYD * (ATP / (ATP + kH));
         dMA = k_onMA*Mg*ATP - k_offMA*MgATP; 
         dATP = -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP);
         
+        %SR Phosphate 
+        PP = 6;                     %units
+        p_i = 0.5;                  %units
+        PC_tot = p_i_SR * c_i;      %units
+        kP = 3.62*10^-3;            %(µM^3/s)
+        V_SR = 0.99 * vol_SR;       %(µM^3)    Bulk SR Volume 
+        Ap = 1*1000;                %(mM^2/s)
+        Bp = 0.0001*1000;           %(mM/s)
+
+        if PC_tot*0.001 >= PP
+            dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
+        else
+            dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);
+        end 
+       
+        %Calcium-Phophate Precipitate (SR) 
+        if PC_tot*0.001 >= PP
+            dPiCa = Ap * (PC_tot*0.001 - PP)* (0.001*PC_tot);
+        else
+            dPiCa = -Bp * PiCa_SR * (PP - 0.001*PC_tot);
+        end
+        
+        %Myoplasmic Phosphate
+        Vmyo = 0.99*vol_myo;        %(µM^3)    Bulk Myoplasm Volume
+        bP = 2.867*10^-2;           %s^-1  
+        dPi_Myo = 0.001*Jhyd + 0.001* (h0*Pre_Pow - hP*Post_Pow) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR)/Vmyo; 
+
+
         % Rapid buffering with CaSQ
         B_SRtot = 31000;
         K_SRBuffer = 800;           % k_off/k_on
@@ -472,13 +508,16 @@ end
             dPre;     % Rate for Pre-Power Stroke from D_2 bound (22)
             dPost;    % Rate for Post-Power Strom from A_1 bound (23)
             dMA;      % Rate for ATP bound Mg2+ (24)
-            dATP;
+            dATP;     % Rate for free ATP (25)
+            dPi_SR;   % Rate for SR Phsophate (26) 
+            dPiCa;    % Rate for Cal-Phos Precipitate (27) 
+            dPi_Myo;  % Rate for Myoplasmic Phosphate (28) 
             ];
 
-        Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1;1;1;1;1;1;1;1;1]; %Normalization factor
+        Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1;1;1;1;1;1;1;1;1;1;1;1]; %Normalization factor
         R = abs(dydt ./ Nf);
         if all(R < 0.00001) && freq==0
-            dydt = zeros(25,1);
+            dydt = zeros(28,1);
             fluxes = zeros(1,8);
             currents = zeros(1,13);
             return
