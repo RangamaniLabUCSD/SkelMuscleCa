@@ -424,7 +424,7 @@ end
         if PC_tot*0.001 >= PP
             dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
         else
-            dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);
+            dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);     %%%%
         end 
        
         %Calcium-Phophate Precipitate (SR) 
