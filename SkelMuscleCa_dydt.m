@@ -232,6 +232,7 @@ end
         J_r4 = ((alpha_n .* (1.0 - n)) - (beta_n .* n));
 
         %% Na-K Pump
+        kATP = 0.04;  % µM ATP dependence of SR Ca pump  
         fPump_NKX = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         C_NKX = (fPump_NKX .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0))) .* (1.0 + (0.1 .* TTFrac));
         I_NKX_K = 2 * C_NKX;
@@ -239,8 +240,8 @@ end
 
         J_NKX_N =  - ((I_NKX_N ./ (carrierValence_NKX .* F)) .* 1E09);
         J_NKX_K = ((I_NKX_K ./ (carrierValence_NKX .* F)) .* 1E09);
-
-        J_NKX_tot = J_NKX_N * (SA_SL ./ vol_myo) / 3;
+       
+        J_NKX_tot = ( J_NKX_N * (SA_SL ./ vol_myo) / 3 )  * (ATP / (kATP + ATP) );
 
         % fPump_NKX_K = ((1.0 + (0.12 .* exp(( - 0.1 .* Voltage_SL .* F ./ (R .* T)))) + ((0.04 ./ 7.0) .* (exp((Na_EC ./ 67300.0)) - 1.0) .* exp(( - Voltage_SL .* F ./ (R .* T))))) ^  - 1.0);
         % I_NKX_K = ((2.0 .* (fPump_NKX_K .* F .* Q10g_NaK .* J_NaK_NKX ./ (((1.0 + (K_mK_NKX ./ K_EC)) ^ 2.0) .* ((1.0 + (K_mNa_NKX ./ Na_i)) ^ 3.0)))) .* (1.0 + (0.1 .* TTFrac)));
@@ -308,12 +309,12 @@ end
         %% SERCA
         volFactor = (vol_myo ./ (PI .* 0.26));
         nu_SERCA = nu_SERCA .* volFactor;
-        LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i));
+        LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i)) * (ATP / (kATP + ATP) );
 
         %% PMCA
         g_PMCA = (g_PMCA * vol_myo) / (700 * SA_SL );
         I_PMCA = (Q10PMCA .^ QCorr) * ( - (g_PMCA .* c_i ./ (K_PMCA + c_i)) .* (1.0 + TTFrac));
-        J_PMCA =  - ((I_PMCA ./ (carrierValence_PMCA .* F)) .* 1E09);
+        J_PMCA =  - ((I_PMCA ./ (carrierValence_PMCA .* F)) .* 1E09) * (ATP / (kATP + ATP) );
 
         %% SL Calcium leak
         g_SLLeak = 5.0 .* 2.0E-6;
@@ -362,12 +363,12 @@ end
         k_onMA = 1.5;               %(µM/s)
         k_offMA = 150;              %s^-1
 
-        if freq == 0
-            kHYD = 0;
-        else
-            kHYD =100;
-        end
-
+        % if freq == 0
+        %     kHYD = 0;
+        % else
+        %     kHYD =100;              %(µM/s)
+        % end
+        kHYD =100;
         kH = 1000;                  %µM
 
         % ATP = ATP_itot - CATP;
@@ -399,18 +400,42 @@ end
         %Crossbridge attach/detachment 
         dD0 = -k_onTrop*c_i*D_0 + k_offTrop*D_1 + k_on0*Trop - k_off0*D_0;
         dD1 = k_onTrop*c_i*D_0 - k_offTrop*D_1 + k_on0*CaTrop - k_off0*D_1 - k_onTrop*c_i*D_1 + k_offTrop*D_2;
-        dD2 = k_onTrop*c_i*D_1 - k_offTrop*D_2 + k_onCa*CaCaTrop - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + g0*Post_Pow;
+        dD2 = k_onTrop*c_i*D_1 - k_offTrop*D_2 + k_onCa*CaCaTrop - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + (g0*Post_Pow*ATP /1000);
 
         %Concentration of Pre/Post Power Stroke Filaments 
         dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow - h0*Pre_Pow;
-        dPost = -hP*Post_Pow + h0*Pre_Pow - g0*Post_Pow;
+        dPost = -hP*Post_Pow + h0*Pre_Pow - (g0*Post_Pow*ATP /1000);
         
         %ATP
-        J_SERCA_tot = LumpedJ_SERCA * KMOLE / vol_myo;
+        % J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo );
+        % 
+        % if freq == 0
+        %     J_SERCA_tot = 0;
+        % else
+        %     J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo );
+        % end
+        % 
+        % % J_PMCA_tot = J_PMCA * KFlux_SL_myo;
+        % 
+        % if freq == 0
+        %     J_PMCA_tot = 0;
+        % else
+        %     J_PMCA_tot = J_PMCA * KFlux_SL_myo;
+        % end
+        % 
+        % if freq == 0
+        %     J_NKX_tot2 = 0;
+        % else
+        %     J_NKX_tot2 = J_NKX_tot;
+        % end
+        J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo );
         J_PMCA_tot = J_PMCA * KFlux_SL_myo;
-        Jhyd = J_NKX_tot + (J_SERCA_tot/2) + J_PMCA_tot + kHYD * (ATP / (ATP + kH));
+        J_NKX_tot2 = J_NKX_tot;
+
+        Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot + ( kHYD * (ATP / (ATP + kH)) );
+        Jprod = kHYD * (700 - ATP) ;  %ATP production rate 
         dMA = k_onMA*Mg*ATP - k_offMA*MgATP; 
-        dATP = -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP);
+        dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0*Post_Pow*ATP /1000);
         
         %SR Phosphate 
         PP = 6;                     %units
@@ -530,6 +555,9 @@ end
         currents = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, I_NCX_N, I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL];
         currents(1:end-1) = SA_SL * currents(1:end-1);
 
+        % if t> 7 && freq > 0
+        %     print('pause')
+        % end
     end
 end
 
