@@ -37,7 +37,7 @@ load PSO_25-Apr-2024.mat pSol % load best fit parameters from PSO - particle swa
 pPSO = pSol.*p0';
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
 tSol = 0:.0001:16;
-freq = 100; 
+freq = 60; 
 [Time,Y] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
 % plot calcium (the 8th variable)
 
@@ -49,29 +49,25 @@ title('time vs Ca2+, freq=100 Hz Jprod=100*kHyd ; atp depend on pumps')
 % ylabel('[Ca2+] (µM)'); 
 
 figure
-plot(Time, Y(:,8))
-hold on
 plot(Time, Y(:,25))
-title('Ca2+ vs ATP, freq=100 Hz Jprod=100*kHyd; atp depend on pumps')
+title('Time vs ATP, freq=100 Hz Jprod=100*kHyd; atp depend on pumps')
 % legend('Calcium ion Conc');  
 % xlabel('Time (seconds)');
 % ylabel('[Ca2+] (µM)'); 
 % 
 figure
-plot( Time, Y(:,25))
-hold on 
 plot(Time, Y(:,16))
 title('CaATP vs ATP, freq=100 Hz Jprod=100*kHyd; atp depend on pumps')
 % % legend('Calcium ion Conc');  
 % xlabel('Time (seconds)');
 % ylabel('[Ca2+] (µM)'); 
 
-% figure
-% plot(Time, Y(:,17))
-% title('time vs CaTrop, freq=100 Hz')
-% legend('CaTrop Conc');  
-% xlabel('Time (seconds)');
-% ylabel('[CaTrop] (µM)'); 
+figure
+plot(Time, Y(:,17))
+title('time vs CaTrop, freq=100 Hz')
+legend('CaTrop Conc');  
+xlabel('Time (seconds)');
+ylabel('[CaTrop] (µM)'); 
 
 % figure
 % subplot(3,1,1)
@@ -130,25 +126,25 @@ title('CaATP vs ATP, freq=100 Hz Jprod=100*kHyd; atp depend on pumps')
 % ylabel('[CaTrop] (µM)'); 
 
 % 
-% figure
-% subplot(2,3,1)
-% plot(Time, Y(:,17))
-% title('time vs dCT')
-% subplot(2,3,2)
-% plot(Time, Y(:,18))
-% title('time vs dCCT')
-% subplot(2,3,3)
-% plot(Time, Y(:,19))
-% title('time vs dD0')
-% subplot(2,3,4)
-% plot(Time, Y(:,19))
-% title('time vs dD1')
-% subplot(2,3,5)
-% plot(Time, Y(:,22))
-% title('time vs dPrePower')
-% subplot(2,3,6)
-% plot(Time, Y(:,23))
-% title('time vs dPostPower')
+figure
+subplot(2,3,1)
+plot(Time, Y(:,17))
+title('time vs dCT')
+subplot(2,3,2)
+plot(Time, Y(:,18))
+title('time vs dCCT')
+subplot(2,3,3)
+plot(Time, Y(:,19))
+title('time vs dD0')
+subplot(2,3,4)
+plot(Time, Y(:,19))
+title('time vs dD1')
+subplot(2,3,5)
+plot(Time, Y(:,22))
+title('time vs dPrePower')
+subplot(2,3,6)
+plot(Time, Y(:,23))
+title('time vs dPostPower')
 
 %% 
  

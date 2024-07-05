@@ -351,7 +351,7 @@ end
         device_SL.Capacitance = (C_SL .* SA_SL) .* (Q10C_SL .^ QCorr);
 
         %% Calcium buffering in the myoplasm and SR
-        k_onATP = 0.15*1000;     %(µM s)^-1  % rate of Ca bound to ATP 
+        k_onATP = 0.15*1000;        %(µM s)^-1  rate of Ca bound to ATP 
         k_offATP = 30*1000;         %s^-1
         k_onParvCa = 41.7;          %(µM s)^-1
         k_offParvCa = 0.5;          %s^-1
@@ -359,23 +359,23 @@ end
         k_offParvMg = 3;            %s^-1
         Parv_itot = 1500;           %(µM)
         % ATP_itot = 8000;            %(µM)
+    
         %ATP Addition 
         k_onMA = 1.5;               %(µM/s)
         k_offMA = 150;              %s^-1
-
         % if freq == 0
         %     kHYD = 0;
         % else
         %     kHYD =100;              %(µM/s)
         % end
-        kHYD =100;
+        kHYD =100;                  %(µM/s)
         kH = 1000;                  %µM
 
         % ATP = ATP_itot - CATP;
         Parv = Parv_itot - CaParv - MgParv;
         Mg = 1000;                  %(µM) constant concentration
         
-        %Crossbrdige Cycling (Calcium and Troponin Binding Process) 
+        %Crossbridge Cycling (Calcium and Troponin Binding Process) 
         k_onTrop = 0.0885*1000;     %(µM/s)
         k_offTrop = 0.115*1000;     %s^-1
         k_on0 = 0;                  %s^-1 RU activation rate w/ no c_i bound
@@ -438,18 +438,18 @@ end
         dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0*Post_Pow*ATP /1000);
         
         %SR Phosphate 
-        PP = 6;                     %units
-        p_i = 0.5;                  %units
-        PC_tot = p_i_SR * c_i;      %units
+        PP = 6;                     %mM^2
+        p_i = 0.05;                 %mM
+        PC_tot = p_i_SR * c_i;      
         kP = 3.62*10^-3;            %(µM^3/s)
         V_SR = 0.99 * vol_SR;       %(µM^3)    Bulk SR Volume 
         Ap = 1*1000;                %(mM^2/s)
         Bp = 0.0001*1000;           %(mM/s)
 
         if PC_tot*0.001 >= PP
-            dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
+            dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*1000 - PP)* (0.001*PC_tot);
         else
-            dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);     %%%%
+            dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
         end 
        
         %Calcium-Phophate Precipitate (SR) 
@@ -498,8 +498,6 @@ end
             end
         end
 
-
-   
         %% Rates
         if freq == 0 && currtime > 60
             dydt = zeros(17,1);

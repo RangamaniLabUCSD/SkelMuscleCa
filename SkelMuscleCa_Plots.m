@@ -14,10 +14,11 @@ V = [0.49,0.18,0.56] ; %-Dark Purple for Voltage
 % 7,8 - HIIT (Control & noSOCE)
 
 % Load data for plotting 
+load Exptdata.mat
 
 % Define variables below
 %Current = ;
-%Y = ;
+ 
 %Flux = ;
 
 
@@ -248,7 +249,7 @@ set(axes15,'FontSize',18,'Box','off','FontSmoothing','on')
 set(plot15,"Renderer","painters");
 
 %% HIIT Plots 
-
+load HIIT.mat DeltaForce_HIIT 
 % DeltaAvg ----------------------------------------------------------------
 plot16 = figure;
 axes16 = axes('Parent', plot16);

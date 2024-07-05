@@ -17,6 +17,7 @@ yinit = [
     1020;       % yinit(15) is the initial condition for 'MgParv'
     0.3632;     % yinit(16) is the inital consition for 'CATP'
     10.004;     % yinit(17) is the initial condition for 'CaTrop'
+    
     ];
 
 % Parameter values
