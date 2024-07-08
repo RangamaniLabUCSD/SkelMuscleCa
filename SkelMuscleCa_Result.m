@@ -100,7 +100,8 @@ yinf = ySS(end,:);
 yinf_noSOCE = ySS_noSOCE(end,:);
 
 % %% HIIT -------------------------------------------------------------------
-% parpool(13)
+delete(gcp('nocreate'))
+parpool(8)
 parfor i = 1:l_HIIT
     freq = f_HIIT(i);
 
@@ -122,6 +123,7 @@ parfor i = 1:l_HIIT
 
 end
 
+%%
 % Max and Avg
 
 for i = 1:l_HIIT
@@ -130,7 +132,7 @@ for i = 1:l_HIIT
     MaxCa7(i) = max(Ca7{i}(start_index7:end));
     AUC7(i) = trapz(Time7{i},Ca7{i})/ max(Time7{i}); 
     Max_F7(i) = max(Force7{i}(start_index7:end));
-    AUC_F7(i) = trapz(Time7{i},Force7{i} / max(Time7{i}));
+    AUC_F7(i) = trapz(Time7{i},Force7{i}) /max(Time7{i});
 
     time_start8 = find(Time_noSOCE8{i} < 1);
     start_index8 = length(time_start8);
@@ -182,6 +184,7 @@ parfor i = 1:l_Resistance
 end
 
 %% Max and Avg
+%NOT NORMALIZED YET???
 
 for i = 1:l_Resistance
 
@@ -190,34 +193,129 @@ for i = 1:l_Resistance
     MaxCa5(i) = max(Ca5{i}(indices5));
     MaxCa_noSOCE6(i) = max(Ca_noSOCE6{i}(indices6));
     Max_F5(i) = max(Force5{i}(indices5));
-    MaxF_noSOCE6(i) = max(Force_noSOCE6{i}(indices6));
+    MaxF_noSOCE6(i) = max(Force_noSOCE6{i}(indices6)) ;
 
+    AUC_indices5_i = (Time5{i} >=0 & Time5{i} <= 60);
+    AUC_indices5_ii = (Time5{i} >=180 & Time5{i} <= 240);
+    AUC_indices5_iii = (Time5{i} >=360 & Time5{i} <= 420);
+    length_AUC = 60 ; 
 
-    AUC_indices5 = (Time5{i} >=0 & Time5{i} <= 60)| (Time5{i} >= 180 & Time5{i} <= 240) | (Time5{i} >= 360 & Time5{i} <= 420);
-    AUC_indices6 = (Time_noSOCE6{i} >= 0 & Time_noSOCE6{i} <= 60)| (Time_noSOCE6{i}  >= 180 & Time_noSOCE6{i}  <= 240) | (Time_noSOCE6{i}  >= 360 & Time_noSOCE6{i}  <= 420);
-    StimTime = 180; % Only considering the period of stimulation 
-    AUC5(i) = trapz(Time5{i}(AUC_indices5),Ca5{i}(AUC_indices5)) / StimTime; 
-    AUC_noSOCE6(i) = trapz(Time_noSOCE6{i}(AUC_indices6),Ca_noSOCE6{i}(AUC_indices6)) / StimTime; 
-    AUC_F5(i) = trapz(Time5{i}(AUC_indices5),Force5{i}(AUC_indices5)) / StimTime; 
-    AUC_F_noSOCE6(i) = trapz(Time_noSOCE6{i}(AUC_indices6),Force_noSOCE6{i}(AUC_indices6)) / StimTime; 
+    AUC_indices6_i = (Time_noSOCE6{i} >= 0 & Time_noSOCE6{i} <= 60);
+    AUC_indices6_ii = (Time_noSOCE6{i}  >= 180 & Time_noSOCE6{i}  <= 240);
+    AUC_indices6_iii = (Time_noSOCE6{i}  >= 360 & Time_noSOCE6{i}  <= 420);
 
+    % AUC_indices5 = (Time5{i} >=0 & Time5{i} <= 60)| (Time5{i} >= 180 & Time5{i} <= 240) | (Time5{i} >= 360 & Time5{i} <= 420);
+    % AUC_indices6 = (Time_noSOCE6{i} >= 0 & Time_noSOCE6{i} <= 60)| (Time_noSOCE6{i}  >= 180 & Time_noSOCE6{i}  <= 240) | (Time_noSOCE6{i}  >= 360 & Time_noSOCE6{i}  <= 420);
+    % StimTime = 180; % Only considering the period of stimulation 
+    % AUC5(i) = trapz(Time5{i}(AUC_indices5),Ca5{i}(AUC_indices5)) / StimTime; 
+    % AUC_noSOCE6(i) = trapz(Time_noSOCE6{i}(AUC_indices6),Ca_noSOCE6{i}(AUC_indices6)) / StimTime; 
+    % AUC_F5(i) = (trapz(Time5{i}(AUC_indices5),Force5{i}(AUC_indices5)) / StimTime ); 
+    % AUC_F_noSOCE6(i) = (trapz(Time_noSOCE6{i}(AUC_indices6),Force_noSOCE6{i}(AUC_indices6)) / StimTime ); 
 
+    AUC_1 = (trapz(Time5{i}(AUC_indices5_i),Ca5{i}(AUC_indices5_i)) / length_AUC );
+    AUC_2 = (trapz(Time5{i}(AUC_indices5_ii),Ca5{i}(AUC_indices5_ii)) / length_AUC );
+    AUC_3 = (trapz(Time5{i}(AUC_indices5_iii),Ca5{i}(AUC_indices5_iii)) / length_AUC ); 
+
+    AUC5(i) = ( AUC_1 + AUC_2 + AUC_3 ) /3; 
+
+    AUC_noSOCE6_1 = (trapz(Time_noSOCE6{i}(AUC_indices6_i),Ca_noSOCE6{i}(AUC_indices6_i)) / length_AUC );
+    AUC_noSOCE6_2 = (trapz(Time_noSOCE6{i}(AUC_indices6_ii),Ca_noSOCE6{i}(AUC_indices6_ii)) / length_AUC );
+    AUC_noSOCE6_3 = (trapz(Time_noSOCE6{i}(AUC_indices6_iii),Ca_noSOCE6{i}(AUC_indices6_iii)) / length_AUC ); 
+
+    AUC_noSOCE6(i) = ( AUC_noSOCE6_1 + AUC_noSOCE6_2 + AUC_noSOCE6_3 ) /3; 
+
+    AUC_F5_1 = (trapz(Time5{i}(AUC_indices5_i),Force5{i}(AUC_indices5_i)) / length_AUC ); 
+    AUC_F5_2 = (trapz(Time5{i}(AUC_indices5_ii),Force5{i}(AUC_indices5_ii)) / length_AUC );
+    AUC_F5_3 = (trapz(Time5{i}(AUC_indices5_iii),Force5{i}(AUC_indices5_iii)) / length_AUC );
+    
+    AUC_F5(i) = (AUC_F5_1 + AUC_F5_2 + AUC_F5_3 )/3; 
+    
+    AUC_F_noSOCE6_1 = (trapz(Time_noSOCE6{i}(AUC_indices6_i),Force_noSOCE6{i}(AUC_indices6_i)) / length_AUC ); 
+    AUC_F_noSOCE6_2 = (trapz(Time_noSOCE6{i}(AUC_indices6_ii),Force_noSOCE6{i}(AUC_indices6_ii)) / length_AUC );
+    AUC_F_noSOCE6_3 = (trapz(Time_noSOCE6{i}(AUC_indices6_iii),Force_noSOCE6{i}(AUC_indices6_iii)) / length_AUC );
+    
+    AUC_F_noSOCE6(i) = (AUC_F_noSOCE6_1 + AUC_F_noSOCE6_2 + AUC_F_noSOCE6_3) /3 ;
+     
+    % figure
+    % plot(Time5{i}, Force5{i})
 end
 deltaMax_Resistance = MaxCa5 - MaxCa_noSOCE6;
 deltaAUC_Resistance = AUC5 - AUC_noSOCE6; 
 
 deltaMax_F_Resistance = Max_F5 - MaxF_noSOCE6;
 deltaAUC_F_Resistance = AUC_F5 - AUC_F_noSOCE6; 
- 
+ % Avg Force vs freq -----------------------------------------------------------
+plot14 = figure;
+axes14 = axes('Parent', plot14);
+scatter(f_Resistance,AUC_F5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+hold on
+scatter(f_Resistance,AUC_F_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+hold off
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('Average Force','Fontsize',18)
+title('Average force during Resistance exercise')
+set(axes14,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot14,"Renderer","painters");
 
+% Max Force vs freq -----------------------------------------------------------
+plot14 = figure;
+axes14 = axes('Parent', plot14);
+scatter(f_Resistance,Max_F5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+hold on
+scatter(f_Resistance,MaxF_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+hold off
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('Max Force','Fontsize',18)
+title('Max force during Resistance exercise')
+set(axes14,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot14,"Renderer","painters");
+
+
+%  Avg Ca vs freq ----------------------------------------------------------------
+plot12 = figure;
+axes12 = axes('Parent', plot12);
+scatter(f_Resistance,AUC5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+hold on
+scatter(f_Resistance,AUC_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('Average [Ca^{2+}]_{myo} (μM)','Fontsize',18)
+set(axes12,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot12,"Renderer","painters");
+
+% Max Ca vs freq -----------------------------------------------------------------
+plot13 = figure;
+axes13 = axes('Parent', plot13);
+scatter(f_Resistance,MaxCa5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+hold on
+scatter(f_Resistance,MaxCa_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
+set(axes13,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot13,"Renderer","painters");
 % % Force  
 % for i = 1 : length(f_Resistance)
 %     Force5(i) = c0 + (100 * ( AUC5(i)^n )/ ( (Ca50 ^ n)  + (AUC5(i) ^ n)) );
 %     Force_noSOCE6(i) = c0 + (100 * (AUC_noSOCE6(i)^n )/ ( (Ca50 ^ n)  + (AUC_noSOCE6(i) ^ n)) );
 % end
 % DeltaForce_Resistance =  (Force5 - Force_noSOCE6);
+ % DeltaMax Resistance ----------------------------------------------------
+plot10 = figure;
+axes10 = axes('Parent', plot10);
+scatter(f_Resistance,deltaMax_Resistance,'filled','MarkerFaceColor',[0.89,0.47,0.97]); 
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('\Delta Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
+set(axes10,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot10,"Renderer","painters");
 
-
+% DeltaAuc Resistance ---------------------------------------------------
+plot11 = figure;
+axes11 = axes('Parent', plot11);
+scatter(f_Resistance,deltaAUC_Resistance,'filled','MarkerFaceColor',[0.89,0.47,0.97]); 
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('\Delta Average [Ca^{2+}]_{myo} (μM)','Fontsize',18)
+set(axes11,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot11,"Renderer","painters");
+ 
 %% Resistance Plots
 
 % DeltaMax Resistance ----------------------------------------------------
@@ -259,7 +357,7 @@ xlabel('Frequency (Hz)', 'Fontsize',18)
 ylabel('Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
 set(axes13,'FontSize',18,'Box','off','FontSmoothing','on')
 set(plot13,"Renderer","painters");
-
+%%
 % Avg Force vs freq -----------------------------------------------------------
 plot14 = figure;
 axes14 = axes('Parent', plot14);
@@ -285,7 +383,7 @@ ylabel('Max Force','Fontsize',18)
 title('Max force during Resistance exercise')
 set(axes14,'FontSize',18,'Box','off','FontSmoothing','on')
 set(plot14,"Renderer","painters");
-
+%%
 % DeltaAUC F vs freq ---------------------------------------------------------
 plot15 = figure;
 axes15 = axes('Parent', plot15);
