@@ -17,7 +17,7 @@
 
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(~,lb,ub,yinit,p,Createplot)
 
-psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 20, 'SwarmSize', 32);
+psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 20, 'SwarmSize', 5);
 
 % pSol Results
 % load PSO_25-Apr-2024.mat pSol
@@ -126,17 +126,17 @@ save(filename);
 
             % Baseline model prediction
             % SS computation
-            [TimeSS_base,ySS_base] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, p(:),StartTimer,n);
-            [~,Y_base] = SkelMuscleCa_dydtEst(t,freq(n), 0, ySS_base(end,:), p(:), StartTimer,n);
+            % [TimeSS_base,ySS_base] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, p(:),StartTimer,n);
+            % [~,Y_base] = SkelMuscleCa_dydtEst(t,freq(n), 0, ySS_base(end,:), p(:), StartTimer,n);
 
             if n <= 5
                 InterpComp{n} = y(:,8) ; % Calcium Calculations
                 CompV{n} = y(:,5) ;
-                InterpComp_base{n} = Y_base(:,8);
+                % InterpComp_base{n} = Y_base(:,8);
             elseif n > 5
                 InterpComp{n} = y(:,5); % Voltage Calculations
                 CompC{n} = y(:,8);
-                InterpComp_base{n} = Y_base(:,5);
+                % InterpComp_base{n} = Y_base(:,5);
             end
 
 

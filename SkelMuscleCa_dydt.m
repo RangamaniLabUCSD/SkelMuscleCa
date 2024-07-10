@@ -432,14 +432,14 @@ end
         J_PMCA_tot = J_PMCA * KFlux_SL_myo;
         J_NKX_tot2 = J_NKX_tot;
 
-        Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot + ( kHYD * (ATP / (ATP + kH)) );
-        Jprod = kHYD * (700 - ATP) ;  %ATP production rate 
+        Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot +  kHYD*(ATP / (kH + ATP) ); %(D_2*f0)/kHYD  (D_2*f0*p_i_SR)/1000
+        Jprod =  kHYD * (700 - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 + 
         dMA = k_onMA*Mg*ATP - k_offMA*MgATP; 
         dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0*Post_Pow*ATP /1000);
         
         %SR Phosphate 
         PP = 6;                     %mM^2
-        p_i = 0.05;                 %mM
+        % p_i = 0.05;                 %mM
         PC_tot = p_i_SR * c_i;      
         kP = 3.62*10^-3;            %(µM^3/s)
         V_SR = 0.99 * vol_SR;       %(µM^3)    Bulk SR Volume 
@@ -447,9 +447,11 @@ end
         Bp = 0.0001*1000;           %(mM/s)
 
         if PC_tot*0.001 >= PP
-            dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*1000 - PP)* (0.001*PC_tot);
+            % dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
+            dPi_SR = kP*(p_i_Myo - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
         else
-            dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
+            % dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
+            dPi_SR = kP*(p_i_Myo - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001); 
         end 
        
         %Calcium-Phophate Precipitate (SR) 
@@ -500,7 +502,7 @@ end
 
         %% Rates
         if freq == 0 && currtime > 60
-            dydt = zeros(17,1);
+            dydt = zeros(length(y),1);
             fluxes = zeros(1,8);
             currents = zeros(1,13);
             return;
