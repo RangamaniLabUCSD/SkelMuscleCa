@@ -17,7 +17,7 @@
 
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(~,lb,ub,yinit,p,Createplot)
 
-psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 20, 'SwarmSize', 5);
+psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 20, 'SwarmSize', 2);
 
 % pSol Results
 % load PSO_25-Apr-2024.mat pSol

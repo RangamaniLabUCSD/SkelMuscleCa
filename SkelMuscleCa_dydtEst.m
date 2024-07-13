@@ -189,15 +189,37 @@ end
         g_PMCA = p(43);
         nu_leakSR = p(44);
         g_leakNa = p(45);
-
-
-        %% Global constants
-        F = 96485.3321;
-        PI = 3.141592653589793;
-        R = 8314.46261815;
-        T = 293;        %K
-        KMOLE = 0.001660538783162726;
-
+         k_onATP = p(46);       
+        k_offATP = p(47);        
+        k_onParvCa = p(48);          
+        k_offParvCa = p(49);        
+        k_onParvMg = p(50);         
+        k_offParvMg = p(51);          
+        Parv_itot = p(52);
+        k_onMA = p(53);               %(µM/s) Mg2+ binding to ATP
+        k_offMA =p(54);
+        kHYD =p(55);               
+        kH = p(56);
+        kPROD = p(57);
+        Mg = p(58);                   
+        k_onTrop = p(59);      
+        k_offTrop = p(60);      
+        k_on0 = p(61);                  
+        k_off0 = p(62);        
+        k_onCa = p(63);          
+        k_offCa = p(64);        
+        f0 = p(65);              
+        fP = p(66);               
+        h0 = p(67);             
+        hP = p(68);              
+        g0 = p(69);            
+        PP = p(70);                     
+        kP = p(71);            
+        Ap = p(72);                
+        Bp = p(73);         
+        bP = p(74);
+        Trop_tot =p(75);
+       
         %% Model Geometry
         vol_SA_ratio = 0.01 ;       %µm
         volFraction_myo = 0.95 ;
@@ -232,11 +254,18 @@ end
         else
             expt_n = expt;
         end
+         %% Global constants
+        F = 96485.3321;
+        PI = 3.141592653589793;
+        R = 8314.46261815;
+        T = Temp(expt);        %K
+        KMOLE = 0.001660538783162726;
+
  %% Extracellular ion concentraions
-        c_EC_init_uM = 1300;        %µM call to expt number 
-        Cl_EC_init_uM = 128000.0;   %µM
-        K_EC_init_uM = 4000.0;      %µM
-        Na_EC_init_uM = 147000.0;   %µM
+        c_EC_init_uM = Ca_o_exp(expt_n);        %µM call to expt number 
+        Cl_EC_init_uM = Cl_o_exp(expt_n);   %µM
+        K_EC_init_uM = K_o_exp(expt_n);      %µM
+        Na_EC_init_uM = Na_o_exp(expt_n);   %µM
 
         %% Carrier Valence
         carrierValence_CaLeak_SL = 2.0;
@@ -442,45 +471,45 @@ end
         device_SL.Capacitance = (C_SL .* SA_SL) .* (Q10C_SL .^ QCorr);
 
         %% Calcium buffering in the myoplasm and SR
-        k_onATP = 0.15*1000;        %(µM s)^-1  rate of Ca bound to ATP 
-        k_offATP = 30*1000;         %s^-1
-        k_onParvCa = 41.7;          %(µM s)^-1
-        k_offParvCa = 0.5;          %s^-1
-        k_onParvMg = 0.033;         %(µM s)^-1
-        k_offParvMg = 3;            %s^-1
-        Parv_itot = 1500;           %(µM)
-        % ATP_itot = 8000;            %(µM)
-    
-        %ATP Addition 
-        k_onMA = 1.5;               %(µM/s)
-        k_offMA = 150;              %s^-1
-        % if freq == 0
-        %     kHYD = 0;
-        % else
-        %     kHYD =100;              %(µM/s)
-        % end
-        kHYD =100;                  %(µM/s)
-        kH = 1000;                  %µM
+        % k_onATP = 0.15*1000;        %(µM s)^-1  rate of Ca bound to ATP 
+        % k_offATP = 30*1000;         %s^-1
+        % k_onParvCa = 41.7;          %(µM s)^-1
+        % k_offParvCa = 0.5;          %s^-1
+        % k_onParvMg = 0.033;         %(µM s)^-1
+        % k_offParvMg = 3;            %s^-1
+        % Parv_itot = 1500;           %(µM)
+        % % ATP_itot = 8000;            %(µM)
+        % 
+        % %ATP Addition 
+        % k_onMA = 1.5;               %(µM/s)
+        % k_offMA = 150;              %s^-1
+        % % if freq == 0
+        % %     kHYD = 0;
+        % % else
+        % %     kHYD =100;              %(µM/s)
+        % % end
+        % kHYD =100;                  %(µM/s)
+        % kH = 1000;                  %µM
 
         % ATP = ATP_itot - CATP;
         Parv = Parv_itot - CaParv - MgParv;
-        Mg = 1000;                  %(µM) constant concentration
-        
+        % Mg = 1000;                  %(µM) constant concentration
+        % 
         %Crossbridge Cycling (Calcium and Troponin Binding Process) 
-        k_onTrop = 0.0885*1000;     %(µM/s)
-        k_offTrop = 0.115*1000;     %s^-1
-        k_on0 = 0;                  %s^-1 RU activation rate w/ no c_i bound
-        k_off0 = 0.15*1000;         %s^-1 RU deactivation rate w/ no c_i bound
-        k_onCa = 0.15*1000;         %s^-1 RU activation rate w/ 2 c_i bound
-        k_offCa = 0.05*1000;        %s^-1 RU deactivation rate w/ 2 c_i bound
-        f0 = 1.5*1000;              %s^-1 rate of crossbridge attachment 
-        fP = 15*1000;               %s^-1 rate of Pre_Pow stroke crossbridge detachment 
-        h0 = 0.24*1000;             %s^-1 forward rate of power stroke 
-        hP = 0.18*1000;             %s^-1 backward rate of power stroke 
-        g0 = 0.12*1000;             %s^-1 rate of Post_pow crossbridge detachment 
+        % k_onTrop = 0.0885*1000;     %(µM/s)
+        % k_offTrop = 0.115*1000;     %s^-1
+        % k_on0 = 0;                  %s^-1 RU activation rate w/ no c_i bound
+        % k_off0 = 0.15*1000;         %s^-1 RU deactivation rate w/ no c_i bound
+        % k_onCa = 0.15*1000;         %s^-1 RU activation rate w/ 2 c_i bound
+        % k_offCa = 0.05*1000;        %s^-1 RU deactivation rate w/ 2 c_i bound
+        % f0 = 1.5*1000;              %s^-1 rate of crossbridge attachment 
+        % fP = 15*1000;               %s^-1 rate of Pre_Pow stroke crossbridge detachment 
+        % h0 = 0.24*1000;             %s^-1 forward rate of power stroke 
+        % hP = 0.18*1000;             %s^-1 backward rate of power stroke 
+        % g0 = 0.12*1000;             %s^-1 rate of Post_pow crossbridge detachment 
         
-        %Calcium system 
-        Trop_tot = 140;
+        % %Calcium system 
+        % Trop_tot = 140;
         Trop = Trop_tot - CaTrop - CaCaTrop - D_0 - D_1 - D_2 - Pre_Pow - Post_Pow;
         dCT = k_onTrop*c_i*Trop - k_offTrop*CaTrop - k_onTrop*c_i*CaTrop + k_offTrop*CaCaTrop - k_on0*CaTrop + k_off0*D_1; % Calcium buffering with Troponin
         dCA = k_onATP*c_i*ATP - k_offATP*CATP; % Calcium buffering with ATP
@@ -524,38 +553,40 @@ end
         J_NKX_tot2 = J_NKX_tot;
 
         Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot +  kHYD*(ATP / (kH + ATP) ); %(D_2*f0)/kHYD  (D_2*f0*p_i_SR)/1000
-        Jprod =  kHYD * (700 - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 + 
+        Jprod =  kPROD * (700 - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 + 
         dMA = k_onMA*Mg*ATP - k_offMA*MgATP; 
         dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0*Post_Pow*ATP /1000);
         
         %SR Phosphate 
-        PP = 6;                     %mM^2
-        % p_i = 0.05;                 %mM
-        PC_tot = p_i_SR * c_i;      
-        kP = 3.62*10^-3;            %(µM^3/s)
-        V_SR = 0.99 * vol_SR;       %(µM^3)    Bulk SR Volume 
-        Ap = 1*1000;                %(mM^2/s)
-        Bp = 0.0001*1000;           %(mM/s)
-
-        if PC_tot*0.001 >= PP
-            % dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
-            dPi_SR = kP*(p_i_Myo - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
-        else
-            % dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
-            dPi_SR = kP*(p_i_Myo - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001); 
-        end 
+        % PP = 6;                     %mM^2
+        % % p_i = 0.05;                 %mM
+        PC_tot = p_i_SR * c_SR;      
+        % kP = 3.62*10^-3;            %(µM^3/s)
+        % V_SR = 0.99 * vol_SR;       %(µM^3)    Bulk SR Volume 
+        % Ap = 1*1000;                %(mM^2/s)
+        % Bp = 0.0001*1000;           %(mM/s)
+        
+        
+        dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot) + Bp * (PiCa_SR);
+        % if PC_tot*0.001 >= PP
+        %     % dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
+        %     dPi_SR = kP*(p_i_Myo - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
+        % else
+        %     % dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
+        %     dPi_SR = kP*(p_i_Myo - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001); 
+        % end 
        
         %Calcium-Phophate Precipitate (SR) 
-        if PC_tot*0.001 >= PP
-            dPiCa = Ap * (PC_tot*0.001 - PP)* (0.001*PC_tot);
+        if PC_tot >= PP
+            dPiCa = Ap * (0.001*PC_tot) -Bp * PiCa_SR;
         else
-            dPiCa = -Bp * PiCa_SR * (PP - 0.001*PC_tot);
+            dPiCa = -Bp * PiCa_SR;
         end
         
         %Myoplasmic Phosphate
-        Vmyo = 0.99*vol_myo;        %(µM^3)    Bulk Myoplasm Volume
-        bP = 2.867*10^-2;           %s^-1  
-        dPi_Myo = 0.001*Jhyd + 0.001* (h0*Pre_Pow - hP*Post_Pow) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR)/Vmyo; 
+        % Vmyo = 0.99*vol_myo;        %(µM^3)    Bulk Myoplasm Volume
+        % bP = 2.867*10^-2;           %s^-1  
+        dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR); 
 
 
         % Rapid buffering with CaSQ
