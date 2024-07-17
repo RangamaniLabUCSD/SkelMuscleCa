@@ -5,7 +5,7 @@ uqlab
 delete(gcp('nocreate'))
 ModelOpts.mFile = 'SkelMuscleCa_SAOutput';
 myModel = uq_createModel(ModelOpts);
-input = importdata('InputParam.xlsx');
+input = importdata('InputParam1.xlsx');
 paramNames = input.textdata;
 numParam = length(paramNames);
 starttimer = tic;
@@ -23,7 +23,7 @@ MorrisSensOpts.Type = 'Sensitivity';
 MorrisSensOpts.Method = 'Morris';
 MorrisSensOpts.Morris.Cost = 1e4;
 MorrisAnalysis = uq_createAnalysis(MorrisSensOpts);
-save('MorrisResults5-9.mat','MorrisAnalysis');
+save('/tscc/lustre/ddn/scratch/jhamid/MorrisResults5-9.mat','MorrisAnalysis');
 endtimer = toc(starttimer);
 %uq_display(MorrisAnalysis)
 

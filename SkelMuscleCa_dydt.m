@@ -25,6 +25,8 @@ if freq == 0 % Steady state condition
 else
     options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:17]);
 end
+yinit(26)= p(76);
+yinit(28) = p(77);
 [Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP); %pass extra arguments at the end
 
 fluxes = zeros(length(Time), 8);
@@ -147,7 +149,7 @@ end
         Bp = p(73);         
         bP = p(74);
         Trop_tot = p(75);
-
+        p_i_Myo_init =p(77); 
         %% Global constants
         F = 96485.3321;
         PI = 3.141592653589793;
@@ -415,7 +417,7 @@ end
         % h0 = 0.24*1000;             %s^-1 forward rate of power stroke 
         % hP = 0.18*1000;             %s^-1 backward rate of power stroke 
         % g0 = 0.12*1000;             %s^-1 rate of Post_pow crossbridge detachment 
- 
+         
         %Calcium system 
         % Trop_tot = 140;
         Trop = Trop_tot - CaTrop - CaCaTrop - D_0 - D_1 - D_2 - Pre_Pow - Post_Pow;
@@ -428,11 +430,11 @@ end
         %Crossbridge attach/detachment 
         dD0 = -k_onTrop*c_i*D_0 + k_offTrop*D_1 + k_on0*Trop - k_off0*D_0;
         dD1 = k_onTrop*c_i*D_0 - k_offTrop*D_1 + k_on0*CaTrop - k_off0*D_1 - k_onTrop*c_i*D_1 + k_offTrop*D_2;
-        dD2 = k_onTrop*c_i*D_1 - k_offTrop*D_2 + k_onCa*CaCaTrop - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + (g0*Post_Pow*ATP /1000);
+        dD2 = k_onTrop*c_i*D_1 - k_offTrop*D_2 + k_onCa*CaCaTrop - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + (g0*Post_Pow*ATP);
 
         %Concentration of Pre/Post Power Stroke Filaments 
-        dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow - h0*Pre_Pow;
-        dPost = -hP*Post_Pow + h0*Pre_Pow - (g0*Post_Pow*ATP /1000);
+        dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow*(p_i_Myo /p_i_Myo_init) - h0*Pre_Pow;
+        dPost = -hP*Post_Pow*(p_i_Myo / p_i_Myo_init) + h0*Pre_Pow - (g0*Post_Pow*ATP);
         
         %ATP
         % J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo );
@@ -463,7 +465,7 @@ end
         Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot +  kHYD*(ATP / (kH + ATP) ); %(D_2*f0)/kHYD  (D_2*f0*p_i_SR)/1000
         Jprod =  kPROD * (700 - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 + 
         dMA = k_onMA*Mg*ATP - k_offMA*MgATP; 
-        dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0*Post_Pow*ATP /1000);
+        dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0*Post_Pow*ATP);
         
         %SR Phosphate 
         PP = 6e6;                     %mM^2
@@ -471,32 +473,32 @@ end
         PC_tot = p_i_SR * c_SR;      
         % V_SR = 0.05*1.1*pi*(0.5^2);       %(µm^3)    Bulk SR Volume
         % kP = 3.62e-3 /V_SR;            %(µm^3/s) 
-        % Ap = 100;                %(mM^2/s)
-        % Bp = 1;           %(mM/s)
+        Ap = 1000 ;                %(mM^2/s)
+        Bp = 1;           %(mM/s)
 
-        dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot) + Bp * (PiCa_SR);
+        % dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot) + Bp * (PiCa_SR);
         
         % dPiCa = Ap * (PC_tot) - Bp*(PiCa_SR);
         % 
-        % if PC_tot >= PP
-        %     % dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
-        %     dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot);
-        % else
-        %     % dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
-        %     dPi_SR = kP*(p_i_Myo - p_i_SR)  + Bp* PiCa_SR ; 
-        % end 
+        if PC_tot >= PP
+            % dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
+            dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot)*(PC_tot -PP);
+        else
+            % dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
+            dPi_SR = kP*(p_i_Myo - p_i_SR)  + Bp* PiCa_SR* (PP - PC_tot) ; 
+        end 
         % 
         %Calcium-Phophate Precipitate (SR) 
         if PC_tot >= PP
-            dPiCa = Ap * (PC_tot) -Bp * PiCa_SR;
+            dPiCa = Ap * (PC_tot)*(PC_tot -PP) ;%-Bp * PiCa_SR;
         else
-            dPiCa = -Bp * PiCa_SR ;
+            dPiCa = -Bp * PiCa_SR* (PP - PC_tot) ;
         end
 
         %Myoplasmic Phosphate
         Vmyo = 0.99*vol_myo;        %(µM^3)    Bulk Myoplasm Volume
         % bP = 2.867*10^-2;           %s^-1  
-        dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR); 
+        dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow*(p_i_Myo / p_i_Myo_init)) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR); 
 
 
         % Rapid buffering with CaSQ

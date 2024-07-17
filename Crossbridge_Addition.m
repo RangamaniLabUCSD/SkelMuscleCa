@@ -25,43 +25,57 @@ yinit = [
     0;	    	% yinit(23) is the initial condition for 'Post_Pow'
     0;	    	% yinit(24) is the initial condition for 'MgATP'
     8000;       % yinit(25) is the initial condition for 'ATP'
-    3000          % yinit(26) is the initial condition for 'p_i_SR' 
+    0          % yinit(26) is the initial condition for 'p_i_SR' 
     0       % yinit(27) is the initial condition for 'PiCa'
-    3000       % yinit(28) is the initial condition for 'Pi_Myo'
+    0       % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
 param = importdata('InputParam1.xlsx'); % load default parameters
 p0 =  param.data;
 load PSO_25-Apr-2024.mat pSol % load best fit parameters from PSO - particle swarm optimization
 % pSol(12) = pSol(12)*0.2;
-pSol(46:75) = 1;
-pPSO = pSol.*p0';
+pSol(46:77) = 1;
+pPSO = pSol .* p0';
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
-tSol = 0:.0001:10;
+tSol = 0:.0001:5;
 freq = 60; 
+ySS(end,26) = 0;
+ySS(end,28) = 2500;
 [Time,Y] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
 % plot calcium (the 8th variable)
 
 figure
 plot(Time, Y(:,8))
-title('time vs Ca2+, freq=100 Hz Jprod=100*kHyd ; atp depend on pumps')
-% legend('Calcium ion Conc');  
-% xlabel('Time (seconds)');
-% ylabel('[Ca2+] (µM)'); 
-
+title('Time vs Ca2+, freq=60 Hz')
+xlabel('Time (seconds)');
+ylabel('[Ca2+] (µM)'); 
+  
+figure
+plot(Time, Y(:,2))
+title('Time vs Ca2+ SR, freq=60 Hz')
+xlabel('Time (seconds)');
+ylabel('[Ca2+]_{SR} (µM)'); 
+% 
 figure
 plot(Time, Y(:,25))
-title('Time vs ATP, freq=100 Hz Jprod=100*kHyd; atp depend on pumps')
-% legend('Calcium ion Conc');  
-% xlabel('Time (seconds)');
-% ylabel('[Ca2+] (µM)'); 
+title('Time vs ATP, freq=60 Hz')
+xlabel('Time (seconds)');
+ylabel('[ATP] (µM)'); 
+
+figure
+plot(Time, Y(:,23))
+title('Time vs Force, freq=60 Hz')
+xlabel('Time (seconds)');
+ylabel('Post Power Stroke'); 
+
+
 % 
 % figure
 % plot(Time, Y(:,26))
 % title('26s')
-% % % legend('Calcium ion Conc');  
-% % xlabel('Time (seconds)');
-% % ylabel('[Ca2+] (µM)'); 
+% % legend('Calcium ion Conc');  
+% xlabel('Time (seconds)');
+% ylabel('[Ca2+] (µM)'); 
 % 
 % figure
 % plot(Time, Y(:,27))
@@ -70,27 +84,27 @@ title('Time vs ATP, freq=100 Hz Jprod=100*kHyd; atp depend on pumps')
 % xlabel('Time (seconds)');
 % ylabel('[CaTrop] (µM)'); 
 % 
-% figure
-% plot(Time, Y(:,28))
+figure
+plot(Time, Y(:,28))
 figure
 subplot(3,1,1)
 plot(Time, Y(:,26))
-title('time vs p_i_SR, freq=100 Hz')
-legend('p_i_SR');  
+title('time vs p_i_{SR}, freq=60 Hz')
+legend('p_i_{SR}');  
 xlabel('Time (seconds)');
-ylabel('[p_i_SR] (µM)'); 
+ylabel('[p_i_{SR}] (µM)'); 
 subplot(3,1,2)
 plot(Time, Y(:,27))
-title('time vs PiCa, freq=100 Hz')
+title('time vs PiCa, freq=60 Hz')
 legend('PiCa Conc');  
 xlabel('Time (seconds)');
 ylabel('[PiCa] (µM)'); 
 subplot(3,1,3)
 plot(Time, Y(:,28))
-title('time vs Pi_Myo, freq=100 Hz')
-legend('Pi_Myo Conc');  
+title('time vs Pi_{Myo}, freq=60 Hz')
+legend('Pi_{Myo} Conc');  
 xlabel('Time (seconds)');
-ylabel('[Pi_Myo] (µM)'); 
+ylabel('[Pi_{Myo}] (µM)'); 
 
 
 
@@ -128,26 +142,26 @@ ylabel('[Pi_Myo] (µM)');
 % xlabel('Time (seconds)');
 % ylabel('[CaTrop] (µM)'); 
 
-% 
-figure
-subplot(2,3,1)
-plot(Time, Y(:,17))
-title('time vs dCT')
-subplot(2,3,2)
-plot(Time, Y(:,18))
-title('time vs dCCT')
-subplot(2,3,3)
-plot(Time, Y(:,19))
-title('time vs dD0')
-subplot(2,3,4)
-plot(Time, Y(:,19))
-title('time vs dD1')
-subplot(2,3,5)
-plot(Time, Y(:,22))
-title('time vs dPrePower')
-subplot(2,3,6)
-plot(Time, Y(:,23))
-title('time vs dPostPower')
+% % 
+% figure
+% subplot(2,3,1)
+% plot(Time, Y(:,17))
+% title('time vs dCT')
+% subplot(2,3,2)
+% plot(Time, Y(:,18))
+% title('time vs dCCT')
+% subplot(2,3,3)
+% plot(Time, Y(:,19))
+% title('time vs dD0')
+% subplot(2,3,4)
+% plot(Time, Y(:,19))
+% title('time vs dD1')
+% subplot(2,3,5)
+% plot(Time, Y(:,22))
+% title('time vs dPrePower')
+% subplot(2,3,6)
+% plot(Time, Y(:,23))
+% title('time vs dPostPower')
 
 %% 
  

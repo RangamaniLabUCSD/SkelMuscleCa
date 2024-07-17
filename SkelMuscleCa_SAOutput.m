@@ -34,14 +34,14 @@ yinit = [
     0;	    	% yinit(23) is the initial condition for 'Post_Pow'
     0;	    	% yinit(24) is the initial condition for 'MgATP'
     8000;       % yinit(25) is the initial condition for 'ATP'
-    10          % yinit(26) is the initial condition for 'p_i_SR'
-    0.001       % yinit(27) is the initial condition for 'PiCa'
-    0.001       % yinit(28) is the initial condition for 'Pi_Myo'
+    3000          % yinit(26) is the initial condition for 'p_i_SR'
+    0        % yinit(27) is the initial condition for 'PiCa'
+    3000       % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
 QOI = zeros(size(param,1),9);
 parpool(50);
-
+ 
    parfor (i = 1 : length(param(:,1)))
         p = param(i,:)'.*parameters;
         t = [0 1000];
@@ -51,7 +51,9 @@ parpool(50);
     
          try
             [tSS,ySS,currtimeSS] = SkelMuscleCa_dydt(t,0, false, yinit, p,StartTimer,2); % Steady State
-            yInf = ySS(end,:);               
+            yInf = ySS(end,:); 
+            yInf(26) =3000;
+            yInf(28) =3000;
    
             [Time,Y,~] = SkelMuscleCa_dydt(tSpan, freqVec, false, yInf, p,StartTimer,2);  % Dynamics - Peak Ca2+, Peak Voltage, Ca2+ Area under curve
             for j = 1 : size(Y,1)

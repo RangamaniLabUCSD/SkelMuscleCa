@@ -23,6 +23,8 @@ if freq == 0
 else
     options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:17]); %,'OutputFcn',@odeplot);
 end
+yinit(26)= p(76);
+yinit(28) = p(77);
 [Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP);
 
 fluxes = zeros(length(Time), 8);
