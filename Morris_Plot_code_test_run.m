@@ -1,0 +1,56 @@
+clear 
+load('MorrisResults5-9.mat')
+
+% QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13),MaxCaF,MaxVF,AreaF];
+
+graph_names = {"SR Calcium", "SL Voltage", "Sodium Ion","Chlorine Ion","Myoplasmic Calcium","Potassium Ion","Max Calcium Force","Max Voltage Force","Area of Calcium"};
+
+n = 1;
+muVec = zeros(size(MorrisAnalysis.Results.MuStar(:,1:length(graph_names))));
+
+for k= 1:length(graph_names)
+    figure
+    scatter(MorrisAnalysis.Results.MuStar(:,k),MorrisAnalysis.Results.Std(:,k),'filled','MarkerFaceColor',[0.64,0.08,0.18])
+    xlabel('mu*')
+    ylabel('simga')
+    title(graph_names{k})
+    hold on
+    ten_percent = max(MorrisAnalysis.Results.MuStar(:,k))*0.1;
+    xline(ten_percent , '--b' )
+
+
+    
+    % labels_above_ten = cell(size(length(graph_names)));
+    
+    for i = 1:length(MorrisAnalysis.Results.MuStar(:,k))
+        mu_star = MorrisAnalysis.Results.MuStar(i,k);
+
+        if mu_star >= ten_percent
+            muVec(i,k) = true;
+            % mu_star = labels_above_ten{k};
+        else
+            muVec(i,k)=false;
+        end
+    end
+
+    dx= 0.001; dy=0.8;
+    label_length = length(MorrisAnalysis.Results.VariableNames(1,:));
+    label(1:label_length,n) = MorrisAnalysis.Results.VariableNames(1,:).';
+    new_label(1:label_length,n) = MorrisAnalysis.Results.VariableNames(1,:).';
+   
+    % labels_above_ten = MorrisAnalysis.Results.VariableNames(1,:).' ;
+    for j= 1:length(muVec(:,k))
+        if muVec(j,n) ==1
+            text(MorrisAnalysis.Results.MuStar(j,n)+dx, MorrisAnalysis.Results.Std(j,n)+dy, label(j,n));
+        end
+      
+        if muVec(j,n) ==0
+            new_label(j,n) = strrep(label(j,n),label(j,n),'0');
+        end
+    
+    end
+
+    prettyGraph
+    hold off 
+    n= n+1;
+end

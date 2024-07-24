@@ -40,12 +40,14 @@ yinit = [
     ];
 
 QOI = zeros(size(param,1),9);
-parpool(50);
+parpool(5);
  
    parfor (i = 1 : length(param(:,1)))
-        p = param(i,:)'.*parameters;
-        t = [0 1000];
-        tSpan = [0 1];
+       p=parameters;
+       p(1:10) = param(i,:)'.*parameters(1:10);
+       % p = param(i,:)'.*parameters;
+        t = 0:1000;
+        tSpan = 0:0.0001:1;
         freqVec = 100;
         StartTimer = tic;
     
@@ -66,7 +68,7 @@ parpool(50);
             MaxCaF = max(Y(:,8));                                            % Maximum [Ca2+] conc for control
             MaxVF = max(Y(:,5));                                             % Maximum Voltage for control
             AreaF = trapz(Time,Y(:,8));                                       % Area under curve for control
-            QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13),MaxCaF,MaxVF,AreaF]; % Quantitites of interest         
+            QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13),MaxCaF,MaxVF,AreaF]; % Quantities of interest         
             fprintf('Session %d of %d , time = %.2f s \n',i,size(param,1),currtimeSS);
     
         catch
@@ -81,10 +83,11 @@ parpool(50);
             end
             MaxCaF = max(Y(:,8));                                            % Maximum [Ca2+] conc for control
             MaxVF = max(Y(:,5));                                             % Maximum Voltage for control
-            AreaF = trapz(Time,Y(:,8));                                       % Area under curve for control
+            AreaF = trapz(Time,Y(:,8));   %redefine as avg; divide by time                                    % Area under curve for control
             QOI(i,:) = [0,0,0,0,0,0,MaxCaF,MaxVF,AreaF];                       % Quantitites of interest
             fprintf('Session %d of %d, with yinit \n',i,size(param,1));
 
         end
     end
 end
+% ssA2, maxA2, AUCa2 (or avg), AUCvoltage/avg(--> width of action potentials)

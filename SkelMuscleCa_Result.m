@@ -578,7 +578,7 @@ xlabel('Frequency (Hz)', 'Fontsize',18)
 ylabel('\Delta Average [Ca^{2+}]_{myo} (μM)','Fontsize',18)
 set(axes17,'FontSize',18,'Box','off','FontSmoothing','on')
 set(plot17,"Renderer","painters");
-
+%%
 % Max Ca ------------------------------------------------------------------
 plot18 = figure;
 axes18 = axes('Parent', plot18);
@@ -589,7 +589,7 @@ xlabel('Frequency (Hz)', 'Fontsize',18)
 ylabel('Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
 set(axes18,'FontSize',18,'Box','off','FontSmoothing','on')
 set(plot18,"Renderer","painters");
-
+%%
 % Avg Force vs freq -----------------------------------------------------------
 plot20 = figure;
 axes20 = axes('Parent', plot20);
