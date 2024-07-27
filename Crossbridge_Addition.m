@@ -7,7 +7,7 @@ yinit = [
     -88.0;		% yinit(5) is the initial condition for 'Voltage_PM'
     14700.0;	% yinit(6) is the initial condition for 'Na_i'
     5830.0;		% yinit(7) is the initial condition for 'Cl_i'
-    1e10;		% yinit(8) is the initial condition for 'c_i'
+    0.1;		% yinit(8) is the initial condition for 'c_i'
     0.003;		% yinit(9) is the initial condition for 'n'
     0.0128;		% yinit(10) is the initial condition for 'm'
     0.8051;		% yinit(11) is the initial condition for 'h'
@@ -24,10 +24,10 @@ yinit = [
     0;	    	% yinit(22) is the initial condition for 'Pre_Pow'
     0;	    	% yinit(23) is the initial condition for 'Post_Pow'
     0;	    	% yinit(24) is the initial condition for 'MgATP'
-    1e10;       % yinit(25) is the initial condition for 'ATP'
-    0          % yinit(26) is the initial condition for 'p_i_SR' 
-    0       % yinit(27) is the initial condition for 'PiCa'
-    0       % yinit(28) is the initial condition for 'Pi_Myo'
+    8000;       % yinit(25) is the initial condition for 'ATP'
+    3000          % yinit(26) is the initial condition for 'p_i_SR'
+    0        % yinit(27) is the initial condition for 'PiCa'
+    3000       % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
 param = importdata('InputParam1.xlsx'); % load default parameters
@@ -37,7 +37,7 @@ load PSO_25-Apr-2024.mat pSol % load best fit parameters from PSO - particle swa
 pSol(46:77) = 1;
 pPSO = pSol .* p0';
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
-tSol = 0:.0001:5;
+tSol = 0:.0001:10;
 freq = 60; 
 % ySS(end,26) = 0;
 % ySS(end,28) = 2500;
@@ -51,32 +51,32 @@ freq = 60;
 % xlabel('Time (seconds)');
 % ylabel('[Ca2+] (µM)'); 
  
-% figure
-% plot(Time, Y(:,8))
-% title('Time vs Ca2+, k_{onParvMg} = 0.033*(1/1.5)')
-% xlabel('Time (seconds)');
-% ylabel('[Ca2+] (µM)'); 
+figure
+plot(Time, Y(:,8))
+title('Time vs Ca2+')
+xlabel('Time (seconds)');
+ylabel('[Ca2+] (µM)'); 
 % 
-% figure
-% plot(Time, Y(:,2))
-% title('Time vs Ca2+ SR, k_{onParvMg} = 0.033*(1/1.5)')
-% xlabel('Time (seconds)');
-% ylabel('[Ca2+]_{SR} (µM)'); 
+figure
+plot(Time, Y(:,2))
+title('Time vs Ca2+ SR')
+xlabel('Time (seconds)');
+ylabel('[Ca2+]_{SR} (µM)'); 
 % % 
-% % figure
-% % plot(Time, Y(:,25))
-% % title('Time vs ATP, freq=60 Hz')
-% % xlabel('Time (seconds)');
-% % ylabel('[ATP] (µM)'); 
-% % 
-% figure
-% plot(Time, Y(:,23))
-% title('Time vs Force, freq=60 Hz')
-% xlabel('Time (seconds)');
-% ylabel('Post Power Stroke'); 
+figure
+plot(Time, Y(:,25))
+title('Time vs ATP, freq=60 Hz')
+xlabel('Time (seconds)');
+ylabel('[ATP] (µM)'); 
+
+figure
+plot(Time, Y(:,23))
+title('Time vs Force, freq=60 Hz')
+xlabel('Time (seconds)');
+ylabel('Post Power Stroke'); 
 figure
 plot(Time, Y(:,5))
-title('Time vs SL Voltage, kP*1.5')
+title('Time vs SL Voltage ')
 xlabel('Time (seconds)');
 ylabel('SL Voltage'); 
 % 
@@ -111,27 +111,27 @@ ylabel('SL Voltage');
 % xlabel('Time (seconds)');
 % ylabel('[CaTrop] (µM)'); 
 % 
-% figure
-% plot(Time, Y(:,28))
-% figure
-% subplot(3,1,1)
-% plot(Time, Y(:,26))
-% title('time vs p_i_{SR}, freq=60 Hz')
-% legend('p_i_{SR}');  
-% xlabel('Time (seconds)');
-% ylabel('[p_i_{SR}] (µM)'); 
-% subplot(3,1,2)
-% plot(Time, Y(:,27))
-% title('time vs PiCa, freq=60 Hz')
-% legend('PiCa Conc');  
-% xlabel('Time (seconds)');
-% ylabel('[PiCa] (µM)'); 
-% subplot(3,1,3)
-% plot(Time, Y(:,28))
-% title('time vs Pi_{Myo}, freq=60 Hz')
-% legend('Pi_{Myo} Conc');  
-% xlabel('Time (seconds)');
-% ylabel('[Pi_{Myo}] (µM)'); 
+figure
+plot(Time, Y(:,28))
+figure
+subplot(3,1,1)
+plot(Time, Y(:,26))
+title('time vs p_i_{SR}, freq=60 Hz')
+legend('p_i_{SR}');  
+xlabel('Time (seconds)');
+ylabel('[p_i_{SR}] (µM)'); 
+subplot(3,1,2)
+plot(Time, Y(:,27))
+title('time vs PiCa, freq=60 Hz')
+legend('PiCa Conc');  
+xlabel('Time (seconds)');
+ylabel('[PiCa] (µM)'); 
+subplot(3,1,3)
+plot(Time, Y(:,28))
+title('time vs Pi_{Myo}, freq=60 Hz')
+legend('Pi_{Myo} Conc');  
+xlabel('Time (seconds)');
+ylabel('[Pi_{Myo}] (µM)'); 
 
 % 
 % figure

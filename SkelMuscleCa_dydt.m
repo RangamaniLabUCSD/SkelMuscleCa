@@ -464,39 +464,39 @@ end
 
         Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot +  kHYD*(ATP / (kH + ATP) ); %(D_2*f0)/kHYD  (D_2*f0*p_i_SR)/1000
         Jprod =  kPROD * (700 - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 + 
-        dMA = k_onMA*Mg*ATP - k_offMA*MgATP; 
+        dMA = k_onMA*Mg*ATP - k_offMA*MgATP; %did not include diffusion terms from Supplemental
         dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0_prime*Post_Pow*ATP);
         
         %SR Phosphate 
-        PP = 6e6;                     %mM^2
+        % PP = 6e6;                     %mM^2
         % % p_i = 0.05;                 %mM
         PC_tot = p_i_SR * c_SR;      
-        V_SR = 0.05*1.1*pi*(0.5^2);       %(µm^3)    Bulk SR Volume
-        kP = 70;            %(µm^3/s) 
-        % Ap = 1/1e6;               %(mM^-3/s)
-        % Bp = 0.0001/1e3;           %(mM^-2/s)
+        % V_SR = 0.05*1.1*pi*(0.5^2);       %(µm^3)    Bulk SR Volume
+        % kP = 70;            %(µm^3/s) 
+        % Ap = (1/1e6);               %(mM^-3/s)
+        % Bp = (0.0001/1e3);           %(mM^-2/s)
+
+        % dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot) + Bp * (PiCa_SR);
         % 
-        dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot) + Bp * (PiCa_SR);
+        % dPiCa = Ap * (PC_tot) - Bp*(PiCa_SR);
 
-        dPiCa = Ap * (PC_tot) - Bp*(PiCa_SR);
-
-        % if PC_tot >= PP
-        %     % dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
-        %     dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot)*(PC_tot -PP);
-        % else
-        %     % dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
-        %     dPi_SR = kP*(p_i_Myo - p_i_SR)  + Bp* PiCa_SR* (PP - PC_tot) ; 
-        % end 
-        % % 
-        % %Calcium-Phophate Precipitate (SR) 
-        % if PC_tot >= PP
-        %     dPiCa = Ap * (PC_tot)*(PC_tot - PP) ;%-Bp * PiCa_SR;
-        % else
-        %     dPiCa = -Bp * PiCa_SR* (PP - PC_tot) ;
-        % end
-        % % 
+        if PC_tot >= PP
+            % dPi_SR = kP*(p_i - p_i_SR) / V_SR - Ap*(PC_tot*0.001 - PP)* (0.001*PC_tot);
+            dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot)*(PC_tot -PP);
+        else
+            % dPi_SR = kP*(p_i - p_i_SR) / V_SR + Bp* PiCa_SR *(PP - PC_tot*0.001);  
+            dPi_SR = kP*(p_i_Myo - p_i_SR)  + Bp* PiCa_SR* (PP - PC_tot) ; 
+        end 
+        % 
+        %Calcium-Phophate Precipitate (SR) 
+        if PC_tot >= PP
+            dPiCa = Ap * (PC_tot)*(PC_tot - PP) ;%-Bp * PiCa_SR;
+        else
+            dPiCa = -Bp * PiCa_SR* (PP - PC_tot) ;
+        end
+        % 
         %Myoplasmic Phosphate
-        Vmyo = 0.99*vol_myo;        %(µM^3)    Bulk Myoplasm Volume
+        % Vmyo = 0.99*vol_myo;        %(µM^3)    Bulk Myoplasm Volume
         % % bP = 2.867*10^-2;           %s^-1  
         dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow*(p_i_Myo / p_i_Myo_init)) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR); 
 
@@ -544,13 +544,13 @@ end
 
         dydt = [
             J_r6;    % rate for SOCEProb(1)
-            (f_SR * KMOLE * (LumpedJ_SERCA - LumpedJ_RyR - J_CaLeak_SR))/vol_SR; %c_SR (2)
+            (f_SR * KMOLE * (LumpedJ_SERCA - LumpedJ_RyR - J_CaLeak_SR))/vol_SR - dPiCa; %c_SR (2)
             J_r5;    % rate for h_K (3)
             J_r0;    % rate for w_RyR (4)
             (1000 /device_SL.Capacitance) * (SA_SL * (I_CaLeak_SL + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE) + I_SL);    % rate for Voltage_SL (5)
             KFlux_SL_myo * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i (6)
             (J_Cl .* KFlux_SL_myo);    % rate for Cl_i (7)
-            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA; % rate for c_i (8)
+            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA - (k_onTrop*c_i*Trop - k_offTrop*CaTrop + k_onTrop*c_i*CaTrop - k_offTrop*CaCaTrop + k_onTrop*c_i*D_0 - k_offTrop*D_1 + k_onTrop*c_i*D_1 - k_offTrop*D_2); % rate for c_i (8)
             J_r4;    % rate for n (9)
             J_r2;    % rate for m (10)
             J_r1;    % rate for h (11)

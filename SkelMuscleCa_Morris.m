@@ -7,7 +7,7 @@ ModelOpts.mFile = 'SkelMuscleCa_SAOutput';
 myModel = uq_createModel(ModelOpts);
 input = importdata('InputParam1.xlsx');
 paramNames = input.textdata;
-numParam = 10;%length(paramNames);
+numParam = length(paramNames);
 starttimer = tic;
 % these specifications designate log normal distributions with std dev
 % log(2) (ranges from about 0.5 to 2)
@@ -23,7 +23,7 @@ MorrisSensOpts.Type = 'Sensitivity';
 MorrisSensOpts.Method = 'Morris';
 MorrisSensOpts.Morris.Cost = 1e4;
 MorrisAnalysis = uq_createAnalysis(MorrisSensOpts);
-save('/tscc/lustre/ddn/scratch/jhamid/MorrisResults5-9.mat','MorrisAnalysis');
+save('/tscc/lustre/ddn/scratch/jhamid/MorrisResults5-10.mat','MorrisAnalysis');
 endtimer = toc(starttimer);
 %uq_display(MorrisAnalysis)
 

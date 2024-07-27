@@ -34,18 +34,15 @@ yinit = [
     0;	    	% yinit(23) is the initial condition for 'Post_Pow'
     0;	    	% yinit(24) is the initial condition for 'MgATP'
     8000;       % yinit(25) is the initial condition for 'ATP'
-    3000          % yinit(26) is the initial condition for 'p_i_SR'
-    0        % yinit(27) is the initial condition for 'PiCa'
-    3000       % yinit(28) is the initial condition for 'Pi_Myo'
+    3000        % yinit(26) is the initial condition for 'p_i_SR'
+    0           % yinit(27) is the initial condition for 'PiCa'
+    3000        % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
-QOI = zeros(size(param,1),9);
-parpool(5);
- 
-   parfor (i = 1 : length(param(:,1)))
-       p=parameters;
-       p(1:10) = param(i,:)'.*parameters(1:10);
-       % p = param(i,:)'.*parameters;
+QOI = zeros(size(param,1),13);
+parpool(50);
+    parfor (i = 1 : length(param(:,1)))
+        p = param(i,:)'.*parameters;
         t = 0:1000;
         tSpan = 0:0.0001:1;
         freqVec = 100;
@@ -67,8 +64,11 @@ parpool(5);
             end
             MaxCaF = max(Y(:,8));                                            % Maximum [Ca2+] conc for control
             MaxVF = max(Y(:,5));                                             % Maximum Voltage for control
-            AreaF = trapz(Time,Y(:,8));                                       % Area under curve for control
-            QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13),MaxCaF,MaxVF,AreaF]; % Quantities of interest         
+            MaxPost = max(Y(:,23));                                          % Maximum Force for control
+            AvgF = trapz(Time,Y(:,8)) / (Time(end)-Time(1));                 % Area under curve for Calcium control
+            AvgPost = trapz(Time,Y(:,23)) / (Time(end)-Time(1));             % Area under curve for Force control
+            AvgVolt = trapz(Time,Y(:,5)) / (Time(end)-Time(1));              % Area under curve for Voltage control
+            QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13), yInf(23), MaxCaF,MaxVF, MaxPost, AvgF, AvgPost, AvgVolt]; % Quantities of interest         
             fprintf('Session %d of %d , time = %.2f s \n',i,size(param,1),currtimeSS);
     
         catch
@@ -83,8 +83,11 @@ parpool(5);
             end
             MaxCaF = max(Y(:,8));                                            % Maximum [Ca2+] conc for control
             MaxVF = max(Y(:,5));                                             % Maximum Voltage for control
-            AreaF = trapz(Time,Y(:,8));   %redefine as avg; divide by time                                    % Area under curve for control
-            QOI(i,:) = [0,0,0,0,0,0,MaxCaF,MaxVF,AreaF];                       % Quantitites of interest
+            MaxPost = max(Y(:,23));                                          % Maximum Force for control 
+            AvgF = trapz(Time,Y(:,8))/ (Time(end)-Time(1));                  % Area under curve for control
+            AvgPost = trapz(Time,Y(:,23)) / (Time(end)-Time(1));             % Area under curve for Force control
+            AvgVolt = trapz(Time,Y(:,5)) / (Time(end)-Time(1));              % Area under curve for Voltage control
+            QOI(i,:) = [0,0,0,0,0,0,0,MaxCaF,MaxVF,MaxPost,AvgF,AvgPost,AvgVolt];      % Quantitites of interest
             fprintf('Session %d of %d, with yinit \n',i,size(param,1));
 
         end
