@@ -25,17 +25,26 @@ yinit = [
     0;	    	% yinit(23) is the initial condition for 'Post_Pow'
     0;	    	% yinit(24) is the initial condition for 'MgATP'
     8000;       % yinit(25) is the initial condition for 'ATP'
-    3000          % yinit(26) is the initial condition for 'p_i_SR'
-    0        % yinit(27) is the initial condition for 'PiCa'
-    3000       % yinit(28) is the initial condition for 'Pi_Myo'
+    3000        % yinit(26) is the initial condition for 'p_i_SR'
+    0           % yinit(27) is the initial condition for 'PiCa'
+    3000        % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
 param = importdata('InputParam1.xlsx'); % load default parameters
 p0 =  param.data;
-load PSO_25-Apr-2024.mat pSol % load best fit parameters from PSO - particle swarm optimization
-% pSol(12) = pSol(12)*0.2;
-pSol(46:77) = 1;
-pPSO = pSol .* p0';
+highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70];
+load PSO_31-Jul-2024.mat pSol % load best fit parameters from PSO - particle swarm optimization
+p0(highSensIdx) = pSol' .* p0(highSensIdx);
+pPSO = p0;
+
+
+% param = importdata('InputParam1.xlsx'); % load default parameters
+% p0 =  param.data;
+% load PSO_25-Apr-2024.mat pSol % load best fit parameters from PSO - particle swarm optimization
+% % pSol(12) = pSol(12)*0.2;
+% pSol(46:77) = 1;
+% pPSO = pSol .* p0';
+
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
 tSol = 0:.0001:10;
 freq = 60; 

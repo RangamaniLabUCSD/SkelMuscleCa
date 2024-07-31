@@ -1,7 +1,7 @@
 clc
 clear
 delete(gcp('nocreate'))
-load PSO_25-Apr-2024.mat p pSol 
+load PSO_30-Jul-2024.mat p pSol 
 yinit = [
     0.0122; 	% yinit(1) is the initial condition for 'SOCEProb'
     1500.0;		% yinit(2) is the initial condition for 'c_SR'
@@ -28,18 +28,20 @@ yinit = [
     0;	    	% yinit(23) is the initial condition for 'Post_Pow'
     0;	    	% yinit(24) is the initial condition for 'MgATP'
     8000;       % yinit(25) is the initial condition for 'ATP'
-    10          % yinit(26) is the initial condition for 'p_i_SR' 
-    0.001       % yinit(27) is the initial condition for 'PiCa'
-    0.001       % yinit(28) is the initial condition for 'Pi_Myo'
+    3000        % yinit(26) is the initial condition for 'p_i_SR'
+    0           % yinit(27) is the initial condition for 'PiCa'
+    3000        % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
-p = p(:) .* pSol(:);
+% p = p(:) .* pSol(:);
 % Expt : 
 % 1,2 - Cont Stim (Control & no SOCE)
 % 3,4 - Wei-Lapierre (Control & noSOCE)
 % 5,6 - Resistance (Control & noSOCE)
 % 7,8 - HIIT (Control & noSOCE)
 
+highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70];
+p(highSensIdx) = pSol' .* p(highSensIdx);
 
 f_HIIT = 60 : 10 : 180;
 l_HIIT = length(f_HIIT);
@@ -173,54 +175,54 @@ deltaAUC_HIIT = (AUC7 - AUC_noSOCE8);
 
 deltaMax_F_HIIT = Max_F7 - MaxF_noSOCE8;
 deltaAUC_F_HIIT = (AUC_F7 - AUC_F_noSOCE8);
-figure
-for i = 1:l_HIIT
-    plot(Time7{1}, Pi_Myo7{1})
-    hold on
-    title('Time vs PiMyo ; Resistance; first freq')
-    plot(Time_noSOCE8{1}, Pi_Myo_noSOCE8{1})
-    legend('w SOCE','no SOCE')
-end
-
-figure
-for i = 1:l_HIIT
-    plot(Time7{1}, Pi_Ca7{1})
-    hold on
-    title('Time vs PiCa ; Resistance; first freq')
-    plot(Time_noSOCE8{1}, Pi_Ca_noSOCE8{1})
-    legend('w SOCE','no SOCE')
-end
-
-figure
-for i = 1:l_HIIT
-    plot(Time7{1}, Pi_SR7{1})
-    hold on
-    title('Time vs PiSR ; HIIIT; first freq')
-    plot(Time_noSOCE8{1}, Pi_SR_noSOCE8{1})
-    legend('w SOCE','no SOCE')
-end
-
-figure
-for i = 1:l_HIIT
-    plot(Time7{1}, ATP7{1})
-    hold on
-    title('Time vs ATP ;HIIT; first freq')
-    plot(Time_noSOCE8{1}, ATP_noSOCE8{1})
-    legend('w SOCE','no SOCE')
-end
-
-figure
-for i = 1:l_HIIT
-    plot(Time7{i}, Pi_Myo7{i})
-    hold on
-    title('Time vs PiMyo ; HIIT; w SOCE')
-end
-figure
-for i = 1:l_HIIT
-    plot(Time7{i}, ATP7{i})
-    hold on
-    title('Time vs ATP ; HIIT; w SOCE')
-end
+% figure
+% for i = 1:l_HIIT
+%     plot(Time7{1}, Pi_Myo7{1})
+%     hold on
+%     title('Time vs PiMyo ; Resistance; first freq')
+%     plot(Time_noSOCE8{1}, Pi_Myo_noSOCE8{1})
+%     legend('w SOCE','no SOCE')
+% end
+% 
+% figure
+% for i = 1:l_HIIT
+%     plot(Time7{1}, Pi_Ca7{1})
+%     hold on
+%     title('Time vs PiCa ; Resistance; first freq')
+%     plot(Time_noSOCE8{1}, Pi_Ca_noSOCE8{1})
+%     legend('w SOCE','no SOCE')
+% end
+% 
+% figure
+% for i = 1:l_HIIT
+%     plot(Time7{1}, Pi_SR7{1})
+%     hold on
+%     title('Time vs PiSR ; HIIIT; first freq')
+%     plot(Time_noSOCE8{1}, Pi_SR_noSOCE8{1})
+%     legend('w SOCE','no SOCE')
+% end
+% 
+% figure
+% for i = 1:l_HIIT
+%     plot(Time7{1}, ATP7{1})
+%     hold on
+%     title('Time vs ATP ;HIIT; first freq')
+%     plot(Time_noSOCE8{1}, ATP_noSOCE8{1})
+%     legend('w SOCE','no SOCE')
+% end
+% 
+% figure
+% for i = 1:l_HIIT
+%     plot(Time7{i}, Pi_Myo7{i})
+%     hold on
+%     title('Time vs PiMyo ; HIIT; w SOCE')
+% end
+% figure
+% for i = 1:l_HIIT
+%     plot(Time7{i}, ATP7{i})
+%     hold on
+%     title('Time vs ATP ; HIIT; w SOCE')
+% end
  
 % %Force
 % for i = 1 : length(f_HIIT)
@@ -319,65 +321,65 @@ for i = 1:l_Resistance
 
 end
 
-%%
-figure
-for i = 1:l_HIIT
-    plot(Time7{1}, ATP7{1})
-    hold on
-    title('Time vs ATP ; hiit')
-    plot(Time7{13}, ATP7{13})
-    legend('FIRST','LAST')
-end
+% %%
+% figure
+% for i = 1:l_HIIT
+%     plot(Time7{1}, ATP7{1})
+%     hold on
+%     title('Time vs ATP ; hiit')
+%     plot(Time7{13}, ATP7{13})
+%     legend('FIRST','LAST')
+% end
 
 %%
-figure
-for i = 1:l_Resistance
-    plot(Time5{1}, Pi_Myo5{1})
-    hold on
-    title('Time vs PiMyo ; Resistance; first freq')
-    plot(Time_noSOCE6{1}, Pi_Myo_noSOCE6{1})
-    legend('w SOCE','no SOCE')
-end
-
-figure
-for i = 1:l_Resistance
-    plot(Time5{1}, Pi_Ca5{1})
-    hold on
-    title('Time vs PiCa ; Resistance; first freq')
-    plot(Time_noSOCE6{1}, Pi_Ca_noSOCE6{1})
-    legend('w SOCE','no SOCE')
-end
-
-figure
-for i = 1:l_Resistance
-    plot(Time5{1}, Pi_SR5{1})
-    hold on
-    title('Time vs PiSR ; Resistance; first freq')
-    plot(Time_noSOCE6{1}, Pi_SR_noSOCE6{1})
-    legend('w SOCE','no SOCE')
-end
-
-figure
-for i = 1:l_Resistance
-    plot(Time5{1}, ATP5{1})
-    hold on
-    title('Time vs ATP ; Resistance; first freq')
-    plot(Time_noSOCE6{1}, ATP_noSOCE6{1})
-    legend('w SOCE','no SOCE')
-end
-
-figure
-for i = 1:l_Resistance
-    plot(Time5{i}, Pi_Myo5{i})
-    hold on
-    title('Time vs PiMyo ; Resistance; w SOCE')
-end
-figure
-for i = 1:l_Resistance
-    plot(Time5{i}, ATP5{i})
-    hold on
-    title('Time vs ATP ; Resistance; w SOCE')
-end
+% figure
+% for i = 1:l_Resistance
+%     plot(Time5{1}, Pi_Myo5{1})
+%     hold on
+%     title('Time vs PiMyo ; Resistance; first freq')
+%     plot(Time_noSOCE6{1}, Pi_Myo_noSOCE6{1})
+%     legend('w SOCE','no SOCE')
+% end
+% 
+% figure
+% for i = 1:l_Resistance
+%     plot(Time5{1}, Pi_Ca5{1})
+%     hold on
+%     title('Time vs PiCa ; Resistance; first freq')
+%     plot(Time_noSOCE6{1}, Pi_Ca_noSOCE6{1})
+%     legend('w SOCE','no SOCE')
+% end
+% 
+% figure
+% for i = 1:l_Resistance
+%     plot(Time5{1}, Pi_SR5{1})
+%     hold on
+%     title('Time vs PiSR ; Resistance; first freq')
+%     plot(Time_noSOCE6{1}, Pi_SR_noSOCE6{1})
+%     legend('w SOCE','no SOCE')
+% end
+% 
+% figure
+% for i = 1:l_Resistance
+%     plot(Time5{1}, ATP5{1})
+%     hold on
+%     title('Time vs ATP ; Resistance; first freq')
+%     plot(Time_noSOCE6{1}, ATP_noSOCE6{1})
+%     legend('w SOCE','no SOCE')
+% end
+% 
+% figure
+% for i = 1:l_Resistance
+%     plot(Time5{i}, Pi_Myo5{i})
+%     hold on
+%     title('Time vs PiMyo ; Resistance; w SOCE')
+% end
+% figure
+% for i = 1:l_Resistance
+%     plot(Time5{i}, ATP5{i})
+%     hold on
+%     title('Time vs ATP ; Resistance; w SOCE')
+% end
  
 
 deltaMax_Resistance = MaxCa5 - MaxCa_noSOCE6;
@@ -386,79 +388,79 @@ deltaAUC_Resistance = AUC5 - AUC_noSOCE6;
 deltaMax_F_Resistance = Max_F5 - MaxF_noSOCE6;
 deltaAUC_F_Resistance = AUC_F5 - AUC_F_noSOCE6; 
 
-%  % Avg Force vs freq -----------------------------------------------------------
-% plot14 = figure;
-% axes14 = axes('Parent', plot14);
-% scatter(f_Resistance,AUC_F5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
-% hold on
-% scatter(f_Resistance,AUC_F_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
-% hold off
-% xlabel('Frequency (Hz)', 'Fontsize',18)
-% ylabel('Average Force','Fontsize',18)
-% title('Average force during Resistance exercise')
-% set(axes14,'FontSize',18,'Box','off','FontSmoothing','on')
-% set(plot14,"Renderer","painters");
-% 
-% % Max Force vs freq -----------------------------------------------------------
-% plot14 = figure;
-% axes14 = axes('Parent', plot14);
-% scatter(f_Resistance,Max_F5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
-% hold on
-% scatter(f_Resistance,MaxF_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
-% hold off
-% xlabel('Frequency (Hz)', 'Fontsize',18)
-% ylabel('Max Force','Fontsize',18)
-% title('Max force during Resistance exercise')
-% set(axes14,'FontSize',18,'Box','off','FontSmoothing','on')
-% set(plot14,"Renderer","painters");
-% 
-% 
-% %  Avg Ca vs freq ----------------------------------------------------------------
-% plot12 = figure;
-% axes12 = axes('Parent', plot12);
-% scatter(f_Resistance,AUC5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
-% hold on
-% scatter(f_Resistance,AUC_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
-% xlabel('Frequency (Hz)', 'Fontsize',18)
-% ylabel('Average [Ca^{2+}]_{myo} (μM)','Fontsize',18)
-% set(axes12,'FontSize',18,'Box','off','FontSmoothing','on')
-% set(plot12,"Renderer","painters");
-% 
-% % Max Ca vs freq -----------------------------------------------------------------
-% plot13 = figure;
-% axes13 = axes('Parent', plot13);
-% scatter(f_Resistance,MaxCa5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
-% hold on
-% scatter(f_Resistance,MaxCa_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
-% xlabel('Frequency (Hz)', 'Fontsize',18)
-% ylabel('Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
-% set(axes13,'FontSize',18,'Box','off','FontSmoothing','on')
-% set(plot13,"Renderer","painters");
-% % % Force  
-% % for i = 1 : length(f_Resistance)
-% %     Force5(i) = c0 + (100 * ( AUC5(i)^n )/ ( (Ca50 ^ n)  + (AUC5(i) ^ n)) );
-% %     Force_noSOCE6(i) = c0 + (100 * (AUC_noSOCE6(i)^n )/ ( (Ca50 ^ n)  + (AUC_noSOCE6(i) ^ n)) );
-% % end
-% % DeltaForce_Resistance =  (Force5 - Force_noSOCE6);
-%  % DeltaMax Resistance ----------------------------------------------------
-% plot10 = figure;
-% axes10 = axes('Parent', plot10);
-% scatter(f_Resistance,deltaMax_Resistance,'filled','MarkerFaceColor',[0.89,0.47,0.97]); 
-% xlabel('Frequency (Hz)', 'Fontsize',18)
-% ylabel('\Delta Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
-% set(axes10,'FontSize',18,'Box','off','FontSmoothing','on')
-% set(plot10,"Renderer","painters");
-% 
-% % DeltaAuc Resistance ---------------------------------------------------
-% plot11 = figure;
-% axes11 = axes('Parent', plot11);
-% scatter(f_Resistance,deltaAUC_Resistance,'filled','MarkerFaceColor',[0.89,0.47,0.97]); 
-% xlabel('Frequency (Hz)', 'Fontsize',18)
-% ylabel('\Delta Average [Ca^{2+}]_{myo} (μM)','Fontsize',18)
-% set(axes11,'FontSize',18,'Box','off','FontSmoothing','on')
-% set(plot11,"Renderer","painters");
- %%
-save('HIIT_Resistance_2.mat')
+ % Avg Force vs freq -----------------------------------------------------------
+plot14 = figure;
+axes14 = axes('Parent', plot14);
+scatter(f_Resistance,AUC_F5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+hold on
+scatter(f_Resistance,AUC_F_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+hold off
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('Average Force','Fontsize',18)
+title('Average force during Resistance exercise')
+set(axes14,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot14,"Renderer","painters");
+
+% Max Force vs freq -----------------------------------------------------------
+plot14 = figure;
+axes14 = axes('Parent', plot14);
+scatter(f_Resistance,Max_F5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+hold on
+scatter(f_Resistance,MaxF_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+hold off
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('Max Force','Fontsize',18)
+title('Max force during Resistance exercise')
+set(axes14,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot14,"Renderer","painters");
+
+
+%  Avg Ca vs freq ----------------------------------------------------------------
+plot12 = figure;
+axes12 = axes('Parent', plot12);
+scatter(f_Resistance,AUC5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+hold on
+scatter(f_Resistance,AUC_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('Average [Ca^{2+}]_{myo} (μM)','Fontsize',18)
+set(axes12,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot12,"Renderer","painters");
+
+% Max Ca vs freq -----------------------------------------------------------------
+plot13 = figure;
+axes13 = axes('Parent', plot13);
+scatter(f_Resistance,MaxCa5,'filled','MarkerFaceColor',[0.64,0.08,0.18]); 
+hold on
+scatter(f_Resistance,MaxCa_noSOCE6,'filled','MarkerFaceColor',[0.10,0.85,0.83]); 
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
+set(axes13,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot13,"Renderer","painters");
+% % Force  
+% for i = 1 : length(f_Resistance)
+%     Force5(i) = c0 + (100 * ( AUC5(i)^n )/ ( (Ca50 ^ n)  + (AUC5(i) ^ n)) );
+%     Force_noSOCE6(i) = c0 + (100 * (AUC_noSOCE6(i)^n )/ ( (Ca50 ^ n)  + (AUC_noSOCE6(i) ^ n)) );
+% end
+% DeltaForce_Resistance =  (Force5 - Force_noSOCE6);
+ % DeltaMax Resistance ----------------------------------------------------
+plot10 = figure;
+axes10 = axes('Parent', plot10);
+scatter(f_Resistance,deltaMax_Resistance,'filled','MarkerFaceColor',[0.89,0.47,0.97]); 
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('\Delta Max [Ca^{2+}]_{myo} (μM)','Fontsize',18)
+set(axes10,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot10,"Renderer","painters");
+
+% DeltaAuc Resistance ---------------------------------------------------
+plot11 = figure;
+axes11 = axes('Parent', plot11);
+scatter(f_Resistance,deltaAUC_Resistance,'filled','MarkerFaceColor',[0.89,0.47,0.97]); 
+xlabel('Frequency (Hz)', 'Fontsize',18)
+ylabel('\Delta Average [Ca^{2+}]_{myo} (μM)','Fontsize',18)
+set(axes11,'FontSize',18,'Box','off','FontSmoothing','on')
+set(plot11,"Renderer","painters");
+
+save('HIIT_Resistance_3.mat')
 
 %% Resistance Plots
 

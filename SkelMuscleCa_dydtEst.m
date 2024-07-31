@@ -222,6 +222,12 @@ end
         bP = p(74);
         Trop_tot =p(75);
         p_i_Myo_init =p(77); 
+        %% Global constants
+        F = 96485.3321;
+        PI = 3.141592653589793;
+        R = 8314.46261815;
+        
+        KMOLE = 0.001660538783162726;
         %% Model Geometry
         vol_SA_ratio = 0.01 ;       %µm
         volFraction_myo = 0.95 ;
@@ -250,18 +256,13 @@ end
                     124000, 126170, 157000, 146000,  146000];                           %mM
         Temp = [(273+22),(273+22),(273+20),(273+22), (273+22),...
                 (273+ 26),(273+22),(273+22),(273+35),(273+22)];                         %K
-
+        T = Temp(expt);        %K
         if expt == 10
             expt_n = 5;
         else
             expt_n = expt;
         end
-         %% Global constants
-        F = 96485.3321;
-        PI = 3.141592653589793;
-        R = 8314.46261815;
-        T = Temp(expt);        %K
-        KMOLE = 0.001660538783162726;
+ 
 
  %% Extracellular ion concentraions
         c_EC_init_uM = Ca_o_exp(expt_n);        %µM call to expt number 
@@ -472,19 +473,19 @@ end
         KFlux_SL_myo = (SA_SL ./ vol_myo);
         device_SL.Capacitance = (C_SL .* SA_SL) .* (Q10C_SL .^ QCorr);
 
-        %% Calcium buffering in the myoplasm and SR
+         %% Calcium buffering in the myoplasm and SR
         % k_onATP = 0.15*1000;        %(µM s)^-1  rate of Ca bound to ATP 
         % k_offATP = 30*1000;         %s^-1
         % k_onParvCa = 41.7;          %(µM s)^-1
         % k_offParvCa = 0.5;          %s^-1
-        % k_onParvMg = 0.033;         %(µM s)^-1
+        % k_onParvMg = 0.033*(1/1.5);         %(µM s)^-1
         % k_offParvMg = 3;            %s^-1
         % Parv_itot = 1500;           %(µM)
         % % ATP_itot = 8000;            %(µM)
         % 
         % %ATP Addition 
-        % k_onMA = 1.5;               %(µM/s)
-        % k_offMA = 150;              %s^-1
+        % k_onMA = 1.5;               %(µM/s) Mg2+ binding to ATP
+        % k_offMA = 0.150;              %s^-1
         % % if freq == 0
         % %     kHYD = 0;
         % % else
@@ -492,11 +493,11 @@ end
         % % end
         % kHYD =100;                  %(µM/s)
         % kH = 1000;                  %µM
-
-        % ATP = ATP_itot - CATP;
+        % kPROD = 100;                %(µM/s)
+        % % ATP = ATP_itot - CATP;
         Parv = Parv_itot - CaParv - MgParv;
         % Mg = 1000;                  %(µM) constant concentration
-        % 
+        
         %Crossbridge Cycling (Calcium and Troponin Binding Process) 
         % k_onTrop = 0.0885*1000;     %(µM/s)
         % k_offTrop = 0.115*1000;     %s^-1
@@ -510,7 +511,7 @@ end
         % hP = 0.18*1000;             %s^-1 backward rate of power stroke 
         % g0 = 0.12*1000;             %s^-1 rate of Post_pow crossbridge detachment 
          g0_prime = g0 / 700; 
-        % %Calcium system 
+        %Calcium system 
         % Trop_tot = 140;
         Trop = Trop_tot - CaTrop - CaCaTrop - D_0 - D_1 - D_2 - Pre_Pow - Post_Pow;
         dCT = k_onTrop*c_i*Trop - k_offTrop*CaTrop - k_onTrop*c_i*CaTrop + k_offTrop*CaCaTrop - k_on0*CaTrop + k_off0*D_1; % Calcium buffering with Troponin
@@ -556,19 +557,18 @@ end
 
         Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot +  kHYD*(ATP / (kH + ATP) ); %(D_2*f0)/kHYD  (D_2*f0*p_i_SR)/1000
         Jprod =  kPROD * (700 - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 + 
-        dMA = k_onMA*Mg*ATP - k_offMA*MgATP; 
+        dMA = k_onMA*Mg*ATP - k_offMA*MgATP; %did not include diffusion terms from Supplemental
         dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0_prime*Post_Pow*ATP);
         
         %SR Phosphate 
-        % PP = 6;                     %mM^2
+        % PP = 6e6;                     %mM^2
         % % p_i = 0.05;                 %mM
         PC_tot = p_i_SR * c_SR;      
-        % kP = 3.62*10^-3;            %(µM^3/s)
-        % V_SR = 0.99 * vol_SR;       %(µM^3)    Bulk SR Volume 
-        % Ap = 1*1000;                %(mM^2/s)
-        % Bp = 0.0001*1000;           %(mM/s)
-        
-        
+        % V_SR = 0.05*1.1*pi*(0.5^2);       %(µm^3)    Bulk SR Volume
+        % kP = 70;            %(µm^3/s) 
+        % Ap = (1/1e6);               %(mM^-3/s)
+        % Bp = (0.0001/1e3);           %(mM^-2/s)
+
         % dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot) + Bp * (PiCa_SR);
         % 
         % dPiCa = Ap * (PC_tot) - Bp*(PiCa_SR);
@@ -587,10 +587,12 @@ end
         else
             dPiCa = -Bp * PiCa_SR* (PP - PC_tot) ;
         end
+        % 
         %Myoplasmic Phosphate
         % Vmyo = 0.99*vol_myo;        %(µM^3)    Bulk Myoplasm Volume
-        % bP = 2.867*10^-2;           %s^-1  
-        dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR); 
+        % % bP = 2.867*10^-2;           %s^-1  
+        dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow*(p_i_Myo / p_i_Myo_init)) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR); 
+
 
 
         % Rapid buffering with CaSQ

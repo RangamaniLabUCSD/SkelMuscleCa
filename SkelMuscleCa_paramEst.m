@@ -15,12 +15,13 @@
 %                  Explanation of corresponding exit condition avialabel at
 %                  https://www.mathworks.com/help/gads/particleswarm.html)
 
-function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(~,lb,ub,yinit,p,Createplot)
+function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(lb,ub,yinit,p,Createplot)
 
-psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 20, 'SwarmSize', 2);
+psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 20, 'SwarmSize', 2); %set swarmsize to 30 for TSCC and 20 to stall iter
 
 % pSol Results
 % load PSO_25-Apr-2024.mat pSol
+
 
 % To check default parameter behavior
 numParam = length(lb);
@@ -28,11 +29,14 @@ pVec = ones(1,numParam) ;
 pToObj(pVec);
 
 delete(gcp('nocreate'))
-% parpool(50)
+% parpool(30) %% **CHANGE SWARMSIZE!** and save file location 
 [pSol,fval,exitflag] = particleswarm(@pToObj,numParam,lb,ub,psOptions);
 pToObj(pSol)
 filename = "PSO_" + date +".mat";
-save(filename);
+% save(filename);
+% save('/SkelMuscle/PSO_29_July.mat',filename)
+% save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename'));
+save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
 
     function objVal = pToObj(pVec)
         %% Function for calculating the objective value for estimation
@@ -51,7 +55,10 @@ save(filename);
         CompV = cell(1,5);
         CompC = cell(1,5);
         StartTimer = tic;
-        param = p(:) .* pVec(:);
+        param = p(:); %.* pVec(:); % initialize all parameter values to defaults
+        highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
+        param(highSensIdx) = param(highSensIdx) .* pVec(:);
+
         tSS = 0:1000;
         penaltyVal = 100000;
 
@@ -86,7 +93,7 @@ save(filename);
             if any(isnan(ySS))
                 objVal = penaltyVal;
                 return
-            elseif ySS(end,2) < 800 || ySS(end,2) > 2000 || param(12) > 0.4*ySS(end,2)
+            elseif ySS(end,2) < 800 || ySS(end,2) > 2000 || param(12) > 0.5*ySS(end,2) %changed from 0.4
                 objVal = penaltyVal;
                 return
             end

@@ -25,34 +25,38 @@ yinit = [
     0;	    	% yinit(23) is the initial condition for 'Post_Pow'
     0;	    	% yinit(24) is the initial condition for 'MgATP'
     8000;       % yinit(25) is the initial condition for 'ATP'
-    10          % yinit(26) is the initial condition for 'p_i_SR'
-    0.001       % yinit(27) is the initial condition for 'PiCa'
-    0.001       % yinit(28) is the initial condition for 'Pi_Myo'
+    3000        % yinit(26) is the initial condition for 'p_i_SR'
+    0           % yinit(27) is the initial condition for 'PiCa'
+    3000        % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
 % Importing parameters 
 param = importdata('InputParam1.xlsx');
 p =  param.data;
-
+highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
 % Setting bounds for parameters
-lb = 0.8*ones(length(p),1); 
-ub = 1.25*ones(length(p),1);
-% limits for NCX, SERCA, PMCA
-lb([20, 42, 43]) = 0.25;
-ub([20, 42, 43]) = 1.0;
+lb = 0.8*ones(length(highSensIdx),1); 
+ub = 1.25*ones(length(highSensIdx),1);
+% % limits for NCX, SERCA, PMCA
+% lb([20, 42, 43]) = 0.25;
+% ub([20, 42, 43]) = 1.0;
+lb(highSensIdx == 43) = 0.25;
+ub(highSensIdx == 43) = 1.0;
 % limits for SR Ca2+ leak
-lb(44) = 0.1;
-ub(44) = 0.4;
-% limits for sodium leak through SL
-lb(45) = 0;
-ub(45) = 2.5;
-timer1 = tic;
+lb(highSensIdx == 44) = 0.1;
+ub(highSensIdx == 44) = 0.4;
+% % limits for sodium leak through SL
+lb(highSensIdx == 45) = 0;
+ub(highSensIdx == 45) = 2.5;
+% timer1 = tic;
 
 % Particle Swarm Optimization 
-Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
-[pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst([0 1],lb, ub, yinit, p,Createplot);
+Createplot = 1; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
+[pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst(lb, ub, yinit, p,Createplot);
 
 
-toc(timer1)
+% toc(timer1)
 filename_fig = "BestFnva"+ date + ".jpg";
-saveas(gcf,filename_fig)
+% saveas(gcf,filename_fig)
+saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
+% saveas(gcf,fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename_fig));
