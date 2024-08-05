@@ -15,44 +15,34 @@ yinit = [
     154500.0;	% yinit(13) is the initial condition for 'K_i'
     387;        % yinit(14) is the initial condition for 'CaParv'
     1020;       % yinit(15) is the initial condition for 'MgParv'
-    0.3632;     % yinit(16) is the inital consition for 'CATP'
+    0.3632;     % yinit(16) is the initial consition for 'CATP'
     10.004;     % yinit(17) is the initial condition for 'CaTrop'
-    0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
-    0;	    	% yinit(19) is the initial condition for 'D_0'
-    0;	    	% yinit(20) is the initial condition for 'D_1'
-    0;	    	% yinit(21) is the initial condition for 'D_2'
-    0;	    	% yinit(22) is the initial condition for 'Pre_Pow'
-    0;	    	% yinit(23) is the initial condition for 'Post_Pow'
-    0;	    	% yinit(24) is the initial condition for 'MgATP'
-    8000;       % yinit(25) is the initial condition for 'ATP'
-    3000        % yinit(26) is the initial condition for 'p_i_SR'
-    0           % yinit(27) is the initial condition for 'PiCa'
-    3000        % yinit(28) is the initial condition for 'Pi_Myo'
     ];
+
 
 param = importdata('InputParam1.xlsx'); % load default parameters
 p0 =  param.data;
-highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70];
-load PSO_31-Jul-2024.mat pSol % load best fit parameters from PSO - particle swarm optimization
-p0(highSensIdx) = pSol' .* p0(highSensIdx);
-pPSO = p0;
-
-
-% param = importdata('InputParam1.xlsx'); % load default parameters
-% p0 =  param.data;
-% load PSO_25-Apr-2024.mat pSol % load best fit parameters from PSO - particle swarm optimization
-% % pSol(12) = pSol(12)*0.2;
-% pSol(46:77) = 1;
-% pPSO = pSol .* p0';
+load PSO_25-Apr-2024.mat pSol % load best fit parameters from PSO - particle swarm optimization
+% pSol(12) = pSol(12)*0.2;
+pPSO = pSol .* p0';
 
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
-tSol = 0:.0001:10;
+tSol = 0:.0001:0.25;
 freq = 60; 
 % ySS(end,26) = 0;
 % ySS(end,28) = 2500;
 [Time,Y] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
 % plot calcium (the 8th variable)
 
+[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p0, tic, 2);
+tSol = 0:.0001:10;
+[Time,Y] = SkelMuscleCa_dydt(tSol, 20, 0, ySS(end,:), p0, tic, 1);
+
+figure
+plot(Time, Y(:,8))
+figure
+plot(Time, Y(:,5))
+%%
 
 % figure
 % scatter(Time, max(Y(:,8)))
@@ -72,17 +62,8 @@ title('Time vs Ca2+ SR')
 xlabel('Time (seconds)');
 ylabel('[Ca2+]_{SR} (µM)'); 
 % % 
-figure
-plot(Time, Y(:,25))
-title('Time vs ATP, freq=60 Hz')
-xlabel('Time (seconds)');
-ylabel('[ATP] (µM)'); 
 
-figure
-plot(Time, Y(:,23))
-title('Time vs Force, freq=60 Hz')
-xlabel('Time (seconds)');
-ylabel('Post Power Stroke'); 
+
 figure
 plot(Time, Y(:,5))
 title('Time vs SL Voltage ')
@@ -121,26 +102,6 @@ ylabel('SL Voltage');
 % ylabel('[CaTrop] (µM)'); 
 % 
 figure
-plot(Time, Y(:,28))
-figure
-subplot(3,1,1)
-plot(Time, Y(:,26))
-title('time vs p_i_{SR}, freq=60 Hz')
-legend('p_i_{SR}');  
-xlabel('Time (seconds)');
-ylabel('[p_i_{SR}] (µM)'); 
-subplot(3,1,2)
-plot(Time, Y(:,27))
-title('time vs PiCa, freq=60 Hz')
-legend('PiCa Conc');  
-xlabel('Time (seconds)');
-ylabel('[PiCa] (µM)'); 
-subplot(3,1,3)
-plot(Time, Y(:,28))
-title('time vs Pi_{Myo}, freq=60 Hz')
-legend('Pi_{Myo} Conc');  
-xlabel('Time (seconds)');
-ylabel('[Pi_{Myo}] (µM)'); 
 
 % 
 % figure
@@ -157,6 +118,15 @@ ylabel('[Pi_{Myo}] (µM)');
 % xlabel('Time (seconds)');
 % ylabel('[A2] (µM)'); 
 %% 
+[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p0, tic, 2);
+tSol = 0:.0001:10;
+[Time,Y] = SkelMuscleCa_dydt(tSol, 20, 0, ySS(end,:), p0, tic, 1);
+
+figure
+plot(Time, Y(:,8))
+figure
+plot(Time, Y(:,5))
+%%
 % figure
 % subplot(3,1,1)
 % plot(Time, Y(:,8))

@@ -17,17 +17,6 @@ yinit = [
     1020;       % yinit(15) is the initial condition for 'MgParv'
     0.3632;     % yinit(16) is the inital consition for 'CATP'
     10.004;     % yinit(17) is the initial condition for 'CaTrop'
-    0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
-    0;	    	% yinit(19) is the initial condition for 'D_0'
-    0;	    	% yinit(20) is the initial condition for 'D_1'
-    0;	    	% yinit(21) is the initial condition for 'D_2'
-    0;	    	% yinit(22) is the initial condition for 'Pre_Pow'
-    0;	    	% yinit(23) is the initial condition for 'Post_Pow'
-    0;	    	% yinit(24) is the initial condition for 'MgATP'
-    8000;       % yinit(25) is the initial condition for 'ATP'
-    3000        % yinit(26) is the initial condition for 'p_i_SR'
-    0           % yinit(27) is the initial condition for 'PiCa'
-    3000        % yinit(28) is the initial condition for 'Pi_Myo'
     ];
 
 % Importing parameters 
@@ -37,13 +26,12 @@ param = importdata('InputParam1.xlsx');
 % you can test different values of default parameters here as well!
 p0 =  param.data;
 numParam = length(p0);
-highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
 % p0([20,42,43]) = 0.2*p0([20,42,43]); % NCX, SERCA, PMCA
 % p0(44) = 0.1*p0(44); % leak SR1
 pVec = ones(1,numParam);
-samples = 100; % number of random samples to generate
+samples = 10; % number of random samples to generate
 sigmaTest = 0.2; % geometric standard deviation controlled extent of random changes in parameters
-randPop = exp(sigmaTest*randn([samples, length(highSensIdx)]));
+randPop = exp(sigmaTest*randn([samples, length(p0)]));
 objVals = zeros(samples, 1);
 simSaved = cell(samples, 1);
 figure
@@ -54,10 +42,10 @@ for i = 1:samples
         continue
     end
     % look at experiment 2 results used in fitting
-    simSaved{i} = simSavedCur{2};
+    simSaved{i} = simSavedCur{7};
     % note that the index of 9 actually indicates variable number 8
     % (calcium), the first column of simSaved{i} is time
-    plot(simSaved{i}(:,1), simSaved{i}(:,9))
+    plot(simSaved{i}(:,1), simSaved{i}(:,6))
     drawnow
     fprintf("%d\n", i)
 end
@@ -65,7 +53,7 @@ end
 % plot the best solution over an extended time
 [~,bestIdx] = min(objVals);
 pBest = p0(:);
-pBest = randPop(bestIdx,:).*pBest(highSensIdx);
+pBest = randPop(bestIdx,:).*p0'; 
 [~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pBest, tic, 2);
 tSol = 0:.0001:10;
 [Time,Y] = SkelMuscleCa_dydt(tSol, 100, 0, ySS(end,:), pBest, tic, 2);
@@ -74,11 +62,9 @@ plot(Time, Y(:,8))
 
 %% plot the solution from PSO over time compared to default parameters
 p0 =  param.data;
-load PSO_30-Jul-2024.mat pSol
+load PSO_25-Apr-2024.mat pSol
 % pSol(12) = pSol(12)*0.2;
-highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
-pPSO = p0(:);
-pPSO(highSensIdx) = pSol(:).*pPSO(highSensIdx);
+pPSO = pSol.*p0';
 fprintf("Objective value from PSO is %.3f\n", pToObj(pSol, p0, yinit, true))
 
 %% plot the solution from PSO over an extended time
@@ -110,10 +96,8 @@ InterpComp_base = cell(1,9);
 CompV = cell(1,5);
 CompC = cell(1,5);
 StartTimer = tic;
-param = p(:); %.* pVec(:); % initialize all parameter values to defaults
-highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
-param(highSensIdx) = param(highSensIdx) .* pVec(:);
-
+param = p(:) .* pVec(:) ; % initialize all parameter values to defaults
+ 
 tSS = 0:1000;
 penaltyVal = 100000;
 
@@ -249,7 +233,7 @@ if Createplot
         x = 0:0.0001:T_max(i);
         Time_Comp = [x, fliplr(x)];
         Ca_Comp = [InterpExpt{i} + 2*sigma_C, fliplr(InterpExpt{i} - 2*sigma_C)];
-        plot(0:0.0001:T_max(i),InterpComp{i},'LineWidth',2, 'color',[0.00,0.00,1.00]) %'b',
+        plot(0:0.0001:T_max(i),InterpComp{i},'LineWidth',2, 'color',[0.49,0.18,0.56]) %'b',
         hold on
         plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
         plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2,'Linestyle','--')
