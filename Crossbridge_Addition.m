@@ -15,7 +15,7 @@ yinit = [
     154500.0;	% yinit(13) is the initial condition for 'K_i'
     387;        % yinit(14) is the initial condition for 'CaParv'
     1020;       % yinit(15) is the initial condition for 'MgParv'
-    0.3632;     % yinit(16) is the inital consition for 'CATP'
+    0.3632;     % yinit(16) is the initial consition for 'CATP'
     10.004;     % yinit(17) is the initial condition for 'CaTrop'
     0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
     0;	    	% yinit(19) is the initial condition for 'D_0'
@@ -46,7 +46,7 @@ pPSO = p0;
 % pPSO = pSol .* p0';
 
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
-tSol = 0:.0001:10;
+tSol = 0:.0001:0.25;
 freq = 60; 
 % ySS(end,26) = 0;
 % ySS(end,28) = 2500;

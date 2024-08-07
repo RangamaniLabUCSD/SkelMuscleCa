@@ -33,11 +33,11 @@ yinit = [
 % Importing parameters 
 param = importdata('InputParam1.xlsx');
 p =  param.data;
-highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
+highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
 % Setting bounds for parameters
 lb = 0.8*ones(length(highSensIdx),1); 
 ub = 1.25*ones(length(highSensIdx),1);
-% % limits for NCX, SERCA, PMCA
+% limits for NCX, SERCA, PMCA
 % lb([20, 42, 43]) = 0.25;
 % ub([20, 42, 43]) = 1.0;
 lb(highSensIdx == 43) = 0.25;
@@ -51,12 +51,12 @@ ub(highSensIdx == 45) = 2.5;
 % timer1 = tic;
 
 % Particle Swarm Optimization 
-Createplot = 1; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
+Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
 [pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst(lb, ub, yinit, p,Createplot);
 
 
 % toc(timer1)
 filename_fig = "BestFnva"+ date + ".jpg";
 % saveas(gcf,filename_fig)
-saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
-% saveas(gcf,fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename_fig));
+% saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
+saveas(gcf,fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename_fig));

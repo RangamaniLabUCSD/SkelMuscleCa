@@ -1,5 +1,5 @@
 clear 
-load('MorrisResults5-10.mat')
+load('MorrisResults8-2.mat')
 
 % QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13), yInf(23), MaxCaF,MaxVF, MaxPost, AvgF, AvgPost, AvgVolt];
 
@@ -33,7 +33,7 @@ for k= 1:length(graph_names)
         end
     end
 
-    dx= 0.001; dy=0.8;
+ 
     label_length = length(MorrisAnalysis.Results.VariableNames(1,:));
     label(1:label_length,n) = MorrisAnalysis.Results.VariableNames(1,:).';
     new_label(1:label_length,n) = MorrisAnalysis.Results.VariableNames(1,:).';
@@ -41,7 +41,7 @@ for k= 1:length(graph_names)
     % labels_above_ten = MorrisAnalysis.Results.VariableNames(1,:).' ;
     for j= 1:length(muVec(:,k))
         if muVec(j,n) ==1
-            text(MorrisAnalysis.Results.MuStar(j,n)+dx, MorrisAnalysis.Results.Std(j,n)+dy, label(j,n));
+            text(MorrisAnalysis.Results.MuStar(j,n), MorrisAnalysis.Results.Std(j,n), label(j,n));
         end
       
         if muVec(j,n) ==0
