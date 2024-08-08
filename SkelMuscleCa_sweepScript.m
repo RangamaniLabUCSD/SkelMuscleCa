@@ -81,9 +81,11 @@ load PSO_05-Aug-2024.mat pSol
 highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93];
 pPSO = p0(:);
 pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
-% pSol(12) = pSol(12)*0.2;
-% pSol(46:94) = 1;
+% load PSO_25-Apr-2024.mat pSol
+% % pSol(12) = pSol(12)*0.2;
+% pPSO(1:45) = pSol(:) .* p0(1:45);
 % pPSO = pSol.*p0';
+% save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/','ppPSO.mat'))
 fprintf("Objective value from PSO is %.3f\n", pToObj(pSol, p0, yinit, true))
 
 %% plot the solution from PSO over an extended time
@@ -115,7 +117,7 @@ InterpComp_base = cell(1,9);
 CompV = cell(1,5);
 CompC = cell(1,5);
 StartTimer = tic;
-param = p(:) ;% .* pVec(:)'; % initialize all parameter values to defaults
+param = p(:)  ;%.* pVec(:)'; % initialize all parameter values to defaults
 % highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
 highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93];
 param(highSensIdx) = param(highSensIdx) .* pVec(:);

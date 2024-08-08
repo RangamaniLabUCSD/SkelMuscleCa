@@ -379,6 +379,8 @@ end
         J_r6 = ((SOCEProb_inf - SOCEProb) ./ tau_SOCEProb);
 
         %% SERCA
+        % nu_SERCA= 1226.60933869134;
+
         volFactor = (vol_myo ./ (PI .* 0.26));
         nu_SERCA = nu_SERCA .* volFactor;
         LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i)) * (ATP / (kATP + ATP) );
@@ -394,6 +396,9 @@ end
         J_CaLeak_SL = ((I_CaLeak_SL ./ (carrierValence_CaLeak_SL .* F)) .* 1.0E09);
 
         %% SR Calcium Leak
+
+        % nu_leakSR = 0.020446711;
+
         nu_leakSR = nu_leakSR * volFactor;
         J_CaLeak_SR = 602.214179 * nu_leakSR * (c_SR - c_i);
 
@@ -423,18 +428,18 @@ end
         device_SL.Capacitance = (C_SL .* SA_SL) .* (Q10C_SL .^ QCorr);
 
          %% Calcium buffering in the myoplasm and SR
-        % k_onATP = 0.15*1000;        %(µM s)^-1  rate of Ca bound to ATP 
-        % k_offATP = 30*1000;         %s^-1
+        k_onATP = 0.15*100;        %(µM s)^-1  rate of Ca bound to ATP 
+        k_offATP = 30*1000;         %s^-1
         % k_onParvCa = 41.7;          %(µM s)^-1
         % k_offParvCa = 0.5;          %s^-1
-        % k_onParvMg = 0.033*(1/1.5);         %(µM s)^-1
-        % k_offParvMg = 3;            %s^-1
+        k_onParvMg = 0.033;         %(µM s)^-1
+        k_offParvMg = 3;            %s^-1
         % Parv_itot = 1500;           %(µM)
         % % ATP_itot = 8000;            %(µM)
         % 
         % %ATP Addition 
-        % k_onMA = 1.5;               %(µM/s) Mg2+ binding to ATP
-        % k_offMA = 0.150;              %s^-1
+        k_onMA = 15;               %(µM/s) Mg2+ binding to ATP
+        k_offMA = 30000;              %s^-1
         % % if freq == 0
         % %     kHYD = 0;
         % % else
@@ -448,8 +453,10 @@ end
         % Mg = 1000;                  %(µM) constant concentration
         
         %Crossbridge Cycling (Calcium and Troponin Binding Process) 
-        % k_onTrop = 0.0885*1000;     %(µM/s)
-        % k_offTrop = 0.115*1000;     %s^-1
+        k_onTrop1 = 1.77*100;     %(µM/s)
+        k_offTrop1 = 1544;     %s^-1
+        k_onTrop2 = 0.0885*1000;     %(µM/s)
+        k_offTrop2 = 0.171*100;     %s^-1
         % k_on0 = 0;                  %s^-1 RU activation rate w/ no c_i bound
         % k_off0 = 0.15*1000;         %s^-1 RU deactivation rate w/ no c_i bound
         % k_onCa = 0.15*1000;         %s^-1 RU activation rate w/ 2 c_i bound
@@ -463,16 +470,16 @@ end
         %Calcium system 
         % Trop_tot = 140;
         Trop = Trop_tot - CaTrop - CaCaTrop - D_0 - D_1 - D_2 - Pre_Pow - Post_Pow;
-        dCT = k_onTrop*c_i*Trop - k_offTrop*CaTrop - k_onTrop*c_i*CaTrop + k_offTrop*CaCaTrop - k_on0*CaTrop + k_off0*D_1; % Calcium buffering with Troponin
+        dCT = k_onTrop1*c_i*Trop - k_offTrop1*CaTrop - k_onTrop2*c_i*CaTrop + k_offTrop2*CaCaTrop - k_on0*CaTrop + k_off0*D_1; % Calcium buffering with Troponin
         dCA = k_onATP*c_i*ATP - k_offATP*CATP; % Calcium buffering with ATP
         dCP = k_onParvCa*c_i*Parv - k_offParvCa*CaParv; % Calcium buffering with Parvalbumin
         dMP = k_onParvMg*Mg * Parv - k_offParvMg*MgParv; % Mg buffering with Troponin
-        dCCT = k_onTrop*c_i*CaTrop - k_offTrop*CaCaTrop - k_onCa*CaCaTrop + k_offCa*D_2;
+        dCCT = k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop - k_onCa*CaCaTrop + k_offCa*D_2;
        
         %Crossbridge attach/detachment 
-        dD0 = -k_onTrop*c_i*D_0 + k_offTrop*D_1 + k_on0*Trop - k_off0*D_0;
-        dD1 = k_onTrop*c_i*D_0 - k_offTrop*D_1 + k_on0*CaTrop - k_off0*D_1 - k_onTrop*c_i*D_1 + k_offTrop*D_2;
-        dD2 = k_onTrop*c_i*D_1 - k_offTrop*D_2 + k_onCa*CaCaTrop - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + (g0_prime*Post_Pow*ATP);
+        dD0 = -k_onTrop1*c_i*D_0 + k_offTrop1*D_1 + k_on0*Trop - k_off0*D_0;
+        dD1 = k_onTrop1*c_i*D_0 - k_offTrop1*D_1 + k_on0*CaTrop - k_off0*D_1 - k_onTrop2*c_i*D_1 + k_offTrop2*D_2;
+        dD2 = k_onTrop2*c_i*D_1 - k_offTrop2*D_2 + k_onCa*CaCaTrop - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + (g0_prime*Post_Pow*ATP);
 
         %Concentration of Pre/Post Power Stroke Filaments 
         dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow*(p_i_Myo /p_i_Myo_init) - h0*Pre_Pow;
@@ -586,7 +593,7 @@ end
             (1000 /device_SL.Capacitance) * (SA_SL * (I_CaLeak_SL + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE) + I_SL);    % rate for Voltage_SL (5)
             KFlux_SL_myo * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i (6)
             (J_Cl .* KFlux_SL_myo);    % rate for Cl_i (7)
-            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA - (k_onTrop*c_i*Trop - k_offTrop*CaTrop + k_onTrop*c_i*CaTrop - k_offTrop*CaCaTrop + k_onTrop*c_i*D_0 - k_offTrop*D_1 + k_onTrop*c_i*D_1 - k_offTrop*D_2); % rate for c_i (8)
+            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA - (k_onTrop1*c_i*Trop - k_offTrop1*CaTrop + k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop + k_onTrop1*c_i*D_0 - k_offTrop1*D_1 + k_onTrop2*c_i*D_1 - k_offTrop2*D_2); % rate for c_i (8)
             J_r4;    % rate for n (9)
             J_r2;    % rate for m (10)
             J_r1;    % rate for h (11)
