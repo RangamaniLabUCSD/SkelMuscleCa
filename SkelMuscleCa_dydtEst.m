@@ -338,6 +338,7 @@ end
 
         %% Na-Calcium Exchanger
         % KmNa_i_NCX = (12.29 .* 1000.0);
+        g_NCX = 0.129  *0.1; %%%%%
         s1_NCX = (exp((nu_NCX .* Voltage_SL .* F ./ (R .* T))) .* (Na_i ^ 3.0) .* c_EC);
         Ka_NCX = (1.0 ./ (1.0 + ((Kdact_NCX ./ c_i) ^ 2.0)));
         Qcorr_NCX = ((T - 310.0) ./ 10.0);
@@ -355,7 +356,7 @@ end
         Qcorr_NCX = ((T - 310.0) ./ 10.0);
 
         I_NCX_C = ((2.0 .* (g_NCX .* (Q10NCX ^ Qcorr_NCX) .* Ka_NCX_C .* (s1_NCX - s2_NCX) ./ s3_NCX_C ./ (1.0 + (ksat_NCX .* exp(((nu_NCX - 1.0) .* Voltage_SL ./ (R .* T ./ F))))))) .* (1.0 + TTFrac));
-        J_NCX_C =  - ((I_NCX_C ./ (carrierValence_NCX_C .* F)) .* 1E09);
+        J_NCX_C =  - ((I_NCX_C ./ (carrierValence_NCX_C .* F)) .* 1E09) ;
 
         %% SOCE
         % if any(expt == [1,3,5,7])
@@ -370,28 +371,28 @@ end
             continuousStim = false;
         end
         
-        g_SOCE = (0.01 ./ 210.44);
+        g_SOCE = (0.01 ./ 210.44)  ;
         E_Ca = (log((c_EC ./ c_i)) .* (R .* T) ./ (2.0 .* F));
         I_SOCE = ((g_SOCE .* (E_Ca - Voltage_SL ) .* (SOCEProb ./ SOCEProbUnit)) .* (1.0 + TTFrac));
-        J_SOCE = ((I_SOCE ./ (carrierValence_SOCE .* F)) .* 1E09);
+        J_SOCE = ((I_SOCE ./ (carrierValence_SOCE .* F)) .* 1E09)  ;
 
         SOCEProb_inf = (1.0 ./ (1.0 + ((c_SR ./ c_ref) ^ 4.0)));
         J_r6 = ((SOCEProb_inf - SOCEProb) ./ tau_SOCEProb);
 
         %% SERCA
-        % nu_SERCA= 1226.60933869134;
+        nu_SERCA= 1226.60933869134;
 
         volFactor = (vol_myo ./ (PI .* 0.26));
-        nu_SERCA = nu_SERCA .* volFactor;
-        LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i)) * (ATP / (kATP + ATP) );
+        nu_SERCA =( nu_SERCA .* volFactor ) ; %%%%%
+        LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * c_i ./ (K_SERCA + c_i)) * (ATP / (kATP + ATP) ) ;
 
         %% PMCA
-        g_PMCA = (g_PMCA * vol_myo) / (700 * SA_SL );
+        g_PMCA = ((g_PMCA * vol_myo) / (700 * SA_SL ))*0.1  ; %%%%%
         I_PMCA = (Q10PMCA .^ QCorr) * ( - (g_PMCA .* c_i ./ (K_PMCA + c_i)) .* (1.0 + TTFrac));
-        J_PMCA =  - ((I_PMCA ./ (carrierValence_PMCA .* F)) .* 1E09) * (ATP / (kATP + ATP) );
+        J_PMCA =  - ((I_PMCA ./ (carrierValence_PMCA .* F)) .* 1E09) * (ATP / (kATP + ATP) ) ;
 
         %% SL Calcium leak
-        % g_SLLeak = 5.0 .* 2.0E-6;
+        g_SLLeak = (5.0 .* 2.0E-6 );
         I_CaLeak_SL = ((g_SLLeak .* (E_Ca - Voltage_SL )) .* (1.0 + TTFrac));
         J_CaLeak_SL = ((I_CaLeak_SL ./ (carrierValence_CaLeak_SL .* F)) .* 1.0E09);
 
@@ -399,7 +400,7 @@ end
 
         % nu_leakSR = 0.020446711;
 
-        nu_leakSR = nu_leakSR * volFactor;
+        nu_leakSR = (nu_leakSR * volFactor) ;
         J_CaLeak_SR = 602.214179 * nu_leakSR * (c_SR - c_i);
 
         %% DHPR - RyR
@@ -457,19 +458,19 @@ end
         k_offTrop1 = 1544;     %s^-1
         k_onTrop2 = 0.0885*1000;     %(µM/s)
         k_offTrop2 = 0.171*100;     %s^-1
-        % k_on0 = 0;                  %s^-1 RU activation rate w/ no c_i bound
-        % k_off0 = 0.15*1000;         %s^-1 RU deactivation rate w/ no c_i bound
-        % k_onCa = 0.15*1000;         %s^-1 RU activation rate w/ 2 c_i bound
-        % k_offCa = 0.05*1000;        %s^-1 RU deactivation rate w/ 2 c_i bound
-        % f0 = 1.5*1000;              %s^-1 rate of crossbridge attachment 
-        % fP = 15*1000;               %s^-1 rate of Pre_Pow stroke crossbridge detachment 
-        % h0 = 0.24*1000;             %s^-1 forward rate of power stroke 
-        % hP = 0.18*1000;             %s^-1 backward rate of power stroke 
-        % g0 = 0.12*1000;             %s^-1 rate of Post_pow crossbridge detachment 
+        k_on0 = 0.15;                  %s^-1 RU activation rate w/ no c_i bound
+        k_off0 = 0 ;         %s^-1 RU deactivation rate w/ no c_i bound
+        k_onCa = 0.15;         %s^-1 RU activation rate w/ 2 c_i bound
+        k_offCa = 0.05;        %s^-1 RU deactivation rate w/ 2 c_i bound
+        f0 = 1.5 ;              %s^-1 rate of crossbridge attachment 
+        fP = 15 ;               %s^-1 rate of Pre_Pow stroke crossbridge detachment 
+        h0 = 0.24 ;             %s^-1 forward rate of power stroke 
+        hP = 0.18 ;             %s^-1 backward rate of power stroke 
+        g0 = 0.12 ;             %s^-1 rate of Post_pow crossbridge detachment 
          g0_prime = g0 / 700; 
         %Calcium system 
         % Trop_tot = 140;
-        Trop = Trop_tot - CaTrop - CaCaTrop - D_0 - D_1 - D_2 - Pre_Pow - Post_Pow;
+        Trop = Trop_tot  - CaTrop - CaCaTrop - D_0 - D_1 - D_2 - Post_Pow - Pre_Pow;
         dCT = k_onTrop1*c_i*Trop - k_offTrop1*CaTrop - k_onTrop2*c_i*CaTrop + k_offTrop2*CaCaTrop - k_on0*CaTrop + k_off0*D_1; % Calcium buffering with Troponin
         dCA = k_onATP*c_i*ATP - k_offATP*CATP; % Calcium buffering with ATP
         dCP = k_onParvCa*c_i*Parv - k_offParvCa*CaParv; % Calcium buffering with Parvalbumin
@@ -486,7 +487,7 @@ end
         dPost = -hP*Post_Pow*(p_i_Myo / p_i_Myo_init) + h0*Pre_Pow - (g0_prime*Post_Pow*ATP);
         
         %ATP
-        J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo );
+        J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo ) ;
         J_PMCA_tot = J_PMCA * KFlux_SL_myo;
         J_NKX_tot2 = J_NKX_tot;
 
