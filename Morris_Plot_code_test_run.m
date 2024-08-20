@@ -1,9 +1,9 @@
 clear 
-load('MorrisResults8-2.mat')
+load('MorrisResults8-15-2.mat')
 
-% QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13), yInf(23), MaxCaF,MaxVF, MaxPost, AvgF, AvgPost, AvgVolt];
+% QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13), yInf(23), MaxCaF,MaxVF, MaxPost, AvgF, AvgPost, AvgVolt, VoltWidth];
 
-graph_names = {"Steady State SR Calcium", "SS Voltage_{PM}", "SS Sodium Ion","SS Chlorine Ion","SS Myoplasmic Calcium","SS Potassium Ion","SS Force", "Max Calcium Myo","Max Voltage","Max Force","Avg Myo Calcium","Avg Force","Avg Voltage"};
+graph_names = {"Steady State SR Calcium", "SS Voltage_{PM}", "SS Sodium Ion","SS Chlorine Ion","SS Myoplasmic Calcium","SS Potassium Ion","SS Force", "Max Calcium Myo","Max Voltage","Max Force","Avg Myo Calcium","Avg Force","Avg Voltage", "AP Width"};
    
 n = 1;
 muVec = zeros(size(MorrisAnalysis.Results.MuStar(:,1:length(graph_names))));

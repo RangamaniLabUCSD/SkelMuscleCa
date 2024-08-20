@@ -40,10 +40,11 @@ numParam = length(p0);
 % highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
 highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93];
 % p0([20,42,43]) = 0.2*p0([20,42,43]); % NCX, SERCA, PMCA
-% p0(44) = 0.1*p0(44); % leak SR1
+p0([42,43]) = 0.1*p0([42,43]); % NCX, SERCA, PMCA
+p0(44) = 0.1*p0(44); % leak SR1
 pVec = ones(1,numParam);
-samples = 10; % number of random samples to generate
-sigmaTest = 0.2; % geometric standard deviation controlled extent of random changes in parameters
+samples = 10 ; % number of random samples to generate
+sigmaTest = 0; % geometric standard deviation controlled extent of random changes in parameters
 randPop = exp(sigmaTest*randn([samples, length(highSensIdx)]));
 objVals = zeros(samples, 1);
 simSaved = cell(samples, 1);
@@ -62,11 +63,11 @@ for i = 1:samples
     drawnow
     fprintf("%d\n", i)
 end
-
+%%
 % plot the best solution over an extended time
 [~,bestIdx] = min(objVals);
 pBest = p0(:);
-pBest = randPop(bestIdx,:).*pBest(highSensIdx);
+pBest(highSensIdx) = randPop(bestIdx,:)'.*pBest(highSensIdx);
 [~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pBest, tic, 2);
 tSol = 0:.0001:10;
 [Time,Y] = SkelMuscleCa_dydt(tSol, 100, 0, ySS(end,:), pBest, tic, 2);

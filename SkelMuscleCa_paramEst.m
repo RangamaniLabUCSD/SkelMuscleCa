@@ -35,8 +35,8 @@ pToObj(pSol)
 filename = "PSO_" + date +".mat";
 % save(filename);
 % save('/SkelMuscle/PSO_29_July.mat',filename)
-save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename'));
-% save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
+% save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename'));
+save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
 
     function objVal = pToObj(pVec)
         %% Function for calculating the objective value for estimation
@@ -56,8 +56,11 @@ save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename'));
         CompC = cell(1,5);
         StartTimer = tic;
         param = p(:); % pVec(:); % initialize all parameter values to defaults
-        highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
+        highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,32,33,34,35,36,37,38,39,40,42,43,44,45,46,47,48,49,50,52,54,55,56,57,58,59,62,65,67,68,69,70,74,75,76,78,79,80,81,82,83,84,85,87,89,90,92,93,94,95,96]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
         param(highSensIdx) = param(highSensIdx) .* pVec(:);
+
+        yinit(26) = param(76);
+        yinit(28) = param(77);
 
         tSS = 0:1000;
         penaltyVal = 100000;

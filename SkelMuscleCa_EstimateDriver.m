@@ -33,7 +33,9 @@ yinit = [
 % Importing parameters 
 param = importdata('InputParam1.xlsx');
 p =  param.data;
-highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
+% highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
+
+highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,32,33,34,35,36,37,38,39,40,42,43,44,45,46,47,48,49,50,52,54,55,56,57,58,59,62,65,67,68,69,70,74,75,76,78,79,80,81,82,83,84,85,87,89,90,92,93,94,95,96];
 % Setting bounds for parameters
 lb = 0.8*ones(length(highSensIdx),1); 
 ub = 1.25*ones(length(highSensIdx),1);
@@ -58,5 +60,5 @@ Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 f
 % toc(timer1)
 filename_fig = "BestFnva"+ date + ".jpg";
 % saveas(gcf,filename_fig)
-% saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
-saveas(gcf,fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename_fig));
+saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
+% saveas(gcf,fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename_fig));
