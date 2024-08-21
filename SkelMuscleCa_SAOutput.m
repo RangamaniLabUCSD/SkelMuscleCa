@@ -17,7 +17,7 @@ parfor (i = 1 : length(param(:,1)))
     p = param(i,:)'.*parameters;
     t = 0:1000;
     tSpan = 0:0.0001:1;
-    freqVec = 100;
+    freqVec = 50;
     StartTimer = tic;
     yinit = [
         0.0122; 	% yinit(1) is the initial condition for 'SOCEProb'
@@ -33,10 +33,10 @@ parfor (i = 1 : length(param(:,1)))
         0.8051;		% yinit(11) is the initial condition for 'h'
         0.8487;		% yinit(12) is the initial condition for 'S'
         154500.0;	% yinit(13) is the initial condition for 'K_i'
-        387;        % yinit(14) is the initial condition for 'CaParv'
-        1020;       % yinit(15) is the initial condition for 'MgParv'
+        0;%387;        % yinit(14) is the initial condition for 'CaParv'
+        0;%1020;       % yinit(15) is the initial condition for 'MgParv'
         0.3632;     % yinit(16) is the inital consition for 'CATP'
-        10.004;     % yinit(17) is the initial condition for 'CaTrop'
+        0;%10.004;     % yinit(17) is the initial condition for 'CaTrop'
         0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
         0;	    	% yinit(19) is the initial condition for 'D_2'
         0;	    	% yinit(20) is the initial condition for 'Pre_Pow'

@@ -18,16 +18,14 @@ yinit = [
     0.3632;     % yinit(16) is the inital consition for 'CATP'
     10.004;     % yinit(17) is the initial condition for 'CaTrop'
     0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
-    0;	    	% yinit(19) is the initial condition for 'D_0'
-    0;	    	% yinit(20) is the initial condition for 'D_1'
-    0;	    	% yinit(21) is the initial condition for 'D_2'
-    0;	    	% yinit(22) is the initial condition for 'Pre_Pow'
-    0;	    	% yinit(23) is the initial condition for 'Post_Pow'
-    0;	    	% yinit(24) is the initial condition for 'MgATP'
-    8000;       % yinit(25) is the initial condition for 'ATP'
-    3000        % yinit(26) is the initial condition for 'p_i_SR'
-    0           % yinit(27) is the initial condition for 'PiCa'
-    3000        % yinit(28) is the initial condition for 'Pi_Myo'
+    0;	    	% yinit(19) is the initial condition for 'D_2'
+    0;	    	% yinit(20) is the initial condition for 'Pre_Pow'
+    0;	    	% yinit(21) is the initial condition for 'Post_Pow'
+    0;	    	% yinit(22) is the initial condition for 'MgATP'
+    8000;       % yinit(23) is the initial condition for 'ATP'
+    3000        % yinit(24) is the initial condition for 'p_i_SR'
+    0           % yinit(25) is the initial condition for 'PiCa'
+    3000        % yinit(26) is the initial condition for 'Pi_Myo'
     ];
 
 % Importing parameters 
@@ -40,8 +38,8 @@ numParam = length(p0);
 % highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
 highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93];
 % p0([20,42,43]) = 0.2*p0([20,42,43]); % NCX, SERCA, PMCA
-p0([42,43]) = 0.1*p0([42,43]); % NCX, SERCA, PMCA
-p0(44) = 0.1*p0(44); % leak SR1
+% p0([42,43]) = 0.1*p0([42,43]); % NCX, SERCA, PMCA
+% p0(44) = 0.1*p0(44); % leak SR1
 pVec = ones(1,numParam);
 samples = 10 ; % number of random samples to generate
 sigmaTest = 0; % geometric standard deviation controlled extent of random changes in parameters

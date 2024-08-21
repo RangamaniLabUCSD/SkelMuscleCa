@@ -64,14 +64,14 @@ end
         CATP = y(16);
         CaTrop = y(17);
         CaCaTrop = y(18);
-        D_2 = y(21);
-        Pre_Pow = y(22);
-        Post_Pow = y(23);
-        MgATP = y(24);
-        ATP = y(25); 
-        p_i_SR = y(26);
-        PiCa_SR = y(27);
-        p_i_Myo = y(28);
+        D_2 = y(19);
+        Pre_Pow = y(20);
+        Post_Pow = y(21);
+        MgATP = y(22);
+        ATP = y(23); 
+        p_i_SR = y(24);
+        PiCa_SR = y(25);
+        p_i_Myo = y(26);
        
         %% Variable Parameters
         A_a = p(1);
@@ -119,6 +119,7 @@ end
         g_PMCA = p(43);
         nu_leakSR = p(44);
         g_leakNa = p(45);
+        
         k_onATP = p(46);       
         k_offATP = p(47);        
         k_onParvCa = p(48);          
@@ -148,8 +149,8 @@ end
         Ap = p(72);                
         Bp = p(73);         
         bP = p(74);
-        Trop_tot =p(75);
-
+        Trop_tot = p(75);
+        
         V_a = p(78);
         V_h = p(79);
         V_hkinf = p(80);
@@ -167,9 +168,10 @@ end
         L_RyR = p(92);
         g0_DHPR = p(93);
         j0_RyR = p(94);
-        
+
         k_onTrop2 = p(95);
-        k_offTrop2=p(96);
+        k_offTrop2 = p(96);
+
         %% Global constants
         F = 96485.3321;
         PI = 3.141592653589793;
@@ -412,11 +414,9 @@ end
         %% Calcium buffering in the myoplasm and SR
  
         % %ATP Addition 
-        
         Parv = Parv_itot - CaParv - MgParv;
      
         %Crossbridge Cycling (Calcium and Troponin Binding Process) 
-        
         g0_prime = g0 / 700; 
         
         %Calcium system 
@@ -533,7 +533,7 @@ end
             (1000 /device_SL.Capacitance) * (SA_SL * (I_CaLeak_SL + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE) + I_SL);    % rate for Voltage_SL (5)
             KFlux_SL_myo * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i (6)
             (J_Cl .* KFlux_SL_myo);    % rate for Cl_i (7)
-            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA - (k_onTrop1*c_i*Trop - k_offTrop1*CaTrop + k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop + k_onTrop1*c_i*D_0 - k_offTrop1*D_1 + k_onTrop2*c_i*D_1 - k_offTrop2*D_2); % rate for c_i (8)
+            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA - (k_onTrop1*c_i*Trop - k_offTrop1*CaTrop + k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop); % rate for c_i (8)
             J_r4;    % rate for n (9)
             J_r2;    % rate for m (10)
             J_r1;    % rate for h (11)
@@ -544,18 +544,18 @@ end
             dCA;      % Rate for ATP bound Ca2+ (16)
             dCT;      % Rate for Trop bound Ca2+ (17)
             dCCT;     % Rate for Ca2+ bound TropCa2+ (18)
-            dD2;      % Rate for Tropomyo opening from CaCaT bound (21)
-            dPre;     % Rate for Pre-Power Stroke from D_2 bound (22)
-            dPost;    % Rate for Post-Power Strom from A_1 bound (23)
-            dMA;      % Rate for ATP bound Mg2+ (24)
-            dATP;     % Rate for free ATP (25)
-            dPi_SR;   % Rate for SR Phsophate (26) 
-            dPiCa;    % Rate for Cal-Phos Precipitate (27) 
-            dPi_Myo;  % Rate for Myoplasmic Phosphate (28) 
+            dD2;      % Rate for Tropomyo opening from CaCaT bound (19)
+            dPre;     % Rate for Pre-Power Stroke from D_2 bound (20)
+            dPost;    % Rate for Post-Power Strom from A_1 bound (21)
+            dMA;      % Rate for ATP bound Mg2+ (22)
+            dATP;     % Rate for free ATP (23)
+            dPi_SR;   % Rate for SR Phsophate (24) 
+            dPiCa;    % Rate for Cal-Phos Precipitate (25) 
+            dPi_Myo;  % Rate for Myoplasmic Phosphate (26) 
             ];
        
         if freq==0
-            dydt(26:28) = 0;
+            dydt(24:26) = 0;
         end
         
         Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1;1;1;1;1;1;1;1;1;1]; %Normalization factor
