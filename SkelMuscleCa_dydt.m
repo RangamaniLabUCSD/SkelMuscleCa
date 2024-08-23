@@ -25,8 +25,8 @@ if freq == 0 % Steady state condition
 else
     options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative',[1:4,6:17]);
 end
-yinit(24)= p(76);
-yinit(26) = p(77);
+yinit(24)= p(74);
+yinit(26) = p(75);
 [Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq,lowATP); %pass extra arguments at the end
 
 fluxes = zeros(length(Time), 8);
@@ -151,43 +151,42 @@ end
         kPROD = p(57);
         Mg = p(58);                   
         k_onTrop1 = p(59);      
-        k_offTrop1 = p(60);      
-        k_on0 = p(61);                  
-        k_off0 = p(62);        
-        k_onCa = p(63);          
-        k_offCa = p(64);        
-        f0 = p(65);              
-        fP = p(66);               
-        h0 = p(67);             
-        hP = p(68);              
-        g0 = p(69);            
-        PP = p(70);                     
-        kP = p(71);            
-        Ap = p(72);                
-        Bp = p(73);         
-        bP = p(74);
-        Trop_tot = p(75);
-        
-        V_a = p(78);
-        V_h = p(79);
-        V_hkinf = p(80);
-        V_m = p(81);
-        V_n = p(82);
-        V_Sinf = p(83);
-        V_tau = p(84);
-        VBar_RyR = p(85);
-        kATP = p(86);
-        KmNa_i_NCX = p(87);
-        KmNa_EC_NCX = p(88);
-        Kmc_EC_NCX_N = p(89);
-        Kmc_EC_NCX_C = p(90);
-        g_SLLeak = p(91);
-        L_RyR = p(92);
-        g0_DHPR = p(93);
-        j0_RyR = p(94);
+        k_offTrop1 = p(60);           
+        k_onCa = p(61);          
+        k_offCa = p(62);        
+        f0 = p(63);              
+        fP = p(64);               
+        h0 = p(65);             
+        hP = p(66);              
+        g0 = p(67);            
+        PP = p(68);                     
+        kP = p(69);            
+        Ap = p(70);                
+        Bp = p(71);         
+        bP = p(72);
+        Trop_tot = p(73);
 
-        k_onTrop2 = p(95);
-        k_offTrop2 = p(96);
+        V_a = p(76);
+        V_h = p(77);
+        V_hkinf = p(78);
+        V_m = p(79);
+        V_n = p(80);
+        V_Sinf = p(81);
+        V_tau = p(82);
+        VBar_RyR = p(83);
+        kATP = p(84);
+        KmNa_i_NCX = p(85);
+        KmNa_EC_NCX = p(86);
+        Kmc_EC_NCX_N = p(87);
+        Kmc_EC_NCX_C = p(88);
+        g_SLLeak = p(89);
+        L_RyR = p(90);
+        g0_DHPR = p(91);
+        j0_RyR = p(92);
+
+        k_onTrop2 = p(93);
+        k_offTrop2 = p(94);
+        
         %% Global constants
         F = 96485.3321;
         PI = 3.141592653589793;
@@ -412,17 +411,18 @@ end
         dCA = k_onATP*c_i*ATP - k_offATP*CATP; % Calcium buffering with ATP
         dCP = k_onParvCa*c_i*Parv - k_offParvCa*CaParv; % Calcium buffering with Parvalbumin
         dMP = k_onParvMg*Mg * Parv - k_offParvMg*MgParv; % Mg buffering with Parvalbumin
-        dCCT = k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop - k_onCa*CaCaTrop + k_offCa*D_2;
+        dCCT = k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop - (k_onCa*CaCaTrop*ATP/700) + k_offCa*D_2;
        
         %Crossbridge attach/detachment 
 
-        dD2 = k_onCa*CaCaTrop - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + (g0_prime*Post_Pow*ATP);
+        dD2 = (k_onCa*CaCaTrop*ATP/700) - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + (g0_prime*Post_Pow*ATP);
 
 
         %Concentration of Pre/Post Power Stroke Filaments 
         dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow*(p_i_Myo /3000) - h0*Pre_Pow;
         dPost = -hP*Post_Pow*(p_i_Myo / 3000) + h0*Pre_Pow - (g0_prime*Post_Pow*ATP);
-        
+        % dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow - h0*Pre_Pow;
+        % dPost = -hP*Post_Pow + h0*Pre_Pow - (g0_prime*Post_Pow*ATP);        
         %ATP
         J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo );
         J_PMCA_tot = J_PMCA * KFlux_SL_myo;
@@ -431,7 +431,7 @@ end
         Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot +  kHYD*(ATP / (kH + ATP) ); %(D_2*f0)/kHYD  (D_2*f0*p_i_SR)/1000
         Jprod =  kPROD * (700 - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 + 
         dMA = k_onMA*Mg*ATP - k_offMA*MgATP; %did not include diffusion terms from Supplemental
-        dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0_prime*Post_Pow*ATP);
+        dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0_prime*Post_Pow*ATP)- (k_onCa*CaCaTrop*ATP/700) + k_offCa*D_2;
 
         %SR Phosphate 
         PC_tot = p_i_SR * c_SR;    

@@ -20,13 +20,12 @@ function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(lb,ub,yinit,p,Createplot)
 psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 20, 'SwarmSize', 2); %set swarmsize to 30 for TSCC and 50 to stall iter
 
 % pSol Results
-% load PSO_25-Apr-2024.mat pSol
-
+load PSO_22-Aug-2024.mat pSol
 
 % To check default parameter behavior
 numParam = length(lb);
 pVec = ones(1,numParam) ; 
-pToObj(pVec);
+pToObj(pSol);
 
 delete(gcp('nocreate'))
 % parpool(30) %% **CHANGE SWARMSIZE!** and save file location 
@@ -35,8 +34,8 @@ pToObj(pSol)
 filename = "PSO_" + date +".mat";
 % save(filename);
 % save('/SkelMuscle/PSO_29_July.mat',filename)
-% save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename'));
-save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
+save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename'));
+% save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
 
     function objVal = pToObj(pVec)
         %% Function for calculating the objective value for estimation
@@ -56,11 +55,11 @@ save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
         CompC = cell(1,5);
         StartTimer = tic;
         param = p(:); % pVec(:); % initialize all parameter values to defaults
-        highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,32,33,34,35,36,37,38,39,40,42,43,44,45,46,47,48,49,50,52,54,55,56,57,58,59,62,65,67,68,69,70,74,75,76,78,79,80,81,82,83,84,85,87,89,90,92,93,94,95,96]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
+        highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,30,32,33,34,35,40,42,43,44,45,50,52,74,76,77,78,79,80,81,82,83,89,90,91,92]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
         param(highSensIdx) = param(highSensIdx) .* pVec(:);
 
-        yinit(26) = param(76);
-        yinit(28) = param(77);
+        yinit(24) = param(74);
+        yinit(26) = param(75);
 
         tSS = 0:1000;
         penaltyVal = 100000;
@@ -69,13 +68,14 @@ save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
         %Expt = {[R_t R_C],[R_MP_t R_MP_C] [HB_t HB_C], [H_t H_C],[HB_MP_t HB_MP_C], [K_t K_V], [B_t B_V] , [M_t M_V], [W_t W_V], [MJ_T MJ_V]};
         load Exptdata.mat Expt
         freq = [100, 100, 67, 67,67,60, 60, 60,60];
+        T_max = [0.03 0.12 0.06 0.045 0.08 0.025 0.01 0.02 0.002];
         expt_title = ["Rincon","Calderon et al. (2010)", "Baylor et al. (2007)", "Hollingworth", "Baylor & Hollingworth", "Yonemura","Bibollet et al. (2023)", "Miranda et al.(2020)","Wallinga"];
         expt_n = [3 2 7 8]; % Index of the experimental used for estimation
 
         %Interpolating experimental values
         for m_index = 1 :length(expt_n) %:9
             m = expt_n(m_index);
-            T_max(m) = max(Expt{m}(:,1))/1000;
+            % T_max(m) = max(Expt{m}(:,1))/1000;
             Expt_t{m} = Expt{m}(:,1)/1000;
             if m < 6
                 Expt{m}(:,2) = Expt{m}(:,2) + 0.1;

@@ -13,35 +13,35 @@ yinit = [
     0.8051;		% yinit(11) is the initial condition for 'h'
     0.8487;		% yinit(12) is the initial condition for 'S'
     154500.0;	% yinit(13) is the initial condition for 'K_i'
-    387;        % yinit(14) is the initial condition for 'CaParv'
-    1020;       % yinit(15) is the initial condition for 'MgParv'
+    0;%387;        % yinit(14) is the initial condition for 'CaParv'
+    0;%1020;       % yinit(15) is the initial condition for 'MgParv'
     0.3632;     % yinit(16) is the inital consition for 'CATP'
-    10.004;     % yinit(17) is the initial condition for 'CaTrop'
+    0;%10.004;     % yinit(17) is the initial condition for 'CaTrop'
     0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
-    0;	    	% yinit(19) is the initial condition for 'D_0'
-    0;	    	% yinit(20) is the initial condition for 'D_1'
-    0;	    	% yinit(21) is the initial condition for 'D_2'
-    0;	    	% yinit(22) is the initial condition for 'Pre_Pow'
-    0;	    	% yinit(23) is the initial condition for 'Post_Pow'
-    0;	    	% yinit(24) is the initial condition for 'MgATP'
-    8000;       % yinit(25) is the initial condition for 'ATP'
-    3000        % yinit(26) is the initial condition for 'p_i_SR'
-    0           % yinit(27) is the initial condition for 'PiCa'
-    3000        % yinit(28) is the initial condition for 'Pi_Myo'
+    0;	    	% yinit(19) is the initial condition for 'D_2'
+    0;	    	% yinit(20) is the initial condition for 'Pre_Pow'
+    0;	    	% yinit(21) is the initial condition for 'Post_Pow'
+    0;	    	% yinit(22) is the initial condition for 'MgATP'
+    8000;       % yinit(23) is the initial condition for 'ATP'
+    3000        % yinit(24) is the initial condition for 'p_i_SR'
+    0           % yinit(25) is the initial condition for 'PiCa'
+    3000        % yinit(26) is the initial condition for 'Pi_Myo'
     ];
 
 % Importing parameters 
 param = importdata('InputParam1.xlsx');
 p =  param.data;
-% highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
-
-highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,32,33,34,35,36,37,38,39,40,42,43,44,45,46,47,48,49,50,52,54,55,56,57,58,59,62,65,67,68,69,70,74,75,76,78,79,80,81,82,83,84,85,87,89,90,92,93,94,95,96];
+highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,30,32,33,34,35,40,42,43,44,45,50,52,74,76,77,78,79,80,81,82,83,89,90,91,92];
 % Setting bounds for parameters
 lb = 0.8*ones(length(highSensIdx),1); 
 ub = 1.25*ones(length(highSensIdx),1);
 % limits for NCX, SERCA, PMCA
 % lb([20, 42, 43]) = 0.25;
 % ub([20, 42, 43]) = 1.0;
+lb(highSensIdx == 20) = 0.25;
+ub(highSensIdx == 20) = 1.0;
+lb(highSensIdx == 42) = 0.25;
+ub(highSensIdx == 42) = 1.0;
 lb(highSensIdx == 43) = 0.25;
 ub(highSensIdx == 43) = 1.0;
 % limits for SR Ca2+ leak
@@ -60,5 +60,5 @@ Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 f
 % toc(timer1)
 filename_fig = "BestFnva"+ date + ".jpg";
 % saveas(gcf,filename_fig)
-saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
-% saveas(gcf,fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename_fig));
+% saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
+saveas(gcf,fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename_fig));

@@ -13,10 +13,10 @@ yinit = [
     0.8051;		% yinit(11) is the initial condition for 'h'
     0.8487;		% yinit(12) is the initial condition for 'S'
     154500.0;	% yinit(13) is the initial condition for 'K_i'
-    387;        % yinit(14) is the initial condition for 'CaParv'
-    1020;       % yinit(15) is the initial condition for 'MgParv'
+    0;%387;        % yinit(14) is the initial condition for 'CaParv'
+    0;%1020;       % yinit(15) is the initial condition for 'MgParv'
     0.3632;     % yinit(16) is the inital consition for 'CATP'
-    10.004;     % yinit(17) is the initial condition for 'CaTrop'
+    0;%10.004;     % yinit(17) is the initial condition for 'CaTrop'
     0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
     0;	    	% yinit(19) is the initial condition for 'D_2'
     0;	    	% yinit(20) is the initial condition for 'Pre_Pow'
@@ -35,8 +35,7 @@ param = importdata('InputParam1.xlsx');
 % you can test different values of default parameters here as well!
 p0 =  param.data;
 numParam = length(p0);
-% highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
-highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93];
+highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
 % p0([20,42,43]) = 0.2*p0([20,42,43]); % NCX, SERCA, PMCA
 % p0([42,43]) = 0.1*p0([42,43]); % NCX, SERCA, PMCA
 % p0(44) = 0.1*p0(44); % leak SR1
@@ -74,12 +73,12 @@ plot(Time, Y(:,8))
 
 %% plot the solution from PSO over time compared to default parameters
 p0 =  param.data;
-load PSO_05-Aug-2024.mat pSol
+load PSO_22-Aug-2024allIdx.mat pSol
 % pSol(12) = pSol(12)*0.2;
 % highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
-highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93];
+highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
 pPSO = p0(:);
-pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
+pPSO(highSensIdx) = pSol(:) .* pPSO(highSensIdx);
 % load PSO_25-Apr-2024.mat pSol
 % % pSol(12) = pSol(12)*0.2;
 % pPSO(1:45) = pSol(:) .* p0(1:45);
@@ -92,10 +91,6 @@ fprintf("Objective value from PSO is %.3f\n", pToObj(pSol, p0, yinit, true))
 tSol = 0:.0001:10;
 [Time,Y] = SkelMuscleCa_dydt(tSol, 20, 0, ySS(end,:), p0, tic, 1);
 
-figure
-plot(Time, Y(:,8))
-figure
-plot(Time, Y(:,5))
 
 %% Function for calculating the objective value for estimation
 
@@ -117,8 +112,7 @@ CompV = cell(1,5);
 CompC = cell(1,5);
 StartTimer = tic;
 param = p(:)  ;%.* pVec(:)'; % initialize all parameter values to defaults
-% highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
-highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,30,31,32,33,35,40,41,42,43,44,45,52,71,72,73,78,79,80,81,82,83,84,85,86,89,92,93];
+highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
 param(highSensIdx) = param(highSensIdx) .* pVec(:);
 
 tSS = 0:1000;
