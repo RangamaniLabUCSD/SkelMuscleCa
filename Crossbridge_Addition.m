@@ -46,7 +46,7 @@ pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
 
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
 tSol = 0:.0001:10;
-freq = 60; 
+freq = 100; 
 % ySS(end,26) = 0;
 % ySS(end,28) = 2500;
 [Time,Y,~,~,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
@@ -70,17 +70,17 @@ plot(Time, Y(:,2))
 title('Time vs Ca2+ SR')
 xlabel('Time (seconds)');
 ylabel('[Ca2+]_{SR} (µM)'); 
-xlim([0 20^2])
+
 % % % 
 figure
 plot(Time, Y(:,23))
-title('Time vs ATP, freq=60 Hz')
+title('Time vs ATP, freq=100 Hz')
 xlabel('Time (seconds)');
 ylabel('[ATP] (µM)'); 
 % 
 figure
 plot(Time, Y(:,21))
-title('Time vs Force, freq=60 Hz')
+title('Time vs Force, freq=100 Hz')
 xlabel('Time (seconds)');
 ylabel('Post Power Stroke'); 
 
@@ -113,7 +113,14 @@ plot(Time,Y(:,5))
 xlim([0 0.05])
 
 
-
+figure 
+yyaxis left
+plot(Time,Y(:,8))
+ylabel('[Ca2+]_{SR} (µM)'); 
+ylim([0 20])
+yyaxis right
+plot(Time,Y(:,21))
+ylabel('Post Power Stroke'); 
 % % 
 % figure
 % plot(Time, Y(:,6))
@@ -151,19 +158,19 @@ xlim([0 0.05])
 figure
 subplot(3,1,1)
 plot(Time, Y(:,24))
-title('time vs p_i_{SR}, freq=60 Hz')
+title('time vs p_i_{SR}, freq=100 Hz')
 legend('p_i_{SR}');  
 xlabel('Time (seconds)');
 ylabel('[p_i_{SR}] (µM)'); 
 subplot(3,1,2)
 plot(Time, Y(:,25))
-title('time vs PiCa, freq=60 Hz')
+title('time vs PiCa, freq=100 Hz')
 legend('PiCa Conc');  
 xlabel('Time (seconds)');
 ylabel('[PiCa] (µM)'); 
 subplot(3,1,3)
 plot(Time, Y(:,26))
-title('time vs Pi_{Myo}, freq=60 Hz')
+title('time vs Pi_{Myo}, freq=100 Hz')
 legend('Pi_{Myo} Conc');  
 xlabel('Time (seconds)');
 ylabel('[Pi_{Myo}] (µM)'); 

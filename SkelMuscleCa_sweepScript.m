@@ -31,52 +31,58 @@ yinit = [
 % Importing parameters 
 param = importdata('InputParam1.xlsx');
 
+
 %% sweep across ranges for sensitive parameters
 % you can test different values of default parameters here as well!
 p0 =  param.data;
 numParam = length(p0);
-highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
+highSensIdx = [4,9,12,15,18,21,23,25,31,32,33,34,40,42,43,44,68,74,77,78,79,81,82,83,86,89,91,92];
 % p0([20,42,43]) = 0.2*p0([20,42,43]); % NCX, SERCA, PMCA
 % p0([42,43]) = 0.1*p0([42,43]); % NCX, SERCA, PMCA
 % p0(44) = 0.1*p0(44); % leak SR1
 pVec = ones(1,numParam);
-samples = 10 ; % number of random samples to generate
-sigmaTest = 0; % geometric standard deviation controlled extent of random changes in parameters
+samples = 2; % number of random samples to generate
+sigmaTest = 0.5; % geometric standard deviation controlled extent of random changes in parameters
 randPop = exp(sigmaTest*randn([samples, length(highSensIdx)]));
 objVals = zeros(samples, 1);
 simSaved = cell(samples, 1);
 figure
 hold on
 for i = 1:samples
-    [objVals(i), simSavedCur] = pToObj(randPop(i,:), p0, yinit, false);
-    if isempty(simSavedCur{2})
-        continue
-    end
+    pCur = pVec;
+    pCur(highSensIdx) = randPop(i,:);
+    pCur = pCur(:) .* p0;
+    objVals(i) = SkelMuscleObj(pCur,true);
+    % [objVals(i), simSavedCur] = pToObj(randPop(i,:), p0, yinit, false);
+    % if isempty(simSavedCur{2})
+    %     continue
+    % end
     % look at experiment 2 results used in fitting
-    simSaved{i} = simSavedCur{7};
+    % simSaved{i} = simSavedCur{7};
     % note that the index of 9 actually indicates variable number 8
     % (calcium), the first column of simSaved{i} is time
-    plot(simSaved{i}(:,1), simSaved{i}(:,6))
-    drawnow
-    fprintf("%d\n", i)
+    % plot(simSaved{i}(:,1), simSaved{i}(:,6))
+    % drawnow
+    fprintf("%d: %.2f\n", i, objVals(i))
 end
 %%
-% plot the best solution over an extended time
-[~,bestIdx] = min(objVals);
-pBest = p0(:);
-pBest(highSensIdx) = randPop(bestIdx,:)'.*pBest(highSensIdx);
-[~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pBest, tic, 2);
-tSol = 0:.0001:10;
-[Time,Y] = SkelMuscleCa_dydt(tSol, 100, 0, ySS(end,:), pBest, tic, 2);
-figure
-plot(Time, Y(:,8))
+% % plot the best solution over an extended time
+% [~,bestIdx] = min(objVals);
+% pBest = p0(:);
+% pBest(highSensIdx) = randPop(bestIdx,:)'.*pBest(highSensIdx);
+% [~,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pBest, tic, 2);
+% tSol = 0:.0001:10;
+% [Time,Y] = SkelMuscleCa_dydt(tSol, 100, 0, ySS(end,:), pBest, tic, 2);
+% figure
+% plot(Time, Y(:,8))
 
 %% plot the solution from PSO over time compared to default parameters
 p0 =  param.data;
-load PSO_22-Aug-2024allIdx.mat pSol
+% p0(45) = 0.001;
+load PSO_12-Sep-2024.mat pSol
 % pSol(12) = pSol(12)*0.2;
-% highSensIdx = [1,3,5,6,8,9,10,11,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,40,43,44,45,46,51,52,53,69,70]; % a vector listing the indices of all parameters we are still including (higher sensitivity values)
-highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
+highSensIdx = [4,9,12,15,18,21,23,25,31,32,33,34,40,42,43,44,68,74,77,78,79,81,82,83,86,89,91,92];
+% highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
 pPSO = p0(:);
 pPSO(highSensIdx) = pSol(:) .* pPSO(highSensIdx);
 % load PSO_25-Apr-2024.mat pSol
@@ -84,12 +90,13 @@ pPSO(highSensIdx) = pSol(:) .* pPSO(highSensIdx);
 % pPSO(1:45) = pSol(:) .* p0(1:45);
 % pPSO = pSol.*p0';
 % save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/','ppPSO.mat'))
-fprintf("Objective value from PSO is %.3f\n", pToObj(pSol, p0, yinit, true))
+fprintf("Objective value from PSO is %.3f\n", SkelMuscleObj(pPSO))
 
 %% plot the solution from PSO over an extended time
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, p0, tic, 2);
 tSol = 0:.0001:10;
 [Time,Y] = SkelMuscleCa_dydt(tSol, 20, 0, ySS(end,:), p0, tic, 1);
+% SkelMuscleObj(pPSO, true)
 
 
 %% Function for calculating the objective value for estimation
@@ -112,7 +119,8 @@ CompV = cell(1,5);
 CompC = cell(1,5);
 StartTimer = tic;
 param = p(:)  ;%.* pVec(:)'; % initialize all parameter values to defaults
-highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
+highSensIdx = [4,9,12,15,18,21,23,25,31,32,33,34,40,42,43,44,68,74,77,78,79,81,82,83,86,89,91,92];
+% highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
 param(highSensIdx) = param(highSensIdx) .* pVec(:);
 
 tSS = 0:1000;

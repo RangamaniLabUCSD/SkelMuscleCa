@@ -23,7 +23,7 @@ MorrisSensOpts.Type = 'Sensitivity';
 MorrisSensOpts.Method = 'Morris';
 MorrisSensOpts.Morris.Cost = 1e4;
 MorrisAnalysis = uq_createAnalysis(MorrisSensOpts);
-save('/tscc/lustre/ddn/scratch/jhamid/MorrisResults8-14.mat','MorrisAnalysis');
+save('/tscc/lustre/ddn/scratch/jhamid/MorrisResults9-10.mat','MorrisAnalysis');
 endtimer = toc(starttimer);
 %uq_display(MorrisAnalysis)
 

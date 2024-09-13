@@ -1,19 +1,21 @@
 clear 
-load('MorrisResults8-20-2.mat')
+load('MorrisResults9-10.mat')
 
 % QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13), yInf(23), MaxCaF,MaxVF, MaxPost, AvgF, AvgPost, AvgVolt, VoltWidth];
 
+% graph_names = {"Steady State SR Calcium", "SS Voltage_{PM}", "SS Sodium Ion","SS Chlorine Ion","SS Myoplasmic Calcium","SS Potassium Ion","SS Force", "Max Calcium Myo","Max Voltage","Max Force","Avg Myo Calcium","Avg Force","Avg Voltage", "AP Width"};
 graph_names = {"Steady State SR Calcium", "SS Voltage_{PM}", "SS Sodium Ion","SS Chlorine Ion","SS Myoplasmic Calcium","SS Potassium Ion","SS Force", "Max Calcium Myo","Max Voltage","Max Force","Avg Myo Calcium","Avg Force","Avg Voltage", "AP Width"};
-   
-n = 1;
-muVec = zeros(size(MorrisAnalysis.Results.MuStar(:,1:length(graph_names))));
+expt_names = repmat(graph_names,4)';
 
-for k= 1:length(graph_names)
+n = 1;
+muVec = zeros(size(MorrisAnalysis.Results.MuStar));
+
+for k= 57 %1:length(graph_names)
     figure
     scatter(MorrisAnalysis.Results.MuStar(:,k),MorrisAnalysis.Results.Std(:,k),'filled','MarkerFaceColor',[0.64,0.08,0.18])
     xlabel('mu*')
     ylabel('simga')
-    title(graph_names{k})
+    % title(graph_names{k})
     hold on
     ten_percent = max(MorrisAnalysis.Results.MuStar(:,k))*0.1;
     xline(ten_percent , '--b' )
@@ -40,11 +42,11 @@ for k= 1:length(graph_names)
    
     % labels_above_ten = MorrisAnalysis.Results.VariableNames(1,:).' ;
     for j= 1:length(muVec(:,k))
-        if muVec(j,n) ==1
-            text(MorrisAnalysis.Results.MuStar(j,n), MorrisAnalysis.Results.Std(j,n), label(j,n));
+        if muVec(j,k) ==1
+            text(MorrisAnalysis.Results.MuStar(j,k), MorrisAnalysis.Results.Std(j,k), label(j,n));
         end
       
-        if muVec(j,n) ==0
+        if muVec(j,k) ==0
             new_label(j,n) = strrep(label(j,n),label(j,n),'0');
         end
     
@@ -52,5 +54,5 @@ for k= 1:length(graph_names)
 
     prettyGraph
     hold off 
-    n= n+1;
+    % n= n+1;
 end
