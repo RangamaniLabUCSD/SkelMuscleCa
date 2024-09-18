@@ -31,26 +31,20 @@ yinit = [
 
 param = importdata('InputParam1.xlsx'); % load default parameters
 p0 =  param.data;
-% load PSO_25-Apr-2024.mat pSol % load best fit parameters from PSO - particle swarm optimization
-% pSol(12) = pSol(12)*0.2;
-% pSol(46:94) = 1;
-% pPSO = pSol .* p0';
-% pSol = [1.33684210526316	0.847368421052632	1.05263157894737	1.66842105263158	1.36842105263158	0.547368421052632	0.705263157894737	1.33684210526316	0.547368421052632	1.49473684210526	1.33684210526316	1.98421052631579	0.500000000000000	0.563157894736842	1.02105263157895	1.19473684210526	1.02105263157895	0.578947368421053	0.642105263157895	1.43157894736842	0.610526315789474	1.51052631578947	1.87368421052632	1.06842105263158	1.51052631578947	0.500000000000000	1.43157894736842	0.500000000000000	1.58947368421053	1.30526315789474	0.594736842105263	1.36842105263158	1.00526315789474	1.51052631578947	0.736842105263158	0.689473684210526	1.08421052631579	0.784210526315790	1.16315789473684	0.563157894736842	1.08421052631579	1.87368421052632	1.85789473684211	0.894736842105263	1.74736842105263	1.55789473684211	0.926315789473684	0.926315789473684	0.768421052631579	1.27368421052632	1.10000000000000	1.68421052631579	1.14736842105263	1.28947368421053	1.81052631578947	0.878947368421053	1.08421052631579	1.54210526315789	1.22631578947368	1.25789473684211	1.87368421052632	1.79473684210526	1.76315789473684	1.33684210526316	1.10000000000000	1.40000000000000	1.70000000000000	1.58947368421053	0.515789473684211	1.33684210526316	1.88947368421053	1.05263157894737	1.17894736842105	0.926315789473684	0.878947368421053	1.36842105263158	1.25789473684211	1.22631578947368	1.70000000000000	0.784210526315790	0.942105263157895	1.62105263157895	1.76315789473684	0.642105263157895	0.563157894736842	1.51052631578947	1.66842105263158	1.77894736842105	1.87368421052632	0.610526315789474	0.815789473684211	0.831578947368421	1.58947368421053	1.52631578947368	1.74736842105263	1.87368421052632];
-% pSol(95:96) = 1;
-% pPSO = p0;
-load PSO_22-Aug-2024allIdx.mat pSol
-highSensIdx = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94];
+
+load PSO_17-Sep-2024.mat pSol
+highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
 pPSO = p0(:);
 pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
 
 
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
 tSol = 0:.0001:10;
-freq = 100; 
+freq = 50; 
 % ySS(end,26) = 0;
 % ySS(end,28) = 2500;
-[Time,Y,~,~,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
-% plot calcium (the 8th variable)
+[Time,Y,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
+
 
 
 % figure
@@ -71,13 +65,15 @@ title('Time vs Ca2+ SR')
 xlabel('Time (seconds)');
 ylabel('[Ca2+]_{SR} (µM)'); 
 
-% % % 
-figure
+figure 
 plot(Time, Y(:,23))
-title('Time vs ATP, freq=100 Hz')
-xlabel('Time (seconds)');
-ylabel('[ATP] (µM)'); 
-% 
+% % % % 
+% figure
+% plot(Time, Y(:,23))
+% title('Time vs ATP, freq=100 Hz')
+% xlabel('Time (seconds)');
+% ylabel('[ATP] (µM)'); 
+% % % 
 figure
 plot(Time, Y(:,21))
 title('Time vs Force, freq=100 Hz')
@@ -90,11 +86,7 @@ title('Time vs SL Voltage ')
 xlabel('Time (seconds)');
 ylabel('SL Voltage'); 
 
-figure
-plot(Time, Y(:,17))
-title('Time vs SL Voltage ')
-xlabel('Time (seconds)');
-ylabel('SL Voltage'); 
+ 
 % Input Stimulus
 plot1 = figure;
 axes1 = axes('Parent', plot1);
@@ -112,15 +104,15 @@ yyaxis right
 plot(Time,Y(:,5))
 xlim([0 0.05])
 
-
-figure 
-yyaxis left
-plot(Time,Y(:,8))
-ylabel('[Ca2+]_{SR} (µM)'); 
-ylim([0 20])
-yyaxis right
-plot(Time,Y(:,21))
-ylabel('Post Power Stroke'); 
+% 
+% figure 
+% yyaxis left
+% plot(Time,Y(:,8))
+% ylabel('[Ca2+]_{SR} (µM)'); 
+% ylim([0 20])
+% yyaxis right
+% plot(Time,Y(:,21))
+% ylabel('Post Power Stroke'); 
 % % 
 % figure
 % plot(Time, Y(:,6))
@@ -189,54 +181,9 @@ ylabel('[Pi_{Myo}] (µM)');
 % legend('ATP Conc');  
 % xlabel('Time (seconds)');
 % ylabel('[A2] (µM)'); 
-%% 
-% figure
-% subplot(3,1,1)
-% plot(Time, Y(:,8))
-% title('time vs Ca2+, freq=100 Hz')
-% legend('Calcium ion Conc');  
-% xlabel('Time (seconds)');
-% ylabel('[Ca2+] (µM)'); 
-% subplot(3,1,2)
-% plot(Time, Y(:,17))
-% title('time vs CaTrop, freq=100 Hz')
-% legend('CaTrop Conc');  
-% xlabel('Time (seconds)');
-% ylabel('[CaTrop] (µM)'); 
-% subplot(3,1,3)
-% plot(Time, Y(:,18))
-% title('time vs CaCaTrop, freq=100 Hz')
-% legend('CaTrop Conc');  
-% xlabel('Time (seconds)');
-% ylabel('[CaTrop] (µM)'); 
 
-% % 
-% figure
-% subplot(2,3,1)
-% plot(Time, Y(:,17))
-% title('time vs dCT')
-% subplot(2,3,2)
-% plot(Time, Y(:,18))
-% title('time vs dCCT')
-% subplot(2,3,3)
-% plot(Time, Y(:,19))
-% title('time vs dD0')
-% subplot(2,3,4)
-% plot(Time, Y(:,19))
-% title('time vs dD1')
-% subplot(2,3,5)
-% plot(Time, Y(:,22))
-% title('time vs dPrePower')
-% subplot(2,3,6)
-% plot(Time, Y(:,23))
-% title('time vs dPostPower')
 
-%% 
-% 
-% figure
-% plot(Time, Y(:,8))
-
-%Adding Senneff Corssbridge Cycling
+%% Adding Senneff Corssbridge Cycling
 Sol= {Time*1000, Y(:,8)}; %to convert Anusha's time (s) to (ms)
 y0=[0 ; 0; 0; 0 ; 0 ];
 kTon = 0.0885; % /0.04425 

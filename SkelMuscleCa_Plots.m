@@ -16,11 +16,30 @@ V = [0.49,0.18,0.56] ; %-Dark Purple for Voltage
 % Load data for plotting 
 load Exptdata.mat
 
-% Define variables below
-%Current = ;
- 
-%Flux = ;
 
+param = importdata('InputParam1.xlsx'); % load default parameters
+p0 =  param.data;
+load PSO_13-Sep-2024.mat pSol
+highSensIdx = 1:95;
+pPSO = p0(:);
+pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
+
+
+[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
+tSol = 0:.0001:10;
+freq = 10; 
+% ySS(end,26) = 0;
+% ySS(end,28) = 2500;
+[Time,Y,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
+
+
+% Define variables below
+ 
+Current = currents;
+ 
+Flux = fluxes;
+Time2 = Time;
+fluxes2 = fluxes;
 
 %% Input Stimulus
 plot1 = figure;

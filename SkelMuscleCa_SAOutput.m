@@ -13,7 +13,7 @@ parameters = input.data; % Parameter values
 totSize = size(param,1);
 QOI = zeros(size(param,1),14*4+1);
 % parpool(50);
-for (i = 1 : length(param(:,1)))
+parfor (i = 1 : length(param(:,1)))
     pVec = param(i,:)'.*parameters;
     [objVal, qoiList] = SkelMuscleObj(pVec); % objVal is a scalar, qoiList is a vector of length 14*4
     QOI(i,:) = [qoiList, objVal]; % 14*4 + 1 in length

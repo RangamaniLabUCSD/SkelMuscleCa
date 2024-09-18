@@ -133,7 +133,7 @@ end
         S_i = p(40);
         tau_SOCEProb = p(41);
         nu_SERCA = p(42);
-        g_PMCA = p(43);
+        g_PMCA = p(43) * 0.2;
         nu_leakSR = p(44);
         g_leakNa = p(45);
         
@@ -308,6 +308,7 @@ end
         E_Na = (log((Na_EC ./ Na_i)) .* R .* T ./ F);
         I_Na = (((g_Na * Q10g_Na .* ((m ./ mUnit) ^ 3.0) * (h ./ hUnit) * (S ./ SUnit)) * (1.0 + (0.1 .* TTFrac))) + g_leakNa ) * (E_Na - Voltage_SL); %
         J_Na = ((I_Na ./ (carrierValence_Na .* F)) .* 1E09);
+        
 
         S_inf = (1.0 ./ (1.0 + exp(((Voltage_SL - V_Sinf) ./ A_Sinf))));
         tau_S = (60.0 ./ (0.2 + (5.65 .* (((Voltage_SL + V_tau) ./ 100.0) ^ 2.0))));
@@ -484,16 +485,16 @@ end
             end
         end
 
-
+        J_NaStim = 0;%1e9*I_SL/F;
         dydt = [
             J_r6;    % rate for SOCEProb(1)
             (f_SR * KMOLE * (LumpedJ_SERCA - LumpedJ_RyR - J_CaLeak_SR))/vol_SR - dPiCa; %c_SR (2)
             J_r5;    % rate for h_K (3)
             J_r0;    % rate for w_RyR (4)
             (1000 /device_SL.Capacitance) * (SA_SL * (I_CaLeak_SL + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE) + I_SL);    % rate for Voltage_SL (5)
-            KFlux_SL_myo * (J_Na - J_NKX_N + J_NCX_N);    % rate for Na_i (6)
+            KFlux_SL_myo * (J_Na - J_NKX_N + J_NCX_N + J_NaStim);    % rate for Na_i (6)
             (J_Cl .* KFlux_SL_myo);    % rate for Cl_i (7)
-            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA - (k_onTrop1*c_i*Trop - k_offTrop1*CaTrop + k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop); % rate for c_i (8)
+            (KFlux_SL_myo * (J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA)) + ((LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR) * KMOLE / vol_myo) - dCP - dCA - (k_onTrop1*c_i*Trop - k_offTrop1*CaTrop);% + k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop); % rate for c_i (8)
             J_r4;    % rate for n (9)
             J_r2;    % rate for m (10)
             J_r1;    % rate for h (11)
@@ -517,6 +518,7 @@ end
         if freq==0
             dydt(24:26) = 0;
         end
+       
 
         if y(8) > 1e6
             fprintf("explosion")
@@ -538,7 +540,7 @@ end
         currents = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, I_NCX_N, I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL];
         currents(1:end-1) = SA_SL * currents(1:end-1);
 
-        % if t> 7 && freq > 0
+        % if t> 2 
         %     print('pause')
         % end
     end

@@ -14,8 +14,8 @@ else
 end
 
 % Createplot = varargin{1};
-if length(pVec) < 95
-    highSensIdx = [4,9,12,15,18,21,23,25,31,32,33,34,40,42,43,44,68,74,77,78,79,81,82,83,86,89,91,92];
+if length(pVec) < 95 || max(pVec) < 1000
+    highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
     pRef = ones(95,1);
     pRef(highSensIdx) = pVec;
     paramStruct = importdata('InputParam1.xlsx');
@@ -172,8 +172,6 @@ for n_index = 1 :length(expt_n)
                 InterpComp_base{n} = Y_base(:,5);
             end
         end
-
-
 
         Y= y;
 
