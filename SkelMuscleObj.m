@@ -96,7 +96,7 @@ for n_index = 1 :length(expt_n)
         param0 = param;
         param0(95) = 0; % set SOCE flux to zero
         [~,ySS] = SkelMuscleCa_dydtEst(tSS,0, 0, yinit, param0,StartTimer,n);
-        if size(ySS,1) < length(tSS) | any(isnan(ySS))
+        if size(ySS,1) < length(tSS) || any(isnan(ySS))
             cSR0 = yinit(2);
         else
             cSR0 = ySS(end,2);
