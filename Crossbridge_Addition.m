@@ -40,7 +40,7 @@ pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
 % pPSO(69) = pPSO(69)*100;
 
 % compute steady state solution without SOCE or phosphate accumulation
-[TimeSS,ySS] = SkelMuscleCa_dydt([0 1],0, 0, yinit, pPSO, tic, 2, false); 
+[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2, false); 
 pPSO(12) = pPSO(12)*ySS(end,2); % set c_ref according to SS c_SR
 % tSol = 0:.0001:10;
 tSol = [0, 420]; % 420 is max time for HIIT
