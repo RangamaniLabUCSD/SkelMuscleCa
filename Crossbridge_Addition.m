@@ -36,16 +36,23 @@ load PSO_17-Sep-2024.mat pSol
 highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
 pPSO = p0(:);
 pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
+% number 69 is the rate of phosphate transport into SR
+% pPSO(69) = pPSO(69)*100;
 
-
-[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
-tSol = 0:.0001:10;
-freq = 50; 
+% compute steady state solution without SOCE or phosphate accumulation
+[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2, false); 
+pPSO(12) = pPSO(12)*ySS(end,2); % set c_ref according to SS c_SR
+% tSol = 0:.0001:10;
+tSol = [0, 420]; % 420 is max time for HIIT
+freq = 10; 
 % ySS(end,26) = 0;
 % ySS(end,28) = 2500;
-[Time,Y,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
-
-
+% expt 1: const stim, with SOCE, expt 2: const stim, no SOCE
+% expt 3: fig 3.4 stim, with SOCE, expt 4: fig 3.4 stim, no SOCE
+% expt 1: HIIT stim, with SOCE, expt 2: HIIT stim, no SOCE
+expt = 6;
+phosphateAccum = false;
+[Time,Y,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, expt, phosphateAccum); % compute time-dependent solution
 
 % figure
 % scatter(Time, max(Y(:,8)))
@@ -59,6 +66,7 @@ title('Time vs Ca2+')
 xlabel('Time (seconds)');
 ylabel('[Ca2+] (µM)'); 
 
+%%
 figure
 plot(Time, Y(:,2))
 title('Time vs Ca2+ SR')

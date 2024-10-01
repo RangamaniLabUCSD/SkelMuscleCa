@@ -1,4 +1,4 @@
-function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, lowATP, yinit, p,StartTimer,expt)
+function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, lowATP, yinit, p,StartTimer,expt,phosphateAccum)
 % input:
 %     tSpan is a vector of start and stop times  
 %     freq is a vector of test frequencies
@@ -7,6 +7,8 @@ function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, lowAT
 %     p is a vector of selected parameters to test
 %     StartTimer starts counting run time
 %     expt is the experimental value used for calculation
+%     phosphateAccum is a logical variable determining if phosphate
+%     accumulation is accounted for
 %
 % output:
 %     T is the vector of times
@@ -42,7 +44,7 @@ end
 % ode rate
     function [dydt, fluxes, currents] = f(t,y,p,freq,lowATP) 
         currtime = toc(StartTimer);
-        if currtime > 120
+        if currtime > 1000%120
             error('too long to compute!')
             % dydt = zeros(length(y),1);
             % fluxes = zeros(1,8);
@@ -342,7 +344,7 @@ end
 
         %% SOCE
         if any(expt == [1,3,5,7])
-            g_SOCE = (0.01 ./ 210.44)   ;
+            g_SOCE = p(95);%(0.01 ./ 210.44)   ;
         else
             g_SOCE = 0; % Expt 2,4,6,8 have no SOCE.
         end
@@ -515,10 +517,9 @@ end
             dPi_Myo;  % Rate for Myoplasmic Phosphate (26) 
             ];
 
-        if freq==0
+        if ~phosphateAccum
             dydt(24:26) = 0;
         end
-       
 
         if y(8) > 1e6
             fprintf("explosion")
