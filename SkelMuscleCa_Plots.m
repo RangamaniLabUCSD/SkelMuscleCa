@@ -19,8 +19,8 @@ load Exptdata.mat
 
 param = importdata('InputParam1.xlsx'); % load default parameters
 p0 =  param.data;
-load PSO_13-Sep-2024.mat pSol
-highSensIdx = 1:95;
+load PSO_17-Sep-2024.mat pSol
+highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
 pPSO = p0(:);
 pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
 
