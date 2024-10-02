@@ -36,7 +36,6 @@ currents = zeros(length(Time), 13);
 % Flux and ionic current through different pathways.
 for i = 1:length(Time)
     [~, fluxes(i,:), currents(i,:)] = f(Time(i), Y(i,:), p, freq, lowATP);
-
 end
 
 
@@ -135,7 +134,7 @@ end
         S_i = p(40);
         tau_SOCEProb = p(41);
         nu_SERCA = p(42);
-        g_PMCA = p(43) * 0.2;
+        g_PMCA = p(43);
         nu_leakSR = p(44);
         g_leakNa = p(45);
         
@@ -517,13 +516,20 @@ end
             dPi_Myo;  % Rate for Myoplasmic Phosphate (26) 
             ];
 
+        if expt == 10 % then only test crossbridge changes
+            crossbridgeIdx = 17:21;
+            crossbridgeLogic = false(size(dydt));
+            crossbridgeLogic(crossbridgeIdx) = true;
+            dydt(~crossbridgeLogic) = 0;
+        end
+
         if ~phosphateAccum
             dydt(24:26) = 0;
         end
 
-        if y(8) > 1e6
-            fprintf("explosion")
-        end
+        % if y(8) > 1e6
+        %     fprintf("explosion")
+        % end
 
         Nf = [1;1000;1;1;100;1000;1000;0.1;1;1;1;1;100000;500;1000;1;1;1;1;1;1;1;1;1;1;1]; %Normalization factor
         R = abs(dydt ./ Nf);

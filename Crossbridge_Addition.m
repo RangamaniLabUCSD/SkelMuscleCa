@@ -40,31 +40,63 @@ pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
 % pPSO(69) = pPSO(69)*100;
 
 % compute steady state solution without SOCE or phosphate accumulation
-[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2, false); 
-pPSO(12) = pPSO(12)*ySS(end,2); % set c_ref according to SS c_SR
+[TimeSS_noSOCE,ySS_noSOCE] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2, false); 
+pPSO(12) = ySS_noSOCE(end,2)/2; % set c_ref according to SS c_SR 
+pPSO(95) = pPSO(95)*5;
+[TimeSS_withSOCE,ySS_withSOCE] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 1, false);
+
+% compute max cross bridge engagement - expt 10 is only crossbridge testing
+% (all other dydt = 0)
+yinit_maxCa = ySS_withSOCE(end,:);
+yinit_maxCa(8) = 1e6;
+[Time_maxCa, Y_maxCa] = SkelMuscleCa_dydt([0 1], 0, 0, yinit_maxCa, pPSO, tic, 10, false);
+maxCrossBridge = Y_maxCa(end,21);
+
 % tSol = 0:.0001:10;
-tSol = [0, 420]; % 420 is max time for HIIT
-freq = 10; 
+tSol = [0, 60]; % 420 is max time for HIIT
+freq = 10;
 % ySS(end,26) = 0;
 % ySS(end,28) = 2500;
 % expt 1: const stim, with SOCE, expt 2: const stim, no SOCE
 % expt 3: fig 3.4 stim, with SOCE, expt 4: fig 3.4 stim, no SOCE
 % expt 1: HIIT stim, with SOCE, expt 2: HIIT stim, no SOCE
-expt = 6;
+expt = 1;
 phosphateAccum = false;
-[Time,Y,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, expt, phosphateAccum); % compute time-dependent solution
+[Time_withSOCE,Y_withSOCE,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS_withSOCE(end,:), pPSO, tic, 1, phosphateAccum); % compute time-dependent solution
+[Time_noSOCE,Y_noSOCE,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS_noSOCE(end,:), pPSO, tic, 2, phosphateAccum); % compute time-dependent solution
 
 % figure
 % scatter(Time, max(Y(:,8)))
 % title('Time vs max Ca2+')
 % xlabel('Time (seconds)');
 % ylabel('[Ca2+] (µM)'); 
- 
+
+%% create plots
+colors = colororder;
 figure
-plot(Time, Y(:,8))
-title('Time vs Ca2+')
-xlabel('Time (seconds)');
-ylabel('[Ca2+] (µM)'); 
+subplot(3,1,1)
+% final entry in color spec gives the opacity
+plot(Time_withSOCE, Y_withSOCE(:,8), 'Color', [colors(1,:), 0.8])
+hold on
+plot(Time_noSOCE, Y_noSOCE(:,8), 'Color', [colors(2,:), 0.5])
+xlabel('Time (seconds)')
+ylabel('Cytosolic calcium conc. (µM)')
+title('Cytosolic calcium')
+legend('With SOCE', 'No SOCE')
+subplot(3,1,2)
+plot(Time_withSOCE, Y_withSOCE(:,2), 'Color', [colors(1,:), 0.8])
+hold on
+plot(Time_noSOCE, Y_noSOCE(:,2), 'Color', [colors(2,:), 0.5])
+xlabel('Time (seconds)')
+ylabel('SR calcium conc. (µM)')
+title('SR calcium')
+subplot(3,1,3)
+plot(Time_withSOCE, Y_withSOCE(:,21)/maxCrossBridge, 'Color', [colors(1,:), 0.8])
+hold on
+plot(Time_noSOCE, Y_noSOCE(:,21)/maxCrossBridge, 'Color', [colors(2,:), 0.5])
+xlabel('Time (seconds)')
+ylabel('Relative force')
+title('Force')
 
 %%
 figure
