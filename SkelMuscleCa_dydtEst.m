@@ -180,6 +180,8 @@ end
         k_offTrop2 = p(94);
         g_SOCE = p(95);
 
+        B_SRtot = p(96);
+        K_SRBuffer = p(97);
         %% Global constants
         F = 96485.3321;
         PI = 3.141592653589793;
@@ -474,9 +476,7 @@ end
         %Myoplasmic Phosphate
         dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow*(p_i_Myo / 3000)) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR); 
 
-        % Rapid buffering with CaSQ
-        B_SRtot = 31000;
-        K_SRBuffer = 800;           % k_off/k_on
+        % Rapid buffering with CaSQ 
         f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2));
 
         currtime = toc(StartTimer);

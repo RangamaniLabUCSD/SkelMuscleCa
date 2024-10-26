@@ -1,4 +1,4 @@
-function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, lowATP, yinit, p,StartTimer,expt)
+function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, lowATP, yinit, p,StartTimer,expt,phosphateAccum)
 % input:
 %     tSpan is a vector of start and stop times  
 %     freq is a vector of test frequencies
@@ -7,6 +7,8 @@ function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, lowAT
 %     p is a vector of selected parameters to test
 %     StartTimer starts counting run time
 %     expt is the experimental value used for calculation
+%     phosphateAccum is a logical variable determining if phosphate
+%     accumulation is accounted for
 %
 % output:
 %     T is the vector of times
@@ -42,7 +44,7 @@ end
 % ode rate
     function [dydt, fluxes, currents] = f(t,y,p,freq,lowATP) 
         currtime = toc(StartTimer);
-        if currtime > 120
+        if currtime > 1000%120
             error('too long to compute!')
             % dydt = zeros(length(y),1);
             % fluxes = zeros(1,8);
@@ -133,7 +135,7 @@ end
         S_i = p(40);
         tau_SOCEProb = p(41);
         nu_SERCA = p(42);
-        g_PMCA = p(43) * 0.2;
+        g_PMCA = p(43);
         nu_leakSR = p(44);
         g_leakNa = p(45);
         
@@ -186,6 +188,9 @@ end
 
         k_onTrop2 = p(93);
         k_offTrop2 = p(94);
+
+        B_SRtot = p(96);
+        K_SRBuffer = p(97); 
         
         %% Global constants
         F = 96485.3321;
@@ -328,7 +333,7 @@ end
         Qcorr_NCX = ((T - 310.0) ./ 10.0);
         s2_NCX = (exp(((nu_NCX - 1.0) .* Voltage_SL .* F ./ (R .* T))) .* (Na_EC ^ 3.0) .* c_i);
       
-        s3_NCX_N = ((Kmc_i_NCX .* (Na_EC ^ 3.0) .* (1.0 + ((Na_i ./ KmNa_i_NCX) ^ 3.0))) + ((KmNa_EC_NCX ^ 3.0) .* c_i .* (1.0 + (c_i ./ Kmc_i_NCX))) + (Kmc_EC_NCX_N .* (Na_i ^ 3.0)) + ((Na_i ^ 3.0) .* c_EC) + ((Na_EC ^ 3.0) .* c_i));
+        s3_NCX_N = ((Kmc_i_NCX .* (Na_EC ^ 3.0) .* (1.0 + ((Na_i .Kmc_EC_NCX_N/ KmNa_i_NCX) ^ 3.0))) + ((KmNa_EC_NCX ^ 3.0) .* c_i .* (1.0 + (c_i ./ Kmc_i_NCX))) + (Kmc_EC_NCX_N .* (Na_i ^ 3.0)) + ((Na_i ^ 3.0) .* c_EC) + ((Na_EC ^ 3.0) .* c_i));
 
         I_NCX_N = ( - (3.0 .* (g_NCX .* (Q10NCX ^ Qcorr_NCX) .* Ka_NCX .* (s1_NCX - s2_NCX) ./ s3_NCX_N ./ (1.0 + (ksat_NCX .* exp(((nu_NCX - 1.0) .* Voltage_SL ./ (R .* T ./ F))))))) .* (1.0 + TTFrac));
         J_NCX_N = ((I_NCX_N ./ (carrierValence_NCX_N .* F)) .* 1E09);
@@ -342,7 +347,7 @@ end
 
         %% SOCE
         if any(expt == [1,3,5,7])
-            g_SOCE = (0.01 ./ 210.44)   ;
+            g_SOCE = p(95);%(0.01 ./ 210.44)   ;
         else
             g_SOCE = 0; % Expt 2,4,6,8 have no SOCE.
         end
@@ -453,9 +458,7 @@ end
         %Myoplasmic Phosphate
         dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow*(p_i_Myo / 3000)) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR); 
 
-        % Rapid buffering with CaSQ
-        B_SRtot = 31000;
-        K_SRBuffer = 800;           % k_off/k_on
+        % Rapid buffering with CaSQ 
         f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2));
 
        
@@ -514,11 +517,17 @@ end
             dPiCa;    % Rate for Cal-Phos Precipitate (25) 
             dPi_Myo;  % Rate for Myoplasmic Phosphate (26) 
             ];
+         if expt == 10 % then only test crossbridge changes
+            crossbridgeIdx = 17:21;
+            crossbridgeLogic = false(size(dydt));
+            crossbridgeLogic(crossbridgeIdx) = true;
+            dydt(~crossbridgeLogic) = 0;
+        end
 
-        if freq==0
+
+        if ~phosphateAccum
             dydt(24:26) = 0;
         end
-       
 
         if y(8) > 1e6
             fprintf("explosion")
@@ -545,4 +554,3 @@ end
         % end
     end
 end
-

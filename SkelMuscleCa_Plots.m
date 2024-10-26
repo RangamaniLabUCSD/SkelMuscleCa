@@ -44,9 +44,9 @@ fluxes2 = fluxes;
 %% Input Stimulus
 plot1 = figure;
 axes1 = axes('Parent', plot1);
-plot(Time,Current(:,end),'LineWidth',2);                          
+plot(Time,Current(:,end),'LineWidth',2, 'Color', [0.6350 0.0780 0.1840]);                          
 xlabel('Time (s)', 'Fontsize',16)
-ylabel('I_{SL (pA)','Fontsize',16,'FontSmoothing','on')
+ylabel('I_{SL} (pA)','Fontsize',16,'FontSmoothing','on')
 set(axes1,'FontSize',16,'Box','off','FontSmoothing','on')
 set(plot1,"Renderer","painters");
 

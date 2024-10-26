@@ -14,9 +14,9 @@ else
 end
 
 % Createplot = varargin{1};
-if length(pVec) < 95 || max(pVec) < 1000
-    highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
-    pRef = ones(95,1);
+if length(pVec) < 97 || max(pVec) < 1000
+    highSensIdx = [2,4,5,6,8,10,14,15,16,24,25,26,28,29,32,33,35,37,40,42,43,60,68,74,77,78,80,81,83,90,91,92];
+    pRef = ones(97,1);
     pRef(highSensIdx) = pVec;
     paramStruct = importdata('InputParam1.xlsx');
     p0 = paramStruct.data;
@@ -251,15 +251,18 @@ if Createplot
         x = 0:0.0001:T_max(i);
         Time_Comp = [x, fliplr(x)];
         Ca_Comp = [InterpExpt{i} + 2*sigma_C, fliplr(InterpExpt{i} - 2*sigma_C)];
-        plot(0:0.0001:T_max(i),InterpComp{i},'LineWidth',2, 'color',[0.49,0.18,0.56]) %'b',
+        plot(0:0.0001:T_max(i),InterpComp{i},'LineWidth',3, 'color',[0.49,0.18,0.56]) %'b',
         hold on
-        plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+        plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',3, 'Color',[0.10,0.85,0.83])
         hold on
-        plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2,'Linestyle','--')
+        plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',3,'Linestyle','--')
         fill(Time_Comp,Ca_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)
         xlabel('Time (s)', 'FontSize',18);
         title('[Ca^{2+}] for '+ expt_title(i), 'FontSize',18);
         ylabel('Concentration (uM)', 'FontSize',18);
+        ax = gca;
+        ax.FontSize = 18;
+
 
     end
 
@@ -269,17 +272,19 @@ if Createplot
         x = 0:0.0001:T_max(i);
         Time_Comp = [x, fliplr(x)];
         V_Comp = [InterpExpt{i} + 2*sigma_V, fliplr(InterpExpt{i} - 2*sigma_V)];
-        plot(0:0.0001:T_max(i),InterpComp{i},'LineWidth',2, 'color',[0.49,0.18,0.56] ) %'b',
+        plot(0:0.0001:T_max(i),InterpComp{i},'LineWidth',3, 'color',[0.49,0.18,0.56] ) %'b',
         hold on
-        plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+        plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',3, 'Color',[0.10,0.85,0.83])
         hold on
-        plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',2)
+        plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',3)
         fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
         xlabel('Time (s)', 'FontSize',18);
         ylabel('Membrane Potential (mV)', 'FontSize',18);
         title('V_{SL} for expt - '+ expt_title(i), 'FontSize',18);
+        ax = gca;
+        ax.FontSize = 18;
 
     end
-    legend('Calibrated','Pre-Calibarated','Experiment', '95% Confidence Interval', 'FontSize',18)
+    legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval', 'FontSize',18)
 end
 end

@@ -1,5 +1,5 @@
 clear 
-load('MorrisResults9-16.mat')
+load('MorrisResults10-24.mat')
 
 % QOI(i,:) = [yInf(2), yInf(5), yInf(6), yInf(7),yInf(8), yInf(13), yInf(23), MaxCaF,MaxVF, MaxPost, AvgF, AvgPost, AvgVolt, VoltWidth];
 
@@ -10,17 +10,32 @@ expt_names = repmat(graph_names,4)';
 n = 1;
 muVec = zeros(size(MorrisAnalysis.Results.MuStar));
 
+ActionPotential = [1:6, 8:10, 13,14,16:30,33,36:40,45,76:82, 85:88];
+CaInflux_SR_Release = [7,11,15,32,35,83,90:92];
+CaBuffering = [46:54,58,68:72,74,75,96,97];
+CaEfflux_SOCE = [12,31,34,41:44,89,95];
+Crossbridge_Cycle = [55:57,59:67,73,84,93,94];
+
+
 for k= 57 %1:length(graph_names)
     figure
-    scatter(MorrisAnalysis.Results.MuStar(:,k),MorrisAnalysis.Results.Std(:,k),'filled','MarkerFaceColor',[0.64,0.08,0.18])
+    scatter(MorrisAnalysis.Results.MuStar(ActionPotential,k),MorrisAnalysis.Results.Std(ActionPotential,k),'filled','MarkerFaceColor',[0.9290 0.6940 0.1250])
+    hold on
+    scatter(MorrisAnalysis.Results.MuStar(CaInflux_SR_Release,k),MorrisAnalysis.Results.Std(CaInflux_SR_Release,k),'filled','MarkerFaceColor',[0.4660 0.6740 0.1880])
+    hold on
+    scatter(MorrisAnalysis.Results.MuStar(CaBuffering,k),MorrisAnalysis.Results.Std(CaBuffering,k),'filled','MarkerFaceColor',[0 0.4470 0.7410])
+    hold on
+    scatter(MorrisAnalysis.Results.MuStar(CaEfflux_SOCE,k),MorrisAnalysis.Results.Std(CaEfflux_SOCE,k),'filled','MarkerFaceColor',	[1 0 0])
+    hold on
+    scatter(MorrisAnalysis.Results.MuStar(Crossbridge_Cycle,k),MorrisAnalysis.Results.Std(Crossbridge_Cycle,k),'filled','MarkerFaceColor',[0.4940 0.1840 0.5560])
     xlabel('mu*')
     ylabel('simga')
+    yticklabels({})
     % title(graph_names{k})
     hold on
     ten_percent = max(MorrisAnalysis.Results.MuStar(:,k))*0.1;
     xline(ten_percent , '--b' )
-
-
+    legend('Action Potential', 'Calcium Influx and SR Release','Calcium Buffering','Calcium Efflux and SOCE','Cross-Bridge Cycle','10% Threshold')
     
     % labels_above_ten = cell(size(length(graph_names)));
     

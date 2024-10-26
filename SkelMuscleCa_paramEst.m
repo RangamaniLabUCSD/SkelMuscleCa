@@ -17,7 +17,7 @@
 
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(lb,ub,yinit,p,Createplot)
 
-psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 2); %set swarmsize to 30 for TSCC and 50 to stall iter
+psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 30); %set swarmsize to 30 for TSCC and 50 to stall iter
 
 % pSol Results
 % load PSO_22-Aug-2024.mat pSol
@@ -32,11 +32,12 @@ SkelMuscleObj(pCur);
 
 
 delete(gcp('nocreate'))
-% parpool(3) %% **CHANGE SWARMSIZE!** and save file location 
+parpool(30) %% **CHANGE SWARMSIZE!** and save file location 
 [pSol,fval,exitflag] = particleswarm(@SkelMuscleObj,length(lb),lb,ub,psOptions);
 % [pSol,fval,exitflag] = particleswarm(@pToObj,numParam,lb,ub,psOptions);
 pCur = pVec;
-highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
+% highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
+highSensIdx = [2,4,5,6,8,10,14,15,16,24,25,26,28,29,32,33,35,37,40,42,43,60,68,74,77,78,80,81,83,90,91,92];
 pCur(highSensIdx) = pSol(:) .* pCur(highSensIdx)';
 pCur = pCur(:) .* p0;
 SkelMuscleObj(pCur)
