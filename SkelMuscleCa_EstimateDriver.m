@@ -1,42 +1,19 @@
 %% start parameter optimization
-yinit = [
-    0.0122; 	% yinit(1) is the initial condition for 'SOCEProb'
-    1500.0;		% yinit(2) is the initial condition for 'c_SR'
-    0.9983;		% yinit(3) is the initial condition for 'h_K'
-    0.9091;		% yinit(4) is the initial condition for 'w_RyR'
-    -88.0;		% yinit(5) is the initial condition for 'Voltage_PM'
-    14700.0;	% yinit(6) is the initial condition for 'Na_i'
-    5830.0;		% yinit(7) is the initial condition for 'Cl_i'
-    0.1;		% yinit(8) is the initial condition for 'c_i'
-    0.003;		% yinit(9) is the initial condition for 'n'
-    0.0128;		% yinit(10) is the initial condition for 'm'
-    0.8051;		% yinit(11) is the initial condition for 'h'
-    0.8487;		% yinit(12) is the initial condition for 'S'
-    154500.0;	% yinit(13) is the initial condition for 'K_i'
-    0;%387;        % yinit(14) is the initial condition for 'CaParv'
-    0;%1020;       % yinit(15) is the initial condition for 'MgParv'
-    0.3632;     % yinit(16) is the inital consition for 'CATP'
-    0;%10.004;     % yinit(17) is the initial condition for 'CaTrop'
-    0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
-    0;	    	% yinit(19) is the initial condition for 'D_2'
-    0;	    	% yinit(20) is the initial condition for 'Pre_Pow'
-    0;	    	% yinit(21) is the initial condition for 'Post_Pow'
-    0;	    	% yinit(22) is the initial condition for 'MgATP'
-    8000;       % yinit(23) is the initial condition for 'ATP'
-    3000        % yinit(24) is the initial condition for 'p_i_SR'
-    0           % yinit(25) is the initial condition for 'PiCa'
-    3000        % yinit(26) is the initial condition for 'Pi_Myo'
-    ];
-
 % Importing parameters 
 param = importdata('InputParam1.xlsx');
 p =  param.data;
+% load PSO_17-Sep-2024.mat pSol
+highSensIdx = 1:105;%[1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
+pSol = ones(size(highSensIdx));
+p(highSensIdx) = pSol(:).* p(highSensIdx);
+% p(95) = p(95)*5; % increase SOCE baseline
 % highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,30,32,33,34,35,40,42,43,44,45,50,52,74,76,77,78,79,80,81,82,83,89,90,91,92];
 % highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
-highSensIdx = [2,4,5,6,8,10,14,15,16,24,25,26,28,29,32,33,35,37,40,42,43,60,68,74,77,78,80,81,83,90,91,92];
+% highSensIdx = [2,4,5,6,8,10,14,15,16,24,25,26,28,29,32,33,35,37,40,42,43,60,68,74,77,78,80,81,83,90,91,92];
+% highSensIdx = [12,31,34,39,41,42,43,59:75,89,91,95];
 % Setting bounds for parameters
-lb = 0.8*ones(length(highSensIdx),1); 
-ub = 1.25*ones(length(highSensIdx),1);
+lb = 0.5*ones(length(highSensIdx),1); 
+ub = 2*ones(length(highSensIdx),1);
 % limits for NCX, SERCA, PMCA
 % lb([20, 42, 43]) = 0.25;
 % ub([20, 42, 43]) = 1.0;
@@ -44,8 +21,8 @@ ub = 1.25*ones(length(highSensIdx),1);
 % ub(highSensIdx == 20) = 1.0;
 % lb(highSensIdx == 42) = 0.25;
 % ub(highSensIdx == 42) = 1.0;
-lb(highSensIdx == 43) = 0.1;
-ub(highSensIdx == 43) = 0.4;
+% lb(highSensIdx == 43) = 0.1;
+% ub(highSensIdx == 43) = 0.4;
 % limits for SR Ca2+ leak
 % lb(highSensIdx == 44) = 0.1;
 % ub(highSensIdx == 44) = 0.4;
@@ -54,13 +31,8 @@ ub(highSensIdx == 43) = 0.4;
 % ub(highSensIdx == 45) = 2.5;
 % timer1 = tic;
 
-% Particle Swarm Optimization 
-Createplot = 0; %Logical input of 0 or 1. 0 for not plotting any outputs and 1 for generatings plots.
-[pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst(lb, ub, yinit, p,Createplot);
-
-
-% toc(timer1)
-filename_fig = "BestFnva"+ date + ".jpg";
+% Particle Swarm Optimization
+[pSol_LM,fval,exitflag] = SkelMuscleCa_paramEst(lb, ub);
 % saveas(gcf,filename_fig)
-saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
+% saveas(gcf,fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename_fig));
 % saveas(gcf,fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename_fig));
