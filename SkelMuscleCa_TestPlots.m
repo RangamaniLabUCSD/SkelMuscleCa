@@ -123,6 +123,65 @@ BFrac = 1 - JFrac;
 
 yinf_noSOCE = ySS_noSOCE(end,:);
 yinf_withSOCE = ySS_withSOCE(end,:);
+
+%% test single frequency and plot currents and fluxes
+expt = 1;
+phosphateAccum = true;
+[Time_withSOCE,Y_withSOCE,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, 50, yinf_withSOCE, pPSO, tic, 1, phosphateAccum); % compute time-dependent solution
+% fluxes in µM/s = [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA,...
+%                   LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];% 
+% current in pA/s = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C,... 
+                %    I_NCX_N, I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL];
+% plot sodium, KDR, and KIR currents
+figure
+subplot(3,1,1)
+plot(Time_withSOCE, currents(:,10)) % in TT
+hold on
+plot(Time_withSOCE, currents(:,13+10)) % in bulk (SL)
+plot(Time_withSOCE, currents(:,10)+currents(:,13+10))
+legend('TT', 'SL', 'Total')
+title('Na')
+subplot(3,1,2)
+plot(Time_withSOCE, currents(:,4)) % in TT
+hold on
+plot(Time_withSOCE, currents(:,13+4)) % in bulk (SL)
+plot(Time_withSOCE, currents(:,4)+currents(:,13+4))
+legend('TT', 'SL', 'Total')
+title('KDR')
+subplot(3,1,3)
+plot(Time_withSOCE, currents(:,5)) % in TT
+hold on
+plot(Time_withSOCE, currents(:,13+5)) % in bulk (SL)
+plot(Time_withSOCE, currents(:,5)+currents(:,13+5))
+legend('TT', 'SL', 'Total')
+title('KIR')
+% plot RyR, SERCA, and PMCA fluxes
+% multiply all fluxes by JFrac or BFrac to represent in terms of total
+% concentration change
+figure
+subplot(3,1,1)
+plot(Time_withSOCE, fluxes(:,6)*JFrac) % from SRJ to MJ
+hold on
+plot(Time_withSOCE, fluxes(:,8+6)*BFrac) % from bulk SR to bulk myo
+plot(Time_withSOCE, fluxes(:,6)*JFrac+fluxes(:,8+6)*BFrac)
+legend('SRJ', 'SRB', 'Total')
+title('RyR')
+subplot(3,1,2)
+plot(Time_withSOCE, fluxes(:,7)*JFrac) % from SRJ to MJ
+hold on
+plot(Time_withSOCE, fluxes(:,8+7)*BFrac) % from bulk SR to bulk myo
+plot(Time_withSOCE, fluxes(:,7)*JFrac+fluxes(:,8+7)*BFrac)
+legend('SRJ', 'SRB', 'Total')
+title('SERCA')
+subplot(3,1,3)
+plot(Time_withSOCE, fluxes(:,5)*JFrac) % from TT to MJ
+hold on
+plot(Time_withSOCE, fluxes(:,8+5)*BFrac) % from SL to bulk myo
+plot(Time_withSOCE, fluxes(:,5)*JFrac+fluxes(:,8+5)*BFrac)
+legend('TT', 'SL', 'Total')
+title('PMCA')
+
+%% test range of frequencies for SOCE vs no SOCE
 figure
 for i = 1:length(freq)
     % expt 1: HIIT stim, with SOCE, expt 2: HIIT stim, no SOCE

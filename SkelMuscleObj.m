@@ -15,7 +15,10 @@ elseif length(varargin)==1 %#ok<ISCL>
     saveProgress = false;
 elseif length(varargin)==2
     Createplot = varargin{1};
-    saveProgress = varargin{2};
+    progressPath = varargin{2};
+    if isfolder(progressPath)
+        saveProgress = true;
+    end
 end
 
 if length(pVec) < 105 || max(pVec) < 1000
@@ -253,11 +256,11 @@ end
 objVal = sum(sum_delta);
 if saveProgress
     try
-        load('/tscc/lustre/ddn/scratch/eafrancis/SkelMuscleCaData/objTest.mat','objTest')
+        load(fullfile(progressPath,'objTest.mat'),'objTest')
         if objVal < objTest
             objTest = objVal;
-            save('/tscc/lustre/ddn/scratch/eafrancis/SkelMuscleCaData/objTest.mat','objTest')
-            save('/tscc/lustre/ddn/scratch/eafrancis/SkelMuscleCaData/pBest.mat','pVec')
+            save(fullfile(progressPath,'objTest.mat'),'objTest')
+            save(fullfile(progressPath,'pBest.mat'),'pVec')
         end
     catch
         fprintf('file was busy I guess\n')
