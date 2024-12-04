@@ -6,7 +6,7 @@ load PSO_22-Nov-2024_20size.mat pSol
 load PSO_22-Nov-2024_20size.mat pSol
 [objVal, simSaved] = SkelMuscleObj2(pSol, true);
 
-%% Test SOCE vs no SOCE for a range of frequencies after adjusting parameters
+%% Test SOCE vs no SOCE steady states after adjusting parameters
 yinit = [
     0.0122; 	% yinit(1) is the initial condition for 'SOCEProb'
     1500.0;		% yinit(2) is the initial condition for 'c_SR'
@@ -56,10 +56,10 @@ p0 =  param.data;
 load PSO_22-Nov-2024_20size.mat pSol
 highSensIdx = 1:105;%[1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
 pPSO = p0(:);
-pPSO(highSensIdx) = pSol(:).*pPSO(highSensIdx);
+% pPSO(highSensIdx) = pSol(:).*pPSO(highSensIdx);
 
 % if desired, perturb parameters to test effects
-% pPSO(45) = 2*pPSO(45); % Na leak
+% pPSO(45) = 0*pPSO(45); % Na leak
 % pPSO(19) = 1*pPSO(19); % Na channel
 % number 69 is the rate of phosphate transport into SR
 % pPSO(69) = pPSO(69)*100
@@ -92,7 +92,7 @@ pPSO0(95) = 0; % no SOCE
 [TimeSS_noSOCE,ySS_noSOCE, ~, fluxes, currents] = SkelMuscleCa_dydt([0 1000],0, yinit, pPSO0, tic, 2, false);
 % pPSO(12) = 0.25;
 pPSO(12) = pPSO(12)*ySS_noSOCE(end,2); % set c_ref according to SS c_SR 
-pPSO(95) = pPSO(95)*10; % gSOCE
+% pPSO(95) = pPSO(95)*10; % gSOCE
 [TimeSS_withSOCE,ySS_withSOCE] = SkelMuscleCa_dydt([0 1000], 0, yinit, pPSO, tic, 1, false);
 
 % compute max cross bridge engagement - expt 10 is only crossbridge testing
@@ -103,13 +103,6 @@ yinit_maxCa(sum(juncLocLogic)+sum(bulkLocLogic(1:8))) = 1e4;
 [Time_maxCa, Y_maxCa] = SkelMuscleCa_dydt([0 1], 0, yinit_maxCa, pPSO, tic, 10, false);
 crossbridgeIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:21));
 maxCrossBridge = Y_maxCa(end,crossbridgeIdx);
-
-% tSol = 0:.0001:10;
-tSol = [0, 0.5]; % 420 is max time for HIIT
-freq = [1, 25, 50, 75, 100, 125, 150, 175, 200, 250];
-forceRatio = zeros(size(freq));
-peakForce = zeros(2, length(freq));
-endPeakRatio = zeros(2, length(freq));
 
 vol_Fiber = pi * (20 ^ 2) * 100 ;
 vol_SA_ratio = 0.01;
@@ -125,6 +118,7 @@ yinf_noSOCE = ySS_noSOCE(end,:);
 yinf_withSOCE = ySS_withSOCE(end,:);
 
 %% test single frequency and plot currents and fluxes
+tSol = [0, 0.5]; % 420 is max time for HIIT
 expt = 1;
 phosphateAccum = true;
 [Time_withSOCE,Y_withSOCE,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, 50, yinf_withSOCE, pPSO, tic, 1, phosphateAccum); % compute time-dependent solution
@@ -182,6 +176,11 @@ legend('TT', 'SL', 'Total')
 title('PMCA')
 
 %% test range of frequencies for SOCE vs no SOCE
+tSol = [0, 0.5]; % 420 is max time for HIIT
+freq = [1, 25, 50, 75, 100, 125, 150, 175, 200, 250];
+forceRatio = zeros(size(freq));
+peakForce = zeros(2, length(freq));
+endPeakRatio = zeros(2, length(freq));
 figure
 for i = 1:length(freq)
     % expt 1: HIIT stim, with SOCE, expt 2: HIIT stim, no SOCE

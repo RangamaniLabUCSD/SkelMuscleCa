@@ -175,11 +175,11 @@ for n_index = 1 :length(expt_n)
             p0 = pVecStruct.data;
             pVec0 = p0;
             pVec0(95) = 0; % set SOCE flux to zero
-            [~,ySS_baseinit] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic, abs(n), phosphateAccum);
+            [~,ySS_baseinit] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic, n, phosphateAccum);
             cSR0 = ySS_baseinit(end,cSRBulkIdx);
             p0(12) = p0(12) * cSR0;
-            [~,ySS_base] = SkelMuscleCa_dydt(tSS, 0, yinit, p0, tic, abs(n), phosphateAccum);
-            [~,Y_base] = SkelMuscleCa_dydt(t,freq(abs(n)), ySS_base(end,:), p0, tic, abs(n), phosphateAccum);
+            [~,ySS_base] = SkelMuscleCa_dydt(tSS, 0, yinit, p0, tic, n, phosphateAccum);
+            [~,Y_base] = SkelMuscleCa_dydt(t,freq(abs(n)), ySS_base(end,:), p0, tic, n, phosphateAccum);
         end
         
         CaSol = y(:,ciJuncIdx)*JFrac + y(:,ciBulkIdx)*BFrac;
