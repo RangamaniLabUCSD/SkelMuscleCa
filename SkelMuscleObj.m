@@ -15,7 +15,10 @@ elseif length(varargin)==1 %#ok<ISCL>
     saveProgress = false;
 elseif length(varargin)==2
     Createplot = varargin{1};
-    saveProgress = varargin{2};
+    progressPath = varargin{2};
+    if isfolder(progressPath)
+        saveProgress = true;
+    end
 end
 
 if length(pVec) < 105 || max(pVec) < 1000
@@ -172,11 +175,11 @@ for n_index = 1 :length(expt_n)
             p0 = pVecStruct.data;
             pVec0 = p0;
             pVec0(95) = 0; % set SOCE flux to zero
-            [~,ySS_baseinit] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic, abs(n), phosphateAccum);
+            [~,ySS_baseinit] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic, n, phosphateAccum);
             cSR0 = ySS_baseinit(end,cSRBulkIdx);
             p0(12) = p0(12) * cSR0;
-            [~,ySS_base] = SkelMuscleCa_dydt(tSS, 0, yinit, p0, tic, abs(n), phosphateAccum);
-            [~,Y_base] = SkelMuscleCa_dydt(t,freq(abs(n)), ySS_base(end,:), p0, tic, abs(n), phosphateAccum);
+            [~,ySS_base] = SkelMuscleCa_dydt(tSS, 0, yinit, p0, tic, n, phosphateAccum);
+            [~,Y_base] = SkelMuscleCa_dydt(t,freq(abs(n)), ySS_base(end,:), p0, tic, n, phosphateAccum);
         end
         
         CaSol = y(:,ciJuncIdx)*JFrac + y(:,ciBulkIdx)*BFrac;
@@ -253,11 +256,11 @@ end
 objVal = sum(sum_delta);
 if saveProgress
     try
-        load('/tscc/lustre/ddn/scratch/eafrancis/SkelMuscleCaData/objTest.mat','objTest')
+        load(fullfile(progressPath,'objTest.mat'),'objTest')
         if objVal < objTest
             objTest = objVal;
-            save('/tscc/lustre/ddn/scratch/eafrancis/SkelMuscleCaData/objTest.mat','objTest')
-            save('/tscc/lustre/ddn/scratch/eafrancis/SkelMuscleCaData/pBest.mat','pVec')
+            save(fullfile(progressPath,'objTest.mat'),'objTest')
+            save(fullfile(progressPath,'pBest.mat'),'pVec')
         end
     catch
         fprintf('file was busy I guess\n')

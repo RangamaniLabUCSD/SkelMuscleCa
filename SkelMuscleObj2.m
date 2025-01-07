@@ -8,9 +8,17 @@ function [objVal, simSaved] = SkelMuscleObj2(pVec, varargin)
 %       objVal - Minimum error between the experimental and model
 %       output
 if isempty(varargin)
-    createPlot = false;
-else
-    createPlot = varargin{1};
+    Createplot = false;
+    saveProgress = false;
+elseif length(varargin)==1 %#ok<ISCL>
+    Createplot = varargin{1};
+    saveProgress = false;
+elseif length(varargin)==2
+    Createplot = varargin{1};
+    progressPath = varargin{2};
+    if isfolder(progressPath)
+        saveProgress = true;
+    end
 end
 
 if length(pVec) < 105 || max(pVec) < 1000
@@ -161,7 +169,20 @@ objVal = sum(((maxForce_withSOCE - maxForceExpMean_withSOCE) ./ maxForceExpSEM_w
     sum(((forceRatio_withSOCE(3:end) - forceRatioExpMean_withSOCE) ./ forceRatioExpSEM_withSOCE).^2) +...
     sum(((forceRatio_noSOCE(3:end) - forceRatioExpMean_noSOCE) ./ forceRatioExpSEM_noSOCE).^2);
 
-if createPlot
+if saveProgress
+    try
+        load(fullfile(progressPath,'objTest.mat'),'objTest')
+        if objVal < objTest
+            objTest = objVal;
+            save(fullfile(progressPath,'objTest.mat'),'objTest')
+            save(fullfile(progressPath,'pBest.mat'),'pVec')
+        end
+    catch
+        fprintf('file was busy I guess\n')
+    end
+end
+
+if Createplot
     figure
     subplot(2,1,1)
     plot(freq, maxForce_withSOCE, 'b')

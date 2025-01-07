@@ -32,7 +32,19 @@ if psOptions.UseParallel
     parpool(3) %% **CHANGE SWARMSIZE!** and save file location
 end
 saveProgress = true;
-fAnon = @(x)SkelMuscleObj2(x, false, saveProgress); % pass whether to save progress 
+
+if saveProgress
+    % enter your chosen path here, be sure it exists!
+    progressPath = '/tscc/lustre/ddn/scratch/eafrancis/SkelMuscleCaData';
+    if isfolder(progressPath)
+        objTest = inf;
+        save(fullfile(progressPath,'objTest.mat'),'objTest');
+    else
+        progressPath = '';
+    end
+end
+
+fAnon = @(x)SkelMuscleObj(x, false, progressPath); % pass path to save progress
 [pSol,fval,exitflag] = particleswarm(fAnon,length(lb),lb,ub,psOptions);
 pCur = pVec;
 % highSensIdx = [12,31,34,39,41,42,43,59:75,89,91,95];

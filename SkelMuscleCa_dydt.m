@@ -289,7 +289,7 @@ end
             nu_SERCA = p(42)*fluxFlagsCur(7);
             g_PMCA = p(43)*fluxFlagsCur(5);
             nu_leakSR = p(44)*fluxFlagsCur(8);
-            g_leakNa = p(45)*(k==2);
+            g_leakNa = p(45)*currentFlagsCur(10);
             k_onATP = p(46);
             k_offATP = p(47);
             k_onParvCa = p(48);
@@ -718,6 +718,7 @@ end
             currents(k,:) = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C,... 
                 I_NCX_N, I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL];
             currents(k,1:end-1) = SA_SL * currents(k,1:end-1);
+
         end
         if all(Rmag < 0.00001) && freq==0
             dydt = zeros(length(y),1);
