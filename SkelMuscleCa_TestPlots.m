@@ -1,9 +1,9 @@
 %% make plot following parameter estimation
-load PSO_22-Nov-2024_20size.mat pSol
+load PSO_19-Dec-2024.mat pSol
 [objVal, simSaved] = SkelMuscleObj(pSol, true);
 
 %% make plot of freq-dependent SOCE behavior (further testing below)
-load PSO_22-Nov-2024_20size.mat pSol
+load PSO_19-Dec-2024.mat pSol
 [objVal, simSaved] = SkelMuscleObj2(pSol, true);
 
 %% Test SOCE vs no SOCE for a range of frequencies after adjusting parameters

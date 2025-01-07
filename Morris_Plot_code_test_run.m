@@ -49,6 +49,9 @@ for k=1:length(expt_names)
         'Calcium Buffering','Calcium Efflux and SOCE','Cross-Bridge Cycle',...
         'Diffusion','10% Threshold')
     
+  
+    
+    
     for i = 1:length(MorrisAnalysis.Results.MuStar(:,k))
         mu_star = MorrisAnalysis.Results.MuStar(i,k);
         if mu_star >= ten_percent
@@ -62,9 +65,27 @@ for k=1:length(expt_names)
     hold off 
 end
 
-% store names of significant parameters
-anySig = any(muVec,2); % if any of the considered QOIs show high sensitivity
-labels_above_ten = MorrisAnalysis.Results.VariableNames(1,:).';
-for i = find(~anySig)'
-    labels_above_ten{i} = '0';
-end
+
+label_length = length(MorrisAnalysis.Results.VariableNames(1,:));
+    label(1:label_length,n) = MorrisAnalysis.Results.VariableNames(1,:).';
+    new_label(1:label_length,n) = MorrisAnalysis.Results.VariableNames(1,:).';
+   
+    % labels_above_ten = MorrisAnalysis.Results.VariableNames(1,:).' ;
+    for j= 1:length(muVec(:,k))
+        if muVec(j,k) ==1
+            text(MorrisAnalysis.Results.MuStar(j,k), MorrisAnalysis.Results.Std(j,k), label(j,n));
+        end
+      
+        if muVec(j,k) ==0
+            new_label(j,n) = strrep(label(j,n),label(j,n),'0');
+        end
+    
+    end
+
+% 
+% % store names of significant parameters
+% anySig = any(muVec,2); % if any of the considered QOIs show high sensitivity
+% labels_above_ten = MorrisAnalysis.Results.VariableNames(1,:).';
+% for i = find(~anySig)'
+%     labels_above_ten{i} = '0';
+% end
