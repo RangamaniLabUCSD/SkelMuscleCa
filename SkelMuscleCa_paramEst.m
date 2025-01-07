@@ -35,12 +35,14 @@ saveProgress = true;
 
 if saveProgress
     % enter your chosen path here, be sure it exists!
-    progressPath = '/tscc/lustre/ddn/scratch/eafrancis/SkelMuscleCaData';
+    progressPath = '/tscc/lustre/ddn/scratch/jhamid/SkelMuscleCaData';
     if isfolder(progressPath)
         objTest = inf;
         save(fullfile(progressPath,'objTest.mat'),'objTest');
     else
         progressPath = '';
+        objTest = inf;
+        save(fullfile(progressPath,'objTest.mat'),'objTest');
     end
 end
 
