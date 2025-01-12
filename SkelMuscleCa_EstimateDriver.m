@@ -1,13 +1,14 @@
 %% start parameter optimization
 % Importing parameters 
-param = importdata('InputParamPsoResults.xlsx');
+param = importdata('InputParam1.xlsx');
 p =  param.data;
-% load PSO_18-Dec-2024.mat pSol
-highSensIdx = [1,3,4,5,7,8,9,11,12,13,16,17,19,22,25,26,27,29,30,31,34,36,38,39,41,44,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,70,71,73,74,75,76,82,84,85,87,88,89,92,93,94,95,96,97,98,99,100,101,102,103,104,105];%[1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
+load PSO_18-Dec-2024.mat pSol
+highSensIdxResults = [2,6,10,14,15,18,20,21,23,24,28,32,33,35,37,40,42,43,45,69,72,77,78,79,80,81,83,86,90,91];
 % p(highSensIdxOG) = pSol(:);
-pSol = ones(size(highSensIdx));
-p(highSensIdx) = pSol(:).* p(highSensIdx);
+% pSol = ones(size(highSensIdx));
+p(highSensIdxResults) =p(highSensIdxResults).* pSol(:);
 
+highSensIdx = [12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
 
 % p(95) = p(95)*5; % increase SOCE baseline
 % highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,30,32,33,34,35,40,42,43,44,45,50,52,74,76,77,78,79,80,81,82,83,89,90,91,92];
