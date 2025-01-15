@@ -22,11 +22,17 @@ elseif length(varargin)==2
 end
 
 if length(pVec) < 105 || max(pVec) < 1000
-    highSensIdx = [12,31,34,41,44,55,56,57,59:68,70,71,73,74,75,84,89,93,94,95];
+    highSensIdx = [12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
     pRef = ones(105,1);
     pRef(highSensIdx) = pVec;
     paramStruct = importdata('InputParam1.xlsx');
+    load PSO_18-Dec-2024.mat pSol
+
     p0 = paramStruct.data;
+
+    highSensIdxResults = [2,6,10,14,15,18,20,21,23,24,28,32,33,35,37,40,42,43,45,69,72,77,78,79,80,81,83,86,90,91];
+    p0(highSensIdxResults) =p0(highSensIdxResults).* pSol(:);
+
     pVec = pRef(:) .* p0(:);
 end
 param = pVec;
@@ -133,7 +139,7 @@ for n = 1:length(freq)
         forceRatio_noSOCE(n) = A2_noSOCE(end) / max(A2_noSOCE); 
     catch
         y = ones(length(t), length(ySS_withSOCE));
-        y = y .* ySS_withSOCE';
+        y = y .* ySS_withSOCE;
         simSaved{n} = [t(:),y];
         maxForce_withSOCE(n) = ySS_withSOCE(21);
         forceRatio_withSOCE(n) = 1; 
