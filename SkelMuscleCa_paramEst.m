@@ -30,7 +30,7 @@ pCur = pCur(:) .* p0;
 SkelMuscleObj2(pCur)
 
 delete(gcp('nocreate'))
-if psOptions.UseParallel true
+if psOptions.UseParallel 
     parpool(3) %% **CHANGE SWARMSIZE!** and save file location
 end
 saveProgress = true;
