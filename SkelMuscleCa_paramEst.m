@@ -14,7 +14,7 @@ function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(lb,ub)
 
  %set swarmsize to 30 for TSCC and 50 to stall iter
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 3, 'SwarmSize', 15);
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 30);
 
 % pSol Results
 % load PSO_18-Dec-2024.mat pSol
@@ -26,7 +26,7 @@ SkelMuscleObj2(ones(length(highSensIdx),1))
 
 delete(gcp('nocreate'))
 if psOptions.UseParallel 
-    parpool(3) %% **CHANGE SWARMSIZE!** and save file location
+    parpool(30) %% **CHANGE SWARMSIZE!** and save file location
 end
 saveProgress = true;
 
@@ -55,7 +55,7 @@ pCur = pCur(:) .* p0;
 SkelMuscleObj2(pCur)
 filename = "PSO_" + string(datetime("today")) +".mat";
 % save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename'));
-% save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
-save(filename)
+save(fullfile('/tscc/lustre/ddn/scratch/jhamid/',filename));
+% save(filename)
 
 end
