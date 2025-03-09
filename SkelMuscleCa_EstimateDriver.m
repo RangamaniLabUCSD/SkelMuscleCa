@@ -1,11 +1,7 @@
 %% start parameter optimization
 % Importing parameters 
-param = importdata('InputParam1.xlsx');
-p =  param.data;
-% load PSO_17-Sep-2024.mat pSol
-highSensIdx = 1:105;%[1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
-pSol = ones(size(highSensIdx));
-p(highSensIdx) = pSol(:).* p(highSensIdx);
+highSensIdx = [12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
+
 % p(95) = p(95)*5; % increase SOCE baseline
 % highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,30,32,33,34,35,40,42,43,44,45,50,52,74,76,77,78,79,80,81,82,83,89,90,91,92];
 % highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];

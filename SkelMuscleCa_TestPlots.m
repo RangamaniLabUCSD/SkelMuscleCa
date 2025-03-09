@@ -1,9 +1,15 @@
 %% make plot following parameter estimation
-load PSO_22-Nov-2024_20size.mat pSol
-[objVal, simSaved] = SkelMuscleObj(pSol, true);
+load PSO_06-Feb-2025.mat pSol highSensIdx
+param = importdata('InputParam1.xlsx'); % load default parameters
+p0 =  param.data;
+pPSO = p0(:);
+pPSO(highSensIdx) = pSol(:).*pPSO(highSensIdx);
+% load pBest.mat pVec
+% pVec(45) = 0;
+[objVal, simSaved] = SkelMuscleObj(pPSO, true);
 
 %% make plot of freq-dependent SOCE behavior (further testing below)
-load PSO_22-Nov-2024_20size.mat pSol
+load PSO_19-Dec-2024.mat pSol
 [objVal, simSaved] = SkelMuscleObj2(pSol, true);
 
 %% Test SOCE vs no SOCE steady states after adjusting parameters
@@ -53,10 +59,15 @@ yinit = [yinit(juncLocLogic); yinit(bulkLocLogic)];
 param = importdata('InputParam1.xlsx'); % load default parameters
 p0 =  param.data;
 
-load PSO_22-Nov-2024_20size.mat pSol
-highSensIdx = 1:105;%[1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
+% load PSO_22-Nov-2024_20size.mat pSol
+load PSO_18-Dec-2024.mat pSol highSensIdx
+% highSensIdx = 1:105;%[1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
 pPSO = p0(:);
-% pPSO(highSensIdx) = pSol(:).*pPSO(highSensIdx);
+pPSO(highSensIdx) = pSol(:).*pPSO(highSensIdx);
+pPSO(45) = 0.002*.5676;
+% load pBest.mat pVec
+% pVec(45) = 0;
+% pPSO = pVec;
 
 % if desired, perturb parameters to test effects
 % pPSO(45) = 0*pPSO(45); % Na leak
@@ -122,6 +133,7 @@ tSol = [0, 0.5]; % 420 is max time for HIIT
 expt = 1;
 phosphateAccum = true;
 [Time_withSOCE,Y_withSOCE,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, 50, yinf_withSOCE, pPSO, tic, 1, phosphateAccum); % compute time-dependent solution
+[Time_noSOCE,Y_noSOCE,~,fluxes2,currents2] = SkelMuscleCa_dydt(tSol, 50, yinf_noSOCE, pPSO, tic, 2, phosphateAccum); % compute time-dependent solution
 % fluxes in µM/s = [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA,...
 %                   LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];% 
 % current in pA/s = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C,... 
@@ -174,6 +186,12 @@ plot(Time_withSOCE, fluxes(:,8+5)*BFrac) % from SL to bulk myo
 plot(Time_withSOCE, fluxes(:,5)*JFrac+fluxes(:,8+5)*BFrac)
 legend('TT', 'SL', 'Total')
 title('PMCA')
+
+%%
+figure
+plot(Time_withSOCE, Y_withSOCE(:,8)*JFrac + Y_withSOCE(:,32)*BFrac)
+hold on
+plot(Time_noSOCE, Y_noSOCE(:,8)*JFrac + Y_noSOCE(:,32)*BFrac)
 
 %% test range of frequencies for SOCE vs no SOCE
 tSol = [0, 0.5]; % 420 is max time for HIIT
