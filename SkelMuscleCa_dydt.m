@@ -106,9 +106,9 @@ end
 % ode rate
     function [dydt, fluxes, currents] = f(t,y,p,freq)
         currtime = toc(StartTimer);
-        if currtime > 60
-            error('too long to compute!')
-        end
+        % if currtime > 60
+        %     error('too long to compute!')
+        % end
 
         %% State Variables - junctional and bulk
         yAll = zeros(length(juncLocLogic), 2); % first column - junc variables, second column - bulk variables

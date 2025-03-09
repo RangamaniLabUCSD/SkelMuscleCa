@@ -37,7 +37,7 @@ if saveProgress
         objTest = inf;
         save(fullfile(progressPath,'objTest.mat'),'objTest');
     else
-        progressPath = '';
+        progressPath = pwd;
         objTest = inf;
         save(fullfile(progressPath,'objTest.mat'),'objTest');
     end
@@ -47,11 +47,10 @@ else
 end
 
 [pSol,fval,exitflag] = particleswarm(fAnon,length(lb),lb,ub,psOptions);
-pCur = pSol;
+pCur = p0;
 % phosphate = 68:72,74,75 ;  CaEfflux_SOCE = [12,31,34,41:44,89,95]; Crossbridge_Cycle = [55:57,59:67,73,84,93,94];
 highSensIdx = [12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
 pCur(highSensIdx) = pSol(:) .* pCur(highSensIdx)';
-pCur = pCur(:) .* p0;
 SkelMuscleObj(pCur)
 filename = "PSO_" + string(datetime("today")) +".mat";
 % save(fullfile('C:/Users/Juliette/Documents/MATLAB/SkelMuscle/',filename'));
