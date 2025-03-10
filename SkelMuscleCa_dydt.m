@@ -1,24 +1,24 @@
 function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, yinit, p,StartTimer,expt,phosphateAccum)
 % input:
-%     tSpan is a vector of start and stop times
-%     freq is a vector of test frequencies
-%     yinit is a vector of initial conditions for the state variables
-%     p is a vector of selected parameters to test
-%     StartTimer starts counting run time
-%     expt is the experimental value used for calculation
-%     phosphateAccum is a logical variable determining if phosphate
-%     accumulation is accounted for
+%     - tSpan is a vector of start and stop times
+%       freq is a vector of test frequencies
+%     - yinit is a vector of initial conditions for the state variables
+%     - p is a vector of selected parameters to test
+%     - StartTimer starts counting run time
+%     - expt is the experimental value used for calculation
+%     - phosphateAccum is a logical variable determining if phosphate
+%       accumulation is accounted for
 %
 % output:
-%     T is the vector of times
-%     Y is the vector of state variables
-%     currtime is the total runtime
-%     fluxes: calcium fluxes at each time point, each row consists:
+%     - T is the vector of times
+%     - Y is the vector of state variables
+%     - currtime is the total runtime
+%     - fluxes: calcium fluxes at each time point, each row consists:
 %            [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR]
 %            in units of µM/s (in terms of myoplasmic conc)
-%     currents: Ionic and total current at each time point, each row consists of:
-%     [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, I_NCX_N,
-%     I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL] in units of pA
+%     - currents: Ionic and total current at each time point, each row consists of:
+%            [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, I_NCX_N,
+%             I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL] in units of pA
 % -------------------------------------------------------------------------
 
 % each compartment has junctional/terminal portion and bulk portion
@@ -31,6 +31,7 @@ function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, yinit
 % junctional portion of a compartment
 % bulkLocLogic stores whether each variable is present in the bulk
 % portion of a compartment
+
 juncLocLogic = true(1,31);
 juncLocLogic(17:21) = false; % cross bridges
 bulkLocLogic = true(1,31);
@@ -106,9 +107,9 @@ end
 % ode rate
     function [dydt, fluxes, currents] = f(t,y,p,freq)
         currtime = toc(StartTimer);
-        % if currtime > 60
-        %     error('too long to compute!')
-        % end
+        if currtime > 60
+            error('too long to compute!')
+        end
 
         %% State Variables - junctional and bulk
         yAll = zeros(length(juncLocLogic), 2); % first column - junc variables, second column - bulk variables
@@ -515,9 +516,6 @@ end
                 (4.0 .* K_RyR))) .* (f_RyR ^  - 2.0))) ^ 4.0) + (L_RyR .* ...
                 ((1.0 + exp(((Voltage_SL - VBar_RyR) ./ (4.0 .* K_RyR)))) ^ 4.0))));
             openProb = voltProb * w_RyR;
-            if openProb ~= openDHPR
-                error('what')
-            end
             LumpedJ_RyR = 602.214179 * j0_RyR * openProb * (c_SR - c_i);
     
             tau_w_r0 = (1.0 / (alpha_w_r0 * ( 1 + (c_i / K_w_r0)))) ; %(100.0 .* (1.0 + c_i)));
@@ -550,8 +548,6 @@ end
             %Concentration of Pre/Post Power Stroke Filaments
             dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow*(p_i_Myo /3000) - h0*Pre_Pow;
             dPost = -hP*Post_Pow*(p_i_Myo / 3000) + h0*Pre_Pow - (g0_prime*Post_Pow*ATP);
-            % dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow - h0*Pre_Pow;
-            % dPost = -hP*Post_Pow + h0*Pre_Pow - (g0_prime*Post_Pow*ATP);
             %ATP
             J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo );
             J_PMCA_tot = J_PMCA * KFlux_SL_myo;
@@ -626,19 +622,10 @@ end
 
             I_ionic = I_CaLeak_SL + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C...
                 + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE;
-            % if I_ionic > 0.1
-            %     fprintf('check it out')
-            % end
-            % if I_ionic*SA_SL > -ClampCurrent && freq > 0
-            %     fprintf('stop')
-            % end
             J_SL_Ca = J_SOCE + J_CaLeak_SL - J_NCX_C + J_DHPR - J_PMCA;
             J_SR_Ca = LumpedJ_RyR - LumpedJ_SERCA + J_CaLeak_SR;
             CaBuffer = - dCP - dCA - (k_onTrop1*c_i*Trop - k_offTrop1*CaTrop + k_onTrop2*c_i*CaTrop - k_offTrop2*CaCaTrop);
             
-            % if Voltage_SL > 0 && k == 1
-            %     fprintf('investigate')
-            % end
             dPiCa = dPiCa*phosphateAccum;
 
             J_NaStim = 0;%1e9*I_SL/F;
@@ -675,12 +662,7 @@ end
                 -SAvols(1) *  J_Cl; % Cl_o
                 dCSQ; % CSQ
                 ];
-            % if k == 1
-            %     dydtCur = dydtCur*0;
-            % end
-            % if t > 200
-            %     fprintf('check')
-            % end
+
             % now add diffusive fluxes
             otherLocs = find(1:size(yAll,2)~=k);
             for j = otherLocs

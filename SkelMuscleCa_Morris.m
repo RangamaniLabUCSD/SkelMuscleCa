@@ -20,9 +20,9 @@ myInput = uq_createInput(InputOpts);
 %% Morris SA
 MorrisSensOpts.Type = 'Sensitivity';
 MorrisSensOpts.Method = 'Morris';
-MorrisSensOpts.Morris.Cost = 1e5;
+MorrisSensOpts.Morris.Cost = 1e4;
 MorrisAnalysis = uq_createAnalysis(MorrisSensOpts);
-% save('/tscc/lustre/ddn/scratch/jhamid/MorrisResults9-16.mat','MorrisAnalysis');
-save('MorrisResults_1e5.mat','MorrisAnalysis');
+username = getenv('USER');
+fname = sprintf('/tscc/lustre/ddn/scratch/%s/MorrisResults_1e4_%s.mat',username,datetime('today'));
+save(fname,'MorrisAnalysis');
 endtimer = toc(starttimer);
-%uq_display(MorrisAnalcysis)

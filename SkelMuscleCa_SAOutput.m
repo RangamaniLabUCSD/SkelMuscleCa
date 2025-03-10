@@ -11,12 +11,13 @@ parameters = input.data; % Parameter values
 
 
 totSize = size(param,1);
-QOI = zeros(size(param,1),14*4+1);
+QOI = zeros(size(param,1),14*4+2);
 parpool(50);
 parfor (i = 1 : length(param(:,1)))
     pVec = param(i,:)'.*parameters;
-    [objVal, qoiList] = SkelMuscleObj(pVec); % objVal is a scalar, qoiList is a vector of length 14*4
-    QOI(i,:) = [qoiList, objVal]; % 14*4 + 1 in length
+    [objVal1, qoiList] = SkelMuscleObj(pVec); % objVal is a scalar, qoiList is a vector of length 14*4
+    objVal2 = SkelMuscleObj2(pVec);
+    QOI(i,:) = [qoiList, objVal1, objVal2]; % 14*4 + 2 in length
     fprintf('Session %d of %d \n',i,totSize);
 end
 end

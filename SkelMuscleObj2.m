@@ -22,7 +22,7 @@ elseif length(varargin)==2
 end
 
 if length(pVec) < 105 || max(pVec) < 1000
-    highSensIdx = [12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
+    highSensIdx = 1:105;%[12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
     pRef = ones(105,1);
     pRef(highSensIdx) = pVec;
     paramStruct = importdata('InputParam1.xlsx');
