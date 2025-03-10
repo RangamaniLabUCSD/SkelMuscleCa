@@ -106,7 +106,7 @@ end
 % ode rate
     function [dydt, fluxes, currents] = f(t,y,p,freq)
         currtime = toc(StartTimer);
-        if currtime > 60
+        if currtime > 500  %%%!!!!!!!!
             error('too long to compute!')
         end
 

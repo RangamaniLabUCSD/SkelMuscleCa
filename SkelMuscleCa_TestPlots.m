@@ -1,10 +1,10 @@
 %% make plot following parameter estimation
-load PSO_19-Dec-2024.mat pSol
+load PSO_18-Dec-2024.mat pSol
 [objVal, simSaved] = SkelMuscleObj(pSol, true);
 
 %% make plot of freq-dependent SOCE behavior (further testing below)
-load PSO_19-Dec-2024.mat pSol
-[objVal, simSaved] = SkelMuscleObj2(pSol, true);
+load PSO_18-Dec-2024.mat pSol
+[objVal, simSaved] = SkelMuscleObj2(pCur, true);
 
 %% Test SOCE vs no SOCE steady states after adjusting parameters
 yinit = [
@@ -53,8 +53,8 @@ yinit = [yinit(juncLocLogic); yinit(bulkLocLogic)];
 param = importdata('InputParam1.xlsx'); % load default parameters
 p0 =  param.data;
 
-load PSO_22-Nov-2024_20size.mat pSol
-highSensIdx = 1:105;%[1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
+load PSO_18-Dec-2024.mat pSol highSensIdx
+%highSensIdx = 1:105;%[1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
 pPSO = p0(:);
 % pPSO(highSensIdx) = pSol(:).*pPSO(highSensIdx);
 
@@ -118,7 +118,7 @@ yinf_noSOCE = ySS_noSOCE(end,:);
 yinf_withSOCE = ySS_withSOCE(end,:);
 
 %% test single frequency and plot currents and fluxes
-tSol = [0, 0.5]; % 420 is max time for HIIT
+tSol = [0, 30]; % 420 is max time for HIIT
 expt = 1;
 phosphateAccum = true;
 [Time_withSOCE,Y_withSOCE,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, 50, yinf_withSOCE, pPSO, tic, 1, phosphateAccum); % compute time-dependent solution

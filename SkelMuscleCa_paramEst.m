@@ -13,14 +13,14 @@
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(lb,ub)
 
  %set swarmsize to 30 for TSCC and 50 to stall iter
-psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
+psOptions = optimoptions('particleswarm','UseParallel',false,'HybridFcn',@fmincon,...
     'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 30);
 
 % pSol Results
 % load PSO_18-Dec-2024.mat pSol
 param = importdata('InputParam1.xlsx');
 p0 =  param.data;
-highSensIdx = [12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
+highSensIdx = [3,4,8,15,28,32,35,40,42,43,69,72,77,78,79,80,81,82,83,86,90,91];
 % Test the objective function for default values
 SkelMuscleObj(ones(length(highSensIdx),1))
 
@@ -47,9 +47,9 @@ else
 end
 
 [pSol,fval,exitflag] = particleswarm(fAnon,length(lb),lb,ub,psOptions);
-pCur = pSol;
+pCur = ones(1,length(p0));
 % phosphate = 68:72,74,75 ;  CaEfflux_SOCE = [12,31,34,41:44,89,95]; Crossbridge_Cycle = [55:57,59:67,73,84,93,94];
-highSensIdx = [12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
+highSensIdx = [3,4,8,15,28,32,35,40,42,43,69,72,77,78,79,80,81,82,83,86,90,91];
 pCur(highSensIdx) = pSol(:) .* pCur(highSensIdx)';
 pCur = pCur(:) .* p0;
 SkelMuscleObj(pCur)

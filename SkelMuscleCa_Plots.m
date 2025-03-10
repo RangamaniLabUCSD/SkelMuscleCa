@@ -16,17 +16,48 @@ V = [0.49,0.18,0.56] ; %-Dark Purple for Voltage
 % Load data for plotting 
 load Exptdata.mat
 
-
 param = importdata('InputParam1.xlsx'); % load default parameters
 p0 =  param.data;
-load PSO_17-Sep-2024.mat pSol
+load PSO_17-Sep-2024-1.mat pSol
 highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
 pPSO = p0(:);
 pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
-
-
+p=  pPSO;
+yinit = [
+    0.0122; 	% yinit(1) is the initial condition for 'SOCEProb'
+    1500.0;		% yinit(2) is the initial condition for 'c_SR'
+    0.9983;		% yinit(3) is the initial condition for 'h_K'
+    0.9091;		% yinit(4) is the initial condition for 'w_RyR'
+    -88.0;		% yinit(5) is the initial condition for 'Voltage_PM'
+    14700.0;	% yinit(6) is the initial condition for 'Na_i'
+    5830.0;		% yinit(7) is the initial condition for 'Cl_i'
+    0.1;		% yinit(8) is the initial condition for 'c_i'
+    0.003;		% yinit(9) is the initial condition for 'n'
+    0.0128;		% yinit(10) is the initial condition for 'm'
+    0.8051;		% yinit(11) is the initial condition for 'h'
+    0.8487;		% yinit(12) is the initial condition for 'S'
+    154500.0;	% yinit(13) is the initial condition for 'K_i'
+    0;%387;        % yinit(14) is the initial condition for 'CaParv'
+    0;%1020;       % yinit(15) is the initial condition for 'MgParv'
+    0.3632;     % yinit(16) is the inital consition for 'CATP'
+    0;%10.004;     % yinit(17) is the initial condition for 'CaTrop'
+    0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
+    0;	    	% yinit(19) is the initial condition for 'D_2'
+    0;	    	% yinit(20) is the initial condition for 'Pre_Pow'
+    0;	    	% yinit(21) is the initial condition for 'Post_Pow'
+    0;	    	% yinit(22) is the initial condition for 'MgATP'
+    8000;       % yinit(23) is the initial condition for 'ATP'
+    p(74);       % yinit(24) is the initial condition for 'p_i_SR'
+    0;          % yinit(25) is the initial condition for 'PiCa'
+    p(75)       % yinit(26) is the initial condition for 'Pi_Myo'
+    1300;        % c_o (µM)
+    147000.0;   % Na_o (µM)
+    4000.0;      % K_o (µM)
+    128000.0;   % Cl_o (µM)
+    15000;      % CSQ
+    ];
 [TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
-tSol = 0:.0001:10;
+tSol = 0:.0001:30;
 freq = 10; 
 % ySS(end,26) = 0;
 % ySS(end,28) = 2500;
