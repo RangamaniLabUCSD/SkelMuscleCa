@@ -14,19 +14,39 @@ V = [0.49,0.18,0.56] ; %-Dark Purple for Voltage
 % 7,8 - HIIT (Control & noSOCE)
 
 % Load data for plotting 
+load Exptdata.mat
+
+
+param = importdata('InputParam1.xlsx'); % load default parameters
+p0 =  param.data;
+load PSO_17-Sep-2024.mat pSol
+highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
+pPSO = p0(:);
+pPSO(highSensIdx) = pSol(:).* pPSO(highSensIdx);
+
+
+[TimeSS,ySS] = SkelMuscleCa_dydt([0 1000],0, 0, yinit, pPSO, tic, 2); % compute steady state solution
+tSol = 0:.0001:10;
+freq = 10; 
+% ySS(end,26) = 0;
+% ySS(end,28) = 2500;
+[Time,Y,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, 0, ySS(end,:), pPSO, tic, 1); % compute time-dependent solution
+
 
 % Define variables below
-%Current = ;
-%Y = ;
-%Flux = ;
-
+ 
+Current = currents;
+ 
+Flux = fluxes;
+Time2 = Time;
+fluxes2 = fluxes;
 
 %% Input Stimulus
 plot1 = figure;
 axes1 = axes('Parent', plot1);
-plot(Time,Current(:,end),'LineWidth',2);                          
+plot(Time,Current(:,end),'LineWidth',2, 'Color', [0.6350 0.0780 0.1840]);                          
 xlabel('Time (s)', 'Fontsize',16)
-ylabel('I_{SL (pA)','Fontsize',16,'FontSmoothing','on')
+ylabel('I_{SL} (pA)','Fontsize',16,'FontSmoothing','on')
 set(axes1,'FontSize',16,'Box','off','FontSmoothing','on')
 set(plot1,"Renderer","painters");
 
@@ -248,7 +268,7 @@ set(axes15,'FontSize',18,'Box','off','FontSmoothing','on')
 set(plot15,"Renderer","painters");
 
 %% HIIT Plots 
-
+load HIIT.mat DeltaForce_HIIT 
 % DeltaAvg ----------------------------------------------------------------
 plot16 = figure;
 axes16 = axes('Parent', plot16);
