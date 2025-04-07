@@ -5,8 +5,8 @@ function QOI = SkelMuscleCa_SAOutput(param)
 % Input:
 %   param is the list of variable parameters
 
-input = importdata('InputParam1.xlsx'); % Load default parameters
-parameters = input.data; % Parameter values
+load p0Struct.mat p0Struct
+parameters = p0Struct.data;
 % load PSO_25-Apr-2024.mat yinit
 
 

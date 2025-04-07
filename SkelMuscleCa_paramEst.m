@@ -1,7 +1,7 @@
-%% Function for estimating parameters using Particle swarm estimation 
+%% Function for estimating parameters using Particle swarm estimation
 % Input:
-%       lb - Lower bound for estimation
-%       ub - upper bound for estimation
+%       lb - Lower bounds for estimation
+%       ub - upper bounds for estimation
 %
 % Output:
 %       pSol - Particle swarm solution
@@ -12,17 +12,11 @@
 
 function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(lb,ub)
 
- %set swarmsize to 30 for TSCC and stall iter to 50
+%set swarmsize to 30 for TSCC and stall iter to 50
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 50, 'SwarmSize', 30);
-param = importdata('InputParam1.xlsx');
-p0 =  param.data;
-highSensIdx = 1:105;%[12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
-% Test the objective function for default values
-SkelMuscleObj(ones(length(highSensIdx),1))
-
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 25, 'SwarmSize', 30);
 delete(gcp('nocreate'))
-if psOptions.UseParallel 
+if psOptions.UseParallel
     parpool(30) %% **CHANGE SWARMSIZE!** and save file location
 end
 saveProgress = true;
@@ -39,17 +33,33 @@ if saveProgress
         objTest = inf;
         save(fullfile(progressPath,'objTest.mat'),'objTest');
     end
-    fAnon = @(x)(SkelMuscleObj(x, false, progressPath) + SkelMuscleObj2(x, false, progressPath)/100); % pass path to save progress
+    % fAnon = @(x)(SkelMuscleObj(x, false, progressPath) + SkelMuscleObj2(x, false, progressPath)/20); % pass path to save progress
+    fAnon = @(x)(LinCombObj(x, progressPath)); % pass path to save progress
 else
-    fAnon = @(x)(SkelMuscleObj(x, false) + SkelMuscleObj2(x, false)/100);
+    % fAnon = @(x)(SkelMuscleObj(x, false) + SkelMuscleObj2(x, false)/20);
+    fAnon = @(x)(LinCombObj(x, '')); % pass path to save progress
 end
 
 [pSol,fval,exitflag] = particleswarm(fAnon,length(lb),lb,ub,psOptions);
-pCur = ones(size(p0));
-% phosphate = 68:72,74,75 ;  CaEfflux_SOCE = [12,31,34,41:44,89,95]; Crossbridge_Cycle = [55:57,59:67,73,84,93,94];
-highSensIdx = 1:105;%[12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
-pCur(highSensIdx) = pSol(:) .* pCur(highSensIdx)';
-SkelMuscleObj(pCur)
 filename = "PSO_" + string(datetime("today")) +".mat";
 save(fullfile(sprintf('/tscc/lustre/ddn/scratch/%s/',username),filename));
-end    
+
+    function objVal = LinCombObj(pVec, progressPath)
+        if isfolder(progressPath)
+            saveProgress = true;
+        end
+        objVal = SkelMuscleObj(pVec, false);% + SkelMuscleObj2(pVec, false)/20;
+        if saveProgress
+            try
+                load(fullfile(progressPath,'objTest.mat'),'objTest')
+                if objVal < objTest
+                    objTest = objVal;
+                    save(fullfile(progressPath,'objTest.mat'),'objTest')
+                    save(fullfile(progressPath,'pBest.mat'),'pVec')
+                end
+            catch
+                fprintf('file was busy I guess\n')
+            end
+        end
+    end
+end

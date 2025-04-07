@@ -1,4 +1,4 @@
-function [Time,Y,currtime,fluxes,currents] = SkelMuscleCa_dydt(tSpan,freq, yinit, p,StartTimer,expt,phosphateAccum)
+function [Time,Y,currtime,fluxes,currents,ySSFinal] = SkelMuscleCa_dydt(tSpan,freq, yinit, p,StartTimer,expt,phosphateAccum)
 % input:
 %     - tSpan is a vector of start and stop times
 %       freq is a vector of test frequencies
@@ -46,8 +46,10 @@ yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:26))) = p(75);
 nonNegJ = [1:sum(juncLocLogic(1:4)),sum(juncLocLogic(1:6)):sum(juncLocLogic(:))];
 nonNegB = [1:sum(bulkLocLogic(1:4)),sum(bulkLocLogic(1:6)):sum(bulkLocLogic(:))];
 nonNegB = nonNegB + nonNegJ(end);
-if freq == 0 % Steady state condition
+if freq == 0 && ~any(expt==[7,8]) % Steady state condition
     options = odeset('RelTol',1e-3,'NonNegative',[nonNegJ, nonNegB]);
+elseif freq == 0 && any(expt==[7,8]) % SOCE test without extra stimulus
+    options = odeset('RelTol',1e-3,'MaxStep',0.1,'NonNegative', [nonNegJ, nonNegB]);
 else
     options = odeset('RelTol',1e-3,'MaxStep',.001,'NonNegative', [nonNegJ, nonNegB]);
 end
@@ -56,16 +58,16 @@ if expt < 0 % then corresponds to a case of estimation
     expt = abs(expt);
     %Expt = {[R_t R_C],[R_MP_t R_MP_C] [HB_t HB_C], [H_t H_C],[HB_MP_t HB_MP_C]
             %[K_t K_V], [B_t B_V] , [M_t M_V], [W_t W_V], [MJ_t MJ_V],};
-    Ca_o_exp = [1000, 1000, 2000, 2000,2000,...
-                2500, 1800, 5000, 2000, 2000];                                      %mM
+    Ca_o_exp = [1000, 1000, 2000, 2000, 2000,...
+                2500, 1800, 5000, 2000, 2000, 1300];                                      %mM
     Na_o_exp = [138100, 138100, 150000, 150000, 150000,...
-                 143800, 118240, 140000, 151000, 151000];                           %mM
+                 143800, 118240, 140000, 151000, 151000, 147000];                           %mM
     K_o_exp = [3900, 3900, 2000, 2000, 2000,...
-               5000, 5330, 4000, 5000 , 5000 , 4000];                               %mM
-    Cl_o_exp = [143700, 143700, 158000, 158000,158000,...
-                124000, 126170, 157000, 146000,  146000];                           %mM
-    Temp = [(273+22),(273+22),(273+20),(273+22), (273+22),...
-            (273+ 26),(273+22),(273+22),(273+35),(273+22)];                         %K
+               5000, 5330, 4000, 5000, 5000, 4000];                               %mM
+    Cl_o_exp = [143700, 143700, 158000, 158000, 158000,...
+                124000, 126170, 157000, 146000, 146000, 127400];                           %mM
+    Temp = [(273.15+22),(273.15+22),(273.15+20),(273.15+22),(273.15+22),...
+            (273.15+26),(273.15+22),(273.15+22),(273.15+35),(273.15+22),(273.15+30)]; %K
     T = Temp(expt);        %K
     if expt == 10
         expt_n = 5;
@@ -82,8 +84,8 @@ if expt < 0 % then corresponds to a case of estimation
     yinit(sum(juncLocLogic(1:30))) = Cl_EC;   %µM
 else
     isEst = false;
-    T = 295;
-    Ca_EC = 1300;  
+    T = 295.15;
+    Ca_EC = 1300;
     Na_EC = 147000.0;
     K_EC = 4000.0;
     Cl_EC = 128000.0;
@@ -93,6 +95,7 @@ end
 [Time,Y] = ode15s(@f,tSpan,yinit,options,p,freq); %pass extra arguments at the end
 
 % return fluxes and currents at select times
+StartTimer = tic;
 fluxes = zeros(length(Time), 2*8);
 currents = zeros(length(Time), 2*13);
 % Flux and ionic current through different pathways.
@@ -102,20 +105,50 @@ for i = 1:length(Time)
     currents(i,:) = [currentsCur(1,:), currentsCur(2,:)];
 end
 
+if freq == 0
+    ssEst = true;
+else
+    ssEst = false;
+end
+if ssEst
+    StartTimer = tic;
+    tSS = Time(Time > Time(end)/2);
+    ySS = Y(Time > Time(end)/2, :);
+    yMean = mean(ySS,1);
+    yMean = yMean(:);
+    dyVals = zeros(size(tSS));
+    for i = 1:length(tSS)
+        dyCur = f(tSS(i),ySS(i,:),p,freq);
+        dyCur = dyCur(:);
+        testIdx = find(yMean~=0);
+        dyVals(i) = sqrt(sum((dyCur(testIdx)./yMean(testIdx)).^2));
+    end
+    [~,idx] = min(dyVals);
+    ySSFinal = ySS(idx,:);
+end
+
 
 % -------------------------------------------------------
 % ode rate
     function [dydt, fluxes, currents] = f(t,y,p,freq)
         currtime = toc(StartTimer);
-        if currtime > 60
+        if currtime > 240
             error('too long to compute!')
         end
 
         %% State Variables - junctional and bulk
+        Ca_EC_cur = Ca_EC;
+        if ~isEst
+            if any(expt == [7,8]) && (t > 6*60 && t < 17*60)
+                Ca_EC_cur = 0.0;
+            elseif any(expt == [7,8]) && (t > 17*60)
+                Ca_EC_cur = Ca_EC*(1-exp(-(t-17*60)));
+            end
+        end
         yAll = zeros(length(juncLocLogic), 2); % first column - junc variables, second column - bulk variables
         yAll(juncLocLogic,1) = y(1:sum(juncLocLogic));
         yAll(bulkLocLogic,2) = y(sum(juncLocLogic)+1:end);
-        yAll(27:30,2) = [Ca_EC; Na_EC; K_EC; Cl_EC];
+        yAll(27:30,2) = [Ca_EC_cur; Na_EC; K_EC; Cl_EC];
 
         %% Global constants
         F = 96485.3321;
@@ -128,7 +161,7 @@ end
         volFraction_SR = 0.05 ;
         volFraction_TT = 0.003 ;
         pulsewidth = 0.001 ;        %s
-        R_fiber = 20;               %µmg_NCX
+        R_fiber = 20;               %µm
         L_fiber = 100;              %µm
 
         vol_Fiber = pi * (R_fiber ^ 2) * L_fiber;
@@ -341,6 +374,7 @@ end
             B_CSQ = p(96);
             K_CSQ = p(97);
             k_offCSQ = p(98);
+            ATPset = 700;%p(106);
 
     
             %% Carrier Valence
@@ -387,7 +421,7 @@ end
                 h_K .* (E_K - Voltage_SL )));
             J_K_DR =  - ((I_K_DR ./ (z_K .* F)) .* 1E09);
     
-            tau_hK = (exp(( - (Voltage_SL + 40.0) ./ 25.75)));
+            tau_hK = (exp(( -(Voltage_SL + 40.0) ./ 25.75)));
             h_Kinf = (1.0 ./ (1.0 + exp(((Voltage_SL - V_hkinf) ./ A_hkinf))));
             J_r5 = ((h_Kinf - h_K) ./ tau_hK);
     
@@ -441,7 +475,9 @@ end
                 ((KmNa_EC_NCX ^ 3.0) .* c_i .* (1.0 + (c_i ./ Kmc_i_NCX))) + ...
                 (Kmc_EC_NCX_N .* (Na_i ^ 3.0)) + ((Na_i ^ 3.0) .* c_o) + ((Na_o ^ 3.0) .* c_i));
     
-    
+            if c_o == 0 % set to zero in absence of EC calcium
+                g_NCX = 0;
+            end
             I_NCX_N = ( - (3.0 .* (g_NCX .* (Q10NCX ^ Qcorr_NCX) .* Ka_NCX .* ...
                 (s1_NCX - s2_NCX) ./ s3_NCX_N ./ (1.0 + (ksat_NCX .* exp(((nu_NCX - 1.0) .* ...
                 Voltage_SL ./ (R .* T ./ F))))))));
@@ -452,27 +488,36 @@ end
                 (Kmc_EC_NCX_C .* (Na_i ^ 3.0)) + ((Na_i ^ 3.0) .* c_o) + ((Na_o ^ 3.0) .* c_i));
             Ka_NCX_C = (1.0 ./ (1.0 + ((Kdact_NCX ./ c_i) ^ 2.0)));
             Qcorr_NCX = ((T - 310.0) ./ 10.0);
-    
+            
             I_NCX_C = ((2.0 .* (g_NCX .* (Q10NCX ^ Qcorr_NCX) .* Ka_NCX_C .* ...
                 (s1_NCX - s2_NCX) ./ s3_NCX_C ./ (1.0 + (ksat_NCX .* exp(((nu_NCX - 1.0) .* ...
                 Voltage_SL ./ (R .* T ./ F))))))));
             J_NCX_C =  - ((I_NCX_C ./ (z_Ca .* F)) .* 1E09);
     
             %% SOCE
-            if any(expt == [1,3,5,7])
+            if ~isEst
+                if any(expt == [1,3,5,7])
+                    g_SOCE = p(95)*fluxFlagsCur(1);
+                else
+                    g_SOCE = 0; % Expt 2,4,6,8 have no SOCE.
+                end
+                %Expt 1,2 are provided cont stimulus.
+                if any(expt == [1,2])
+                    continuousStim = true;
+                else
+                    continuousStim = false;
+                end
+            else
                 g_SOCE = p(95)*fluxFlagsCur(1);
-            else
-                g_SOCE = 0; % Expt 2,4,6,8 have no SOCE.
-            end
-            %Expt 1,2,7,8 are provided cont stimulus.
-            if any(expt == [1,2,7,8])
-                continuousStim = true;
-            else
                 continuousStim = false;
             end
     
             E_Ca = (log((c_o ./ c_i)) .* (R .* T) ./ (2.0 .* F));
-            I_SOCE = ((g_SOCE .* (E_Ca - Voltage_SL ) .* SOCEProb));
+            if c_o == 0 % set to zero in absence of EC calcium
+                I_SOCE = 0;
+            else
+                I_SOCE = ((g_SOCE .* (E_Ca - Voltage_SL ) .* SOCEProb));
+            end
             J_SOCE = ((I_SOCE ./ (z_Ca .* F)) .* 1E09);
     
             SOCEProb_inf = (1.0 ./ (1.0 + ((c_SR ./ c_ref) ^ 4.0)));
@@ -480,17 +525,30 @@ end
     
             %% SERCA
             volFactor = (vol_myo ./ (pi .* 0.26));
-            nu_SERCA = (nu_SERCA .* volFactor );
+            if ~isEst
+                if any(expt == [7,8]) && t > 11*60
+                    nu_SERCA = (nu_SERCA .* volFactor)*(0.1 + 0.9*exp(-(t-11*60)/10));
+                else
+                    nu_SERCA = (nu_SERCA .* volFactor);
+                end
+            else
+                nu_SERCA = (nu_SERCA .* volFactor);
+            end
             LumpedJ_SERCA = (Q10SERCA .^ QCorr) * (602.214179 * nu_SERCA * ...
                 c_i ./ (K_SERCA + c_i)) * (ATP / (kATP + ATP) );% * SRMFrac;
     
             %% PMCA
-            g_PMCA =( (g_PMCA * vol_myo) / (700 * SA_SL ) );
+            scalePMCA = 1/(1+exp(-(c_i-0.05)/.005));
+            g_PMCA =scalePMCA*( (g_PMCA * vol_myo) / (700 * SA_SL ) );
             I_PMCA = (Q10PMCA .^ QCorr) * - (g_PMCA .* c_i ./ (K_PMCA + c_i)) * (ATP / (kATP + ATP));
             J_PMCA =  - ((I_PMCA ./ (z_Ca .* F)) .* 1E09) ;
     
             %% SL Calcium leak
-            I_CaLeak_SL = ((g_SLLeak .* (E_Ca - Voltage_SL )));
+            if c_o == 0
+                I_CaLeak_SL = 0;
+            else
+                I_CaLeak_SL = ((g_SLLeak .* (E_Ca - Voltage_SL )));
+            end
             J_CaLeak_SL = ((I_CaLeak_SL ./ (z_Ca .* F)) .* 1.0E09);
     
             %% SR Calcium Leak
@@ -507,8 +565,12 @@ end
                 (f_DHPR ^  - 2.0))) ^ 4.0) ./ (((1.0 + (exp(((Voltage_SL - VBar_DHPR) ./ ...
                 (4.0 .* K_DHPR))) .* (f_DHPR ^  - 2.0))) ^ 4.0) + (L_DHPR .* ...
                 ((1.0 + exp(((Voltage_SL - VBar_DHPR) ./ (4.0 .* K_DHPR)))) ^ 4.0)))) .* w_DHPR);
-    
-            I_DHPR = ((g0_DHPR .* openDHPR .* (E_Ca - Voltage_SL )));
+            
+            if c_o == 0
+                I_DHPR = 0;
+            else
+                I_DHPR = ((g0_DHPR .* openDHPR .* (E_Ca - Voltage_SL )));
+            end
             J_DHPR = ((I_DHPR ./ (z_Ca .* F)) .* 1E09);
     
             voltProb = (((1.0 + (exp(((Voltage_SL - VBar_RyR) ./ (4.0 .* K_RyR))) .* ...
@@ -554,7 +616,7 @@ end
             J_NKX_tot2 = J_NKX_tot;
     
             Jhyd = J_NKX_tot2 + (J_SERCA_tot/2) + J_PMCA_tot +  kHYD*(ATP / (kH + ATP) ); %(D_2*f0)/kHYD  (D_2*f0*p_i_SR)/1000
-            Jprod =  kPROD * (700 - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 +
+            Jprod =  kPROD * (ATPset - ATP) ;  %ATP production rate  (Post_Pow*g0*ATP)/1000 +
             dMA = k_onMA*Mg*ATP - k_offMA*MgATP; %did not include diffusion terms from Supplemental
             dATP = Jprod -Jhyd - (k_onATP*c_i*ATP - k_offATP*CATP) - (k_onMA*Mg*ATP - k_offMA*MgATP) -(g0_prime*Post_Pow*ATP)- (k_onCa*CaCaTrop*ATP/700) + k_offCa*D_2;
     
@@ -593,6 +655,8 @@ end
                 elseif expt == 6
                     tMax = 0.07;
                     ClampCurrent = ClampCurrent - 5000; % higher current for this expt
+                elseif expt == 11
+                    tMax = 0.33;
                 else
                     tMax = 0.001;
                 end
@@ -687,10 +751,6 @@ end
             dydt(curStartIdx:curStartIdx+sum(varLogicCur)-1) = dydtCur(varLogicCur);
             Rmag(curStartIdx:curStartIdx+sum(varLogicCur)-1) = RmagCur(varLogicCur);
             curStartIdx = curStartIdx + sum(varLogicCur);
-
-            if y(8) > 1e6 && expt ~= 10
-                fprintf("explosion")
-            end
 
             fluxes(k,:) = [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA,...
                 LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];
