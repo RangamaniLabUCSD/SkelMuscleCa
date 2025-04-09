@@ -85,6 +85,8 @@ yinit = [
     128000.0;   % Cl_o (µM)
     15000;      % CSQ
     ];
+
+
 juncLocLogic = true(1,31);
 juncLocLogic(17:21) = false; % cross bridges
 bulkLocLogic = true(1,31);
@@ -312,18 +314,17 @@ if Createplot
             x = 0:0.0001:T_max(i);
             Time_Comp = [x, fliplr(x)];
             V_Comp = [InterpExpt{i} + 2*sigma_V, fliplr(InterpExpt{i} - 2*sigma_V)];
-            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',3, 'color',[0.49,0.18,0.56] ) %'b',
+            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',2, 'color',[0.49,0.18,0.56] ) %'b',
             hold on
-            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',3, 'Color',[0.10,0.85,0.83])
-            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',3)
+            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',2)
             fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
-            xlabel('Time (s)', 'FontSize',18);
-            ylabel('Membrane Potential (mV)', 'FontSize',18);
-            title('V_{SL} for expt - '+ expt_title(i), 'FontSize',18);
-            ax = gca;
-            ax.FontSize = 18;
+            xlabel('Time (s)');
+            ylabel('Membrane Potential (mV)');
+            title('V_{SL} for expt - '+ expt_title(i));
+            prettyGraph
         end
-        legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval', 'FontSize',18)
+        legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')
     else
         for index = 1:2 % Update according to the number of Calcium expts used
             i = expt_n(index);
@@ -331,16 +332,15 @@ if Createplot
             x = 0:0.0001:T_max(i);
             Time_Comp = [x, fliplr(x)];
             Ca_Comp = [InterpExpt{i} + 2*sigma_C, fliplr(InterpExpt{i} - 2*sigma_C)];
-            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',3, 'color',[0.49,0.18,0.56]) %'b',
+            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',2, 'color',[0.49,0.18,0.56]) %'b',
             hold on
-            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',3, 'Color',[0.10,0.85,0.83])
-            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',3,'Linestyle','--')
+            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2,'Linestyle','--')
             fill(Time_Comp,Ca_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)
-            xlabel('Time (s)', 'FontSize',18);
-            title('[Ca^{2+}] for '+ expt_title(i), 'FontSize',18);
-            ylabel('Concentration (uM)', 'FontSize',18);
-            ax = gca;
-            ax.FontSize = 18;
+            xlabel('Time (s)');
+            title('[Ca^{2+}] for '+ expt_title(i));
+            ylabel('Concentration (μM)');
+            prettyGraph
         end
         for index = 3:4
             i = expt_n(index); %% Update according to the number of Voltage expts used
@@ -348,18 +348,17 @@ if Createplot
             x = 0:0.0001:T_max(i);
             Time_Comp = [x, fliplr(x)];
             V_Comp = [InterpExpt{i} + 2*sigma_V, fliplr(InterpExpt{i} - 2*sigma_V)];
-            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',3, 'color',[0.49,0.18,0.56] ) %'b',
+            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',2, 'color',[0.49,0.18,0.56] ) %'b',
             hold on
-            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',3, 'Color',[0.10,0.85,0.83])
-            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',3)
+            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',2)
             fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
-            xlabel('Time (s)', 'FontSize',18);
-            ylabel('Membrane Potential (mV)', 'FontSize',18);
-            title('V_{SL} for expt - '+ expt_title(i), 'FontSize',18);
-            ax = gca;
-            ax.FontSize = 18;
+            xlabel('Time (s)');
+            ylabel('Membrane Potential (mV)');
+            title('V_{SL} for expt - '+ expt_title(i));
+            prettyGraph
         end
-        legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval', 'FontSize',18)
+        legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')
     end
 end
 end
