@@ -156,7 +156,7 @@ for n_index = 1 :length(expt_n)
     try
         pVec0 = pVec;
         pVec0(95) = 0; % set SOCE flux to zero
-        [~,ySS] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic,n,phosphateAccum);
+        [~,ySS] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic,n,false);%phosphateAccum);
         if size(ySS,1) < length(tSS) || any(isnan(ySS(:)))
             cSR0 = yinit(cSRBulkIdx);
         else
@@ -169,7 +169,7 @@ for n_index = 1 :length(expt_n)
         % pVec(12) is cratio (default value of 0.25)
         pVecCur = pVec;
         pVecCur(12) = pVecCur(12) * cSR0;
-        [~,ySS,~,~,~,ySSFinal] = SkelMuscleCa_dydt(tSS, 0, yinit, pVecCur, tic, n, phosphateAccum);
+        [~,ySS,~,~,~,ySSFinal] = SkelMuscleCa_dydt(tSS, 0, yinit, pVecCur, tic, n, false);%phosphateAccum);
         if size(ySS,1) < length(tSS) || any(isnan(ySS(:)))
             yinf = yinit;
             simSaved{abs(n)} = zeros(1,totIdx);
@@ -201,8 +201,8 @@ for n_index = 1 :length(expt_n)
         % Baseline model prediction
         % SS computation
         if Createplot
-            pVecStruct = importdata('InputParam1.xlsx');
-            p0 = pVecStruct.data;
+            load p0Struct.mat p0Struct
+            p0 = p0Struct.data;
             pVec0 = p0;
             pVec0(95) = 0; % set SOCE flux to zero
             [~,ySS_baseinit] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic, n, phosphateAccum);

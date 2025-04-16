@@ -15,7 +15,8 @@ CaBuffering = [46:54,58,68:72,74,75,96,97,98];
 CaEfflux_SOCE = [12,31,34,41:44,89,95];
 Crossbridge_Cycle = [55:57,59:67,73,84,93,94,106];
 Diffusion = 98:105; % new parameters for diffusion between junctional and bulk compartments
-qoiList = [28+9,28+13, 8, 11]; % voltage qois from expt 7, calcium qois from expt 3
+% qoiList = [28+9,28+13, 8, 11]; % voltage qois from expt 7, calcium qois from expt 3
+qoiList = [10,12]; % force qois from expt 3
 sensIdx = cell(length(qoiList),1);
 
 for k = qoiList

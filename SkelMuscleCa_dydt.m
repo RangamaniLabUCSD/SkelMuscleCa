@@ -36,10 +36,10 @@ juncLocLogic = true(1,31);
 juncLocLogic(17:21) = false; % cross bridges
 bulkLocLogic = true(1,31);
 bulkLocLogic([1,4,27:30]) = false; % SOCE, wRyR, extracell ions
-yinit(sum(juncLocLogic(1:24))) = p(74);
-yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:24))) = p(74);
-yinit(sum(juncLocLogic(1:26))) = p(75);
-yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:26))) = p(75);
+% yinit(sum(juncLocLogic(1:24))) = p(74);
+% yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:24))) = p(74);
+% yinit(sum(juncLocLogic(1:26))) = p(75);
+% yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:26))) = p(75);
 
 % ode15s settings
 % pull out non-negative variables (everything except voltage)
@@ -132,7 +132,7 @@ end
 % ode rate
     function [dydt, fluxes, currents] = f(t,y,p,freq)
         currtime = toc(StartTimer);
-        if currtime > 240
+        if currtime > 480
             error('too long to compute!')
         end
 
@@ -194,7 +194,7 @@ end
         
         %% define diffusive flux rates
         D_ion = p(100);
-        D_ionSR = p(100); % slower maybe?
+        D_ionSR = 1*p(100); % slower maybe?
         D_ATP = p(101);
         D_parv = p(102);
         D_CSQ = p(103);
@@ -623,15 +623,15 @@ end
             %SR Phosphate
             PC_tot = p_i_SR * c_SR;
     
-            if PC_tot >= PP
+            if PC_tot >= PP && freq~=0
                 dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot)*(PC_tot -PP);
             else
                 dPi_SR = kP*(p_i_Myo - p_i_SR)  + Bp* PiCa_SR* (PP - PC_tot) ;
             end
     
             %Calcium-Phophate Precipitate (SR)
-            if PC_tot >= PP
-                dPiCa = Ap * (PC_tot)*(PC_tot - PP) -Bp * PiCa_SR;
+            if PC_tot >= PP && freq~=0
+                dPiCa = Ap * (PC_tot)*(PC_tot - PP);
             else
                 dPiCa = -Bp * PiCa_SR* (PP - PC_tot) ;
             end
@@ -714,10 +714,10 @@ end
                 dCCT;     % Rate for Ca2+ bound TropCa2+ (18)
                 dD2;      % Rate for Tropomyo opening from CaCaT bound (19)
                 dPre;     % Rate for Pre-Power Stroke from D_2 bound (20)
-                dPost;    % Rate for Post-Power Strom from A_1 bound (21)
+                dPost;    % Rate for Post-Power Stroke from A_1 bound (21)
                 dMA;      % Rate for ATP bound Mg2+ (22)
                 dATP;     % Rate for free ATP (23)
-                dPi_SR;   % Rate for SR Phsophate (24)
+                dPi_SR;   % Rate for SR Phosphate (24)
                 dPiCa;    % Rate for Cal-Phos Precipitate (25)
                 dPi_Myo;  % Rate for Myoplasmic Phosphate (26)
                 -SAvols(1) * J_SL_Ca; % c_o
