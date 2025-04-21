@@ -608,8 +608,10 @@ end
             dD2 = (k_onCa*CaCaTrop*ATP/700) - k_offCa*D_2 - f0*D_2 + fP*Pre_Pow + (g0_prime*Post_Pow*ATP);
 
             %Concentration of Pre/Post Power Stroke Filaments
-            dPre = f0*D_2 - fP*Pre_Pow + hP*Post_Pow*(p_i_Myo /3000) - h0*Pre_Pow;
-            dPost = -hP*Post_Pow*(p_i_Myo / 3000) + h0*Pre_Pow - (g0_prime*Post_Pow*ATP);
+            hP_prime = hP / 3000;
+
+            dPre = f0*D_2 - fP*Pre_Pow + hP_prime*Post_Pow*p_i_Myo - h0*Pre_Pow;
+            dPost = -hP_prime*Post_Pow*p_i_Myo + h0*Pre_Pow - (g0_prime*Post_Pow*ATP);
             %ATP
             J_SERCA_tot = LumpedJ_SERCA * ( KMOLE / vol_myo );
             J_PMCA_tot = J_PMCA * KFlux_SL_myo;
@@ -637,7 +639,7 @@ end
             end
     
             %Myoplasmic Phosphate
-            dPi_Myo = Jhyd + (h0*Pre_Pow - hP*Post_Pow*(p_i_Myo / 3000)) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR);
+            dPi_Myo = Jhyd + (h0*Pre_Pow - hP_prime*Post_Pow*p_i_Myo) - bP*p_i_Myo - kP* (p_i_Myo - p_i_SR);
     
             % Buffering with CSQ
             k_onCSQ = k_offCSQ/K_CSQ;

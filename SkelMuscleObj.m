@@ -338,7 +338,7 @@ if Createplot
             plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2,'Linestyle','--')
             fill(Time_Comp,Ca_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)
             xlabel('Time (s)');
-            title('[Ca^{2+}] for '+ expt_title(i));
+            title('[Ca{2+}] for '+ expt_title(i));
             ylabel('Concentration (μM)');
             prettyGraph
         end
@@ -355,7 +355,7 @@ if Createplot
             fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
             xlabel('Time (s)');
             ylabel('Membrane Potential (mV)');
-            title('V_{SL} for expt - '+ expt_title(i));
+            title('V{SL} for expt - '+ expt_title(i));
             prettyGraph
         end
         legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')
