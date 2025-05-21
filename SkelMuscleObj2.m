@@ -25,13 +25,11 @@ if length(pVec) < 105 || max(pVec) < 1000
     highSensIdx = 1:105;%[12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
     pRef = ones(105,1);
     pRef(highSensIdx) = pVec;
-    paramStruct = importdata('InputParam1.xlsx');
-    load PSO_18-Dec-2024.mat pSol
+    load p0Struct.mat p0Struct
+    p0 = p0Struct.data;
 
-    p0 = paramStruct.data;
-
-    highSensIdxResults = [2,6,10,14,15,18,20,21,23,24,28,32,33,35,37,40,42,43,45,69,72,77,78,79,80,81,83,86,90,91];
-    p0(highSensIdxResults) =p0(highSensIdxResults).* pSol(:);
+    % highSensIdxResults = [2,6,10,14,15,18,20,21,23,24,28,32,33,35,37,40,42,43,45,69,72,77,78,79,80,81,83,86,90,91];
+    % p0(highSensIdxResults) =p0(highSensIdxResults).* pSol(:);
 
     pVec = pRef(:) .* p0(:);
 end
@@ -61,8 +59,8 @@ yinit = [
     0;	    	% yinit(21) is the initial condition for 'Post_Pow'
     0;	    	% yinit(22) is the initial condition for 'MgATP'
     8000;       % yinit(23) is the initial condition for 'ATP'
-    param(74)       % yinit(24) is the initial condition for 'p_i_SR'
-    0           % yinit(25) is the initial condition for 'PiCa'
+    param(74);       % yinit(24) is the initial condition for 'p_i_SR'
+    0 ;          % yinit(25) is the initial condition for 'PiCa'
     param(75);       % yinit(26) is the initial condition for 'Pi_Myo'
     1300;        % c_o (µM)
     147000.0;   % Na_o (µM)
@@ -104,7 +102,7 @@ try
     end
 catch
     cSR0 = yinit(2);
-    ySS_noSOCE = yinit;
+    ySS_noSOCE = yinit';
 end
 try
     param(12) = param(12) * cSR0;
@@ -115,7 +113,7 @@ try
     end
     ySS_withSOCE = ySS(end,:);
 catch
-    ySS_withSOCE = yinit;
+    ySS_withSOCE = yinit';
     fprintf('error in SS computation \n');
 end
 

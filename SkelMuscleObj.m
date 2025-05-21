@@ -21,15 +21,34 @@ elseif length(varargin)==2
     end
 end
 
-if length(pVec) < 105 || max(pVec) < 1000
+VOnly = false;
+if length(pVec) < 106 || max(pVec) < 1000
+    load p0Struct.mat p0Struct
+    p0 = p0Struct.data;
+    % p0(44) = 0.02;
+    p0(106) = 700;
     % highSensIdx = [1,3,4,5,7,8,9,11,12,13,16,17,19,22,25,26,27,29,30,31,34,36,38,39,41,44,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,70,71,73,74,75,76,82,84,85,87,88,89,92,93,94,95,96,97,98,99,100,101,102,103,104,105]; %[2,6,10,14,15,18,20,21,23,24,28,32,33,35,37,40,42,43,45,69,72,77,78,79,80,81,83,86,90,91];%[12,31,34,39,41,42,43,59:75,89,91,95];
-    highSensIdx = 1:105;%[12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
-    pRef = ones(105,1);
+    if length(pVec) == 28 % then VOnly
+        highSensIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
+        VOnly = true;
+    else % then fitting to both calcium and V using ca sens indices
+        highSensIdx = 1:106;%[3,15,18,23,32,35,40,42,43,69,72,77,79,80,81,83,86,90,91];
+        % highSensIdx = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,...
+        %     26, 27, 28, 29, 32, 33, 34, 36, 37, 38, 39, 40, 42, 43, 44, 76, 77, 78, 79, 80, 81, 82, 83, 85, 88, 90, 92];
+        VOnlyIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
+        % VOnlyStruct = load('pVec_VOnlyNoBib.mat', 'pVec');
+        % pVecVOnly = VOnlyStruct.pVec;
+        VOnlyStruct = load('PSOpenaltyNoBib_VOnlyRedo_13-May-2025.mat', 'pSol');
+        pVecVOnly = VOnlyStruct.pSol;
+        pVecVOnly = pVecVOnly(:); % be sure it is a column vector
+        [VOnlyOnly,onlyIdx] = setdiff(VOnlyIdx, highSensIdx); % non overlapping indices
+        p0(VOnlyOnly) = pVecVOnly(onlyIdx).*p0(VOnlyOnly); % set p0 according to previous estimation
+    end
+    pRef = ones(106,1);
     pRef(highSensIdx) = pVec;
-    pVecStruct = importdata('InputParam1.xlsx');
-    p0 = pVecStruct.data;
     pVec = pRef(:) .* p0(:);
 end
+pVec(91) = 0;
 
 %Initialize values
 InterpExpt = cell(1,9);
@@ -63,13 +82,15 @@ yinit = [
     8000;       % yinit(23) is the initial condition for 'ATP'
     pVec(74);       % yinit(24) is the initial condition for 'p_i_SR'
     0;          % yinit(25) is the initial condition for 'PiCa'
-    pVec(75)       % yinit(26) is the initial condition for 'Pi_Myo'
+    pVec(75);       % yinit(26) is the initial condition for 'Pi_Myo'
     1300;        % c_o (µM)
     147000.0;   % Na_o (µM)
     4000.0;      % K_o (µM)
     128000.0;   % Cl_o (µM)
     15000;      % CSQ
     ];
+
+
 juncLocLogic = true(1,31);
 juncLocLogic(17:21) = false; % cross bridges
 bulkLocLogic = true(1,31);
@@ -88,17 +109,22 @@ SLVoltIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:5));
 
 tSS = 0:1000;
 load Exptdata.mat Expt
-freq = [100, 100, 67, 67,67,60, 60, 60,60];
-T_max = [0.03 0.12 0.06 0.045 0.08 0.025 0.01 0.02 0.002];
+freq = [100, 100, 67, 67,67,60, 60, 60, 60, 67, 15];
+% T_max = [0.03 0.12 0.06 0.045 0.08 0.025 0.01 0.02 0.002];
+T_max = [0.03 0.1 0.05 0.045 0.08 0.025 0.006 0.012 0.002, 0.08, 0.32];
 expt_title = ["Rincon","Calderon et al. (2010)", "Baylor et al. (2007)",...
     "Hollingworth", "Baylor & Hollingworth", "Yonemura","Bibollet et al. (2023)",...
-    "Miranda et al.(2020)","Wallinga"];
-expt_n = [3 2 7 8]; % Indices of the experiments used for estimation
+    "Miranda et al.(2020)","Wallinga", "", "Pederson (2009)"];
+if VOnly
+    expt_n = [8];
+else
+    expt_n = [3,2,8];
+end
 
 %Interpolating experimental values
 for m_index = 1 :length(expt_n) %:9
     m = expt_n(m_index);
-    T_max(m) = max(Expt{m}(:,1))/1000;
+    % T_max(m) = max(Expt{m}(:,1))/1000;
     Expt_t{m} = Expt{m}(:,1)/1000;
     if m < 6 % calcium cases assume baseline 0.1 uM
         Expt{m}(:,2) = Expt{m}(:,2) + 0.1;
@@ -120,6 +146,13 @@ diffusion_length = pVec(99);
 vol_myoJ = SA_TT*diffusion_length;
 JFrac = vol_myoJ / vol_myo;
 BFrac = 1 - JFrac;
+vol_SR = 0.05*vol_Fiber;
+SRJ_occupancy = 0.5;
+SA_SRJ = SA_TT * SRJ_occupancy;
+vol_SRJ = SA_SRJ*diffusion_length;
+JSRFrac = vol_SRJ / vol_SR;
+BSRFrac = 1 - JSRFrac;
+ssPenalty = zeros(length(expt_n),1);
 
 for n_index = 1 :length(expt_n)
     n = -expt_n(n_index); % negative n to indicate this is estimation 
@@ -127,7 +160,7 @@ for n_index = 1 :length(expt_n)
     try
         pVec0 = pVec;
         pVec0(95) = 0; % set SOCE flux to zero
-        [~,ySS] = SkelMuscleCa_dydt(tSS,0, yinit, pVec0,tic,n,phosphateAccum);
+        [~,ySS] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic,n,false);%phosphateAccum);
         if size(ySS,1) < length(tSS) || any(isnan(ySS(:)))
             cSR0 = yinit(cSRBulkIdx);
         else
@@ -140,15 +173,15 @@ for n_index = 1 :length(expt_n)
         % pVec(12) is cratio (default value of 0.25)
         pVecCur = pVec;
         pVecCur(12) = pVecCur(12) * cSR0;
-        [~,ySS] = SkelMuscleCa_dydt(tSS, 0, yinit, pVecCur, tic, n, phosphateAccum);
+        [~,ySS,~,~,~,ySSFinal] = SkelMuscleCa_dydt(tSS, 0, yinit, pVecCur, tic, n, false);%phosphateAccum);
         if size(ySS,1) < length(tSS) || any(isnan(ySS(:)))
             yinf = yinit;
             simSaved{abs(n)} = zeros(1,totIdx);
         else
-            yinf = ySS(end,:);
+            yinf = ySSFinal;
         end
     catch
-        yinf = yinit;
+        yinf = yinit';
         fprintf('error in SS computation \n');
     end
     ssQOI = [yinf(cSRBulkIdx), yinf(SLVoltIdx), yinf(sum(juncLocLogic(1:6))),...
@@ -157,7 +190,7 @@ for n_index = 1 :length(expt_n)
 
     %% Calculate Dynamics
     t = 0:0.0001:T_max(abs(n));
-    % try
+    try
         [~,y] = SkelMuscleCa_dydt(t, freq(abs(n)), yinf, pVecCur, tic, n, phosphateAccum);
         if size(y,1) < length(t)
             ySim = y;
@@ -172,8 +205,8 @@ for n_index = 1 :length(expt_n)
         % Baseline model prediction
         % SS computation
         if Createplot
-            pVecStruct = importdata('InputParam1.xlsx');
-            p0 = pVecStruct.data;
+            load p0Struct.mat p0Struct
+            p0 = p0Struct.data;
             pVec0 = p0;
             pVec0(95) = 0; % set SOCE flux to zero
             [~,ySS_baseinit] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic, n, phosphateAccum);
@@ -184,6 +217,10 @@ for n_index = 1 :length(expt_n)
         end
         
         CaSol = y(:,ciJuncIdx)*JFrac + y(:,ciBulkIdx)*BFrac;
+        CaSRSol = y(:,cSRJuncIdx)*JSRFrac + y(:,cSRBulkIdx)*BSRFrac;
+        if ~VOnly
+            ssPenalty(n_index) = ((CaSol(1)-0.1)/0.1)^2 + ((CaSRSol(1)-500)/500)^2;
+        end
         VSol = y(:,SLVoltIdx);
         if abs(n) <= 5 % Calcium Calculations
             CompInterp{abs(n)} = CaSol;
@@ -227,11 +264,15 @@ for n_index = 1 :length(expt_n)
 
         qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, MaxCaF, MaxVF, MaxPost, ...
                                                   AvgF, AvgPost, AvgVolt, VoltWidth] ;
-    % catch
-    %     qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, zeros(1,7)];
-    %     fprintf('error in dynamics comp \n');
-    % 
-    % end
+    catch
+        qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, zeros(1,7)];
+        fprintf('error in dynamics comp \n');
+        if abs(n) <= 5 % Calcium Calculations
+            CompInterp{abs(n)} = ssQOI(5)*ones(size(t));
+        elseif abs(n) > 5
+            CompInterp{abs(n)} = ssQOI(2)*ones(size(t));
+        end
+    end
 end
 
 %% Objective Value Calc
@@ -243,7 +284,7 @@ for j_index = 1 :length(expt_n) %:9
     j = expt_n(j_index);
     weight = length(InterpExpt{j}) ;
     sigma_C = 0.5;
-    sigma_V = 5 ;
+    sigma_V = 5;
     delta{j} = CompInterp{j}(:) - InterpExpt{j}(:);
     if j < 6
         Error{j} = ((delta{j} ./ sigma_C ) .^ 2 )./ weight;
@@ -255,6 +296,7 @@ for j_index = 1 :length(expt_n) %:9
 end
 
 objVal = sum(sum_delta);
+objVal = objVal + sum(ssPenalty);
 if saveProgress
     try
         load(fullfile(progressPath,'objTest.mat'),'objTest')
@@ -272,41 +314,59 @@ end
 if Createplot
 
     figure
-    for index = 1:2 % Update according to the number of Calcium expts used
-        i = expt_n(index);
-        subplot(2,2,index)
-        x = 0:0.0001:T_max(i);
-        Time_Comp = [x, fliplr(x)];
-        Ca_Comp = [InterpExpt{i} + 2*sigma_C, fliplr(InterpExpt{i} - 2*sigma_C)];
-        plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',3, 'color',[0.49,0.18,0.56]) %'b',
-        hold on
-        plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',3, 'Color',[0.10,0.85,0.83])
-        plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',3,'Linestyle','--')
-        fill(Time_Comp,Ca_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)
-        xlabel('Time (s)', 'FontSize',18);
-        title('[Ca^{2+}] for '+ expt_title(i), 'FontSize',18);
-        ylabel('Concentration (uM)', 'FontSize',18);
-        ax = gca;
-        ax.FontSize = 18;
-    end
 
-    for index = 3:4
-        i = expt_n(index); %% Update according to the number of Voltage expts used
-        subplot(2,2,index)
-        x = 0:0.0001:T_max(i);
-        Time_Comp = [x, fliplr(x)];
-        V_Comp = [InterpExpt{i} + 2*sigma_V, fliplr(InterpExpt{i} - 2*sigma_V)];
-        plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',3, 'color',[0.49,0.18,0.56] ) %'b',
-        hold on
-        plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',3, 'Color',[0.10,0.85,0.83])
-        plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',3)
-        fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
-        xlabel('Time (s)', 'FontSize',18);
-        ylabel('Membrane Potential (mV)', 'FontSize',18);
-        title('V_{SL} for expt - '+ expt_title(i), 'FontSize',18);
-        ax = gca;
-        ax.FontSize = 18;
+    if VOnly
+        for index = 1
+            i = expt_n(index); %% Update according to the number of Voltage expts used
+            subplot(1,2,index)
+            x = 0:0.0001:T_max(i);
+            Time_Comp = [x, fliplr(x)];
+            V_Comp = [InterpExpt{i} + 2*sigma_V, fliplr(InterpExpt{i} - 2*sigma_V)];
+            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',2, 'color',[0.49,0.18,0.56] ) %'b',
+            hold on
+            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',2)
+            fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
+            xlabel('Time (s)');
+            ylabel('Membrane Potential (mV)');
+            % title('V_{SL} for expt - '+ expt_title(i));
+            prettyGraph
+        end
+        legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')
+    else
+        for index = 1:2 % Update according to the number of Calcium expts used
+            i = expt_n(index);
+            subplot(2,2,index)
+            x = 0:0.0001:T_max(i);
+            Time_Comp = [x, fliplr(x)];
+            Ca_Comp = [InterpExpt{i} + 2*sigma_C, fliplr(InterpExpt{i} - 2*sigma_C)];
+            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',2, 'color',[0.49,0.18,0.56]) %'b',
+            hold on
+            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2,'Linestyle','--')
+            fill(Time_Comp,Ca_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)
+            xlabel('Time (s)');
+            % title('[Ca^{2+}] for '+ expt_title(i));
+            ylabel('Concentration (μM)');
+            prettyGraph
+        end
+        for index = 3
+            i = expt_n(index); %% Update according to the number of Voltage expts used
+            subplot(2,2,index)
+            x = 0:0.0001:T_max(i);
+            Time_Comp = [x, fliplr(x)];
+            V_Comp = [InterpExpt{i} + 2*sigma_V, fliplr(InterpExpt{i} - 2*sigma_V)];
+            plot(0:0.0001:T_max(i),CompInterp{i},'LineWidth',2, 'color',[0.49,0.18,0.56] ) %'b',
+            hold on
+            plot(0:0.0001:T_max(i),InterpComp_base{i},'LineWidth',2, 'Color',[0.10,0.85,0.83])
+            plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineStyle', '--' ,'LineWidth',2)
+            fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
+            xlabel('Time (s)');
+            ylabel('Membrane Potential (mV)');
+            % title('V_{SL} for expt - '+ expt_title(i));
+            prettyGraph
+        end
+        legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')
     end
-    legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval', 'FontSize',18)
 end
 end

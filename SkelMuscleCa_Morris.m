@@ -5,8 +5,8 @@ uqlab
 delete(gcp('nocreate'))
 ModelOpts.mFile = 'SkelMuscleCa_SAOutput';
 myModel = uq_createModel(ModelOpts);
-input = importdata('InputParam1.xlsx');
-paramNames = input.textdata;
+load p0Struct.mat p0Struct
+paramNames = p0Struct.names;
 numParam = length(paramNames);
 starttimer = tic;
 % these specifications designate uniform distributions ranging from about 0.5 to 2

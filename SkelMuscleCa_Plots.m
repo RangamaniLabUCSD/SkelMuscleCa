@@ -17,8 +17,8 @@ V = [0.49,0.18,0.56] ; %-Dark Purple for Voltage
 load Exptdata.mat
 
 
-param = importdata('InputParam1.xlsx'); % load default parameters
-p0 =  param.data;
+load p0Struct.mat p0Struct
+p0 = p0Struct.data;
 load PSO_17-Sep-2024.mat pSol
 highSensIdx = [1,5,15,16,19,22,24,30,32,34,35,43,74,83,91,92];
 pPSO = p0(:);
