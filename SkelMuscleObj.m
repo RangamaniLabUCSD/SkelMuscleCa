@@ -22,29 +22,33 @@ elseif length(varargin)==2
 end
 
 VOnly = false;
-if length(pVec) < 105 || max(pVec) < 1000
+if length(pVec) < 106 || max(pVec) < 1000
     load p0Struct.mat p0Struct
     p0 = p0Struct.data;
+    % p0(44) = 0.02;
+    p0(106) = 700;
     % highSensIdx = [1,3,4,5,7,8,9,11,12,13,16,17,19,22,25,26,27,29,30,31,34,36,38,39,41,44,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,70,71,73,74,75,76,82,84,85,87,88,89,92,93,94,95,96,97,98,99,100,101,102,103,104,105]; %[2,6,10,14,15,18,20,21,23,24,28,32,33,35,37,40,42,43,45,69,72,77,78,79,80,81,83,86,90,91];%[12,31,34,39,41,42,43,59:75,89,91,95];
-    if length(pVec) == 35 % then VOnly
-        highSensIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,22,23,24,25,26,28,30,32,33,40,76,77,78,79,80,81,82,83,91];
+    if length(pVec) == 28 % then VOnly
+        highSensIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
         VOnly = true;
-    elseif length(pVec) == 95
-        highSensIdx = [1:75,84:105];%1:105;%[12,31,34,41,44,55:57,59:68,70,71,73,74,75,84,89,93,94,95];
-    else % then fiting to both calcium and V using ca sens indices
-        highSensIdx = 1:105;%[3,15,18,23,32,35,40,42,43,69,72,77,79,80,81,83,86,90,91];
-        VOnlyIdx = [1,3,4,5,6,8,9,10,11,13,14,15,16,17,18,19,22,23,24,25,26,28,30,32,33,40,76,77,78,79,80,81,82,83,91];
-        VOnlyStruct = load('pVec_VOnly.mat', 'pVec');
-        pVecVOnly = VOnlyStruct.pVec;
+    else % then fitting to both calcium and V using ca sens indices
+        highSensIdx = 1:106;%[3,15,18,23,32,35,40,42,43,69,72,77,79,80,81,83,86,90,91];
+        % highSensIdx = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,...
+        %     26, 27, 28, 29, 32, 33, 34, 36, 37, 38, 39, 40, 42, 43, 44, 76, 77, 78, 79, 80, 81, 82, 83, 85, 88, 90, 92];
+        VOnlyIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
+        % VOnlyStruct = load('pVec_VOnlyNoBib.mat', 'pVec');
+        % pVecVOnly = VOnlyStruct.pVec;
+        VOnlyStruct = load('PSOpenaltyNoBib_VOnlyRedo_13-May-2025.mat', 'pSol');
+        pVecVOnly = VOnlyStruct.pSol;
         pVecVOnly = pVecVOnly(:); % be sure it is a column vector
         [VOnlyOnly,onlyIdx] = setdiff(VOnlyIdx, highSensIdx); % non overlapping indices
         p0(VOnlyOnly) = pVecVOnly(onlyIdx).*p0(VOnlyOnly); % set p0 according to previous estimation
     end
-    pRef = ones(105,1);
+    pRef = ones(106,1);
     pRef(highSensIdx) = pVec;
     pVec = pRef(:) .* p0(:);
-    pVec(91) = 0;
 end
+pVec(91) = 0;
 
 %Initialize values
 InterpExpt = cell(1,9);
@@ -112,9 +116,9 @@ expt_title = ["Rincon","Calderon et al. (2010)", "Baylor et al. (2007)",...
     "Hollingworth", "Baylor & Hollingworth", "Yonemura","Bibollet et al. (2023)",...
     "Miranda et al.(2020)","Wallinga", "", "Pederson (2009)"];
 if VOnly
-    expt_n = [7,8];
+    expt_n = [8];
 else
-    expt_n = [3,2,7,8];
+    expt_n = [3,2,8];
 end
 
 %Interpolating experimental values
@@ -186,7 +190,7 @@ for n_index = 1 :length(expt_n)
 
     %% Calculate Dynamics
     t = 0:0.0001:T_max(abs(n));
-    % try
+    try
         [~,y] = SkelMuscleCa_dydt(t, freq(abs(n)), yinf, pVecCur, tic, n, phosphateAccum);
         if size(y,1) < length(t)
             ySim = y;
@@ -260,11 +264,15 @@ for n_index = 1 :length(expt_n)
 
         qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, MaxCaF, MaxVF, MaxPost, ...
                                                   AvgF, AvgPost, AvgVolt, VoltWidth] ;
-    % catch
-    %     qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, zeros(1,7)];
-    %     fprintf('error in dynamics comp \n');
-    % 
-    % end
+    catch
+        qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, zeros(1,7)];
+        fprintf('error in dynamics comp \n');
+        if abs(n) <= 5 % Calcium Calculations
+            CompInterp{abs(n)} = ssQOI(5)*ones(size(t));
+        elseif abs(n) > 5
+            CompInterp{abs(n)} = ssQOI(2)*ones(size(t));
+        end
+    end
 end
 
 %% Objective Value Calc
@@ -308,7 +316,7 @@ if Createplot
     figure
 
     if VOnly
-        for index = 1:2
+        for index = 1
             i = expt_n(index); %% Update according to the number of Voltage expts used
             subplot(1,2,index)
             x = 0:0.0001:T_max(i);
@@ -321,7 +329,7 @@ if Createplot
             fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
             xlabel('Time (s)');
             ylabel('Membrane Potential (mV)');
-            title('V_{SL} for expt - '+ expt_title(i));
+            % title('V_{SL} for expt - '+ expt_title(i));
             prettyGraph
         end
         legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')
@@ -338,11 +346,11 @@ if Createplot
             plot(0:0.0001:T_max(i),InterpExpt{i},'r','LineWidth',2,'Linestyle','--')
             fill(Time_Comp,Ca_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)
             xlabel('Time (s)');
-            title('[Ca^{2+}] for '+ expt_title(i));
+            % title('[Ca^{2+}] for '+ expt_title(i));
             ylabel('Concentration (μM)');
             prettyGraph
         end
-        for index = 3:4
+        for index = 3
             i = expt_n(index); %% Update according to the number of Voltage expts used
             subplot(2,2,index)
             x = 0:0.0001:T_max(i);
@@ -355,7 +363,7 @@ if Createplot
             fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
             xlabel('Time (s)');
             ylabel('Membrane Potential (mV)');
-            title('V_{SL} for expt - '+ expt_title(i));
+            % title('V_{SL} for expt - '+ expt_title(i));
             prettyGraph
         end
         legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')

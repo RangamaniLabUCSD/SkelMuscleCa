@@ -9,14 +9,14 @@ expt_names = [expt_names; "Objective Value 1"; "Objective Value 2"];
 n = 1;
 muVec = zeros(size(MorrisAnalysis.Results.MuStar));
 
-ActionPotential = [1:6, 8:10, 13,14,16:30,33,36:40,45,76:82, 85:88];
-CaInflux_SR_Release = [7,11,15,32,35,83,90:92];
+ActionPotential = [1:6, 8:11, 13,14,16:30,33,36:40,45,76:82, 85:88];
+CaInflux_SR_Release = [7, 15,32,35,83,90:92];
 CaBuffering = [46:54,58,68:72,74,75,96,97,98];
 CaEfflux_SOCE = [12,31,34,41:44,89,95];
 Crossbridge_Cycle = [55:57,59:67,73,84,93,94,106];
 Diffusion = 98:105; % new parameters for diffusion between junctional and bulk compartments
-% qoiList = [28+9,28+13, 8, 11]; % voltage qois from expt 7, calcium qois from expt 3
-qoiList = [10,12]; % force qois from expt 3
+qoiList = [42+9,42+13, 8, 11]; % voltage qois from expt 8, calcium qois from expt 3
+% qoiList = [10,12]; % force qois from expt 3
 sensIdx = cell(length(qoiList),1);
 
 for k = qoiList
@@ -42,15 +42,14 @@ for k = qoiList
         MorrisAnalysis.Results.Std(Diffusion,k),'filled',...
         'MarkerFaceColor','g')
     xlabel('mu*')
-    ylabel('simga')
-    yticklabels({})
+    ylabel('sigma')
     title(expt_names{k})
     hold on
     ten_percent = max(MorrisAnalysis.Results.MuStar(:,k))*0.1;
     xline(ten_percent , '--b' )
-    legend('Action Potential', 'Calcium Influx and SR Release',...
-        'Calcium Buffering','Calcium Efflux and SOCE','Cross-Bridge Cycle',...
-        'Diffusion','10% Threshold')
+    % legend('Action Potential', 'Calcium Influx and SR Release',...
+    %     'Calcium Buffering','Calcium Efflux and SOCE','Cross-Bridge Cycle',...
+    %     'Diffusion','10% Threshold')
     for i = 1:length(MorrisAnalysis.Results.MuStar(:,k))
         mu_star = MorrisAnalysis.Results.MuStar(i,k);
         if mu_star >= ten_percent
@@ -71,8 +70,9 @@ for k = qoiList
 
     % labels_above_ten = MorrisAnalysis.Results.VariableNames(1,:).' ;
     for j= 1:length(muVec(:,k))
+        shiftVal = 0.01*max(MorrisAnalysis.Results.MuStar(:,k));
         if muVec(j,k) ==1
-            text(MorrisAnalysis.Results.MuStar(j,k), MorrisAnalysis.Results.Std(j,k), label(j,n));
+            text(MorrisAnalysis.Results.MuStar(j,k)+shiftVal, MorrisAnalysis.Results.Std(j,k)-shiftVal, string(j));%label(j,n));
         end
 
         if muVec(j,k) ==0

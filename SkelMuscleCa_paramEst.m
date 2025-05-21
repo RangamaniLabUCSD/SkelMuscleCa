@@ -14,10 +14,10 @@ function [pSol,fval,exitflag] = SkelMuscleCa_paramEst(lb,ub)
 
 %set swarmsize to 30 for TSCC and stall iter to 50
 psOptions = optimoptions('particleswarm','UseParallel',true,'HybridFcn',@fmincon,...
-    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 25, 'SwarmSize', 30);
+    'PlotFcn','pswplotbestf','Display','iter','MaxStallIterations', 10, 'SwarmSize', 10);
 delete(gcp('nocreate'))
 if psOptions.UseParallel
-    parpool(30) %% **CHANGE SWARMSIZE!** and save file location
+    parpool(5) %% **CHANGE SWARMSIZE!** and save file location
 end
 saveProgress = true;
 

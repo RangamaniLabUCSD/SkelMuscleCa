@@ -9,6 +9,7 @@ load p0Struct.mat p0Struct
 parameters = p0Struct.data;
 % load PSO_25-Apr-2024.mat yinit
 
+parameters(106) = 700;
 
 totSize = size(param,1);
 QOI = zeros(size(param,1),14*4+2);
