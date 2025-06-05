@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/603239582.svg)](https://doi.org/10.5281/zenodo.15485446)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15485446.svg)](https://doi.org/10.5281/zenodo.15485446)
 
 # SkelMuscleCa
 MATLAB code for an ODE-based model of calcium dynamics and force production in skeletal muscle fibers
