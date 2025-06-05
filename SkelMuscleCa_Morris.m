@@ -5,7 +5,7 @@ uqlab
 delete(gcp('nocreate'))
 ModelOpts.mFile = 'SkelMuscleCa_SAOutput';
 myModel = uq_createModel(ModelOpts);
-load p0Struct.mat p0Struct
+load Data/p0Struct.mat p0Struct
 paramNames = p0Struct.names;
 numParam = length(paramNames);
 starttimer = tic;

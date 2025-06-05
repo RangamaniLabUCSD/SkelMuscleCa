@@ -23,7 +23,7 @@ end
 
 VOnly = false;
 if length(pVec) < 106 || max(pVec) < 1000
-    load p0Struct.mat p0Struct
+    load Data/p0Struct.mat p0Struct
     p0 = p0Struct.data;
     % p0(44) = 0.02;
     p0(106) = 700;
@@ -32,14 +32,10 @@ if length(pVec) < 106 || max(pVec) < 1000
         highSensIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
         VOnly = true;
     else % then fitting to both calcium and V using ca sens indices
-        highSensIdx = 1:106;%[3,15,18,23,32,35,40,42,43,69,72,77,79,80,81,83,86,90,91];
-        % highSensIdx = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,...
-        %     26, 27, 28, 29, 32, 33, 34, 36, 37, 38, 39, 40, 42, 43, 44, 76, 77, 78, 79, 80, 81, 82, 83, 85, 88, 90, 92];
+        highSensIdx = 1:106;
         VOnlyIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
-        % VOnlyStruct = load('pVec_VOnlyNoBib.mat', 'pVec');
-        % pVecVOnly = VOnlyStruct.pVec;
-        VOnlyStruct = load('PSOpenaltyNoBib_VOnlyRedo_13-May-2025.mat', 'pSol');
-        pVecVOnly = VOnlyStruct.pSol;
+        VOnlyStruct = load('Data/pVec_VOnly.mat', 'pVec');
+        pVecVOnly = VOnlyStruct.pVec;
         pVecVOnly = pVecVOnly(:); % be sure it is a column vector
         [VOnlyOnly,onlyIdx] = setdiff(VOnlyIdx, highSensIdx); % non overlapping indices
         p0(VOnlyOnly) = pVecVOnly(onlyIdx).*p0(VOnlyOnly); % set p0 according to previous estimation
@@ -108,13 +104,13 @@ TTVoltIdx = sum(juncLocLogic(1:5));
 SLVoltIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:5));
 
 tSS = 0:1000;
-load Exptdata.mat Expt
+load Data/Exptdata.mat Expt
 freq = [100, 100, 67, 67,67,60, 60, 60, 60, 67, 15];
 % T_max = [0.03 0.12 0.06 0.045 0.08 0.025 0.01 0.02 0.002];
 T_max = [0.03 0.1 0.05 0.045 0.08 0.025 0.006 0.012 0.002, 0.08, 0.32];
-expt_title = ["Rincon","Calderon et al. (2010)", "Baylor et al. (2007)",...
-    "Hollingworth", "Baylor & Hollingworth", "Yonemura","Bibollet et al. (2023)",...
-    "Miranda et al.(2020)","Wallinga", "", "Pederson (2009)"];
+% expt_title = ["Rincon","Calderon et al. (2010)", "Baylor et al. (2007)",...
+%     "Hollingworth", "Baylor & Hollingworth", "Yonemura","Bibollet et al. (2023)",...
+%     "Miranda et al.(2020)","Wallinga", "", "Pederson (2009)"];
 if VOnly
     expt_n = [8];
 else
@@ -205,7 +201,7 @@ for n_index = 1 :length(expt_n)
         % Baseline model prediction
         % SS computation
         if Createplot
-            load p0Struct.mat p0Struct
+            load Data/p0Struct.mat p0Struct
             p0 = p0Struct.data;
             pVec0 = p0;
             pVec0(95) = 0; % set SOCE flux to zero

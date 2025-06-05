@@ -82,11 +82,3 @@ for k = qoiList
     end
 
 end
-
-%
-% % store names of significant parameters
-% anySig = any(muVec,2); % if any of the considered QOIs show high sensitivity
-% labels_above_ten = MorrisAnalysis.Results.VariableNames(1,:).';
-% for i = find(~anySig)'
-%     labels_above_ten{i} = '0';
-% end

@@ -698,7 +698,7 @@ end
                     tMax = 0.07;
                 elseif expt == 6
                     tMax = 0.07;
-                    ClampCurrent = ClampCurrent - 5000; % higher current for this expt
+                    % ClampCurrent = ClampCurrent - 5000; % higher current for this expt
                 elseif expt == 11
                     tMax = 0.33;
                 else
