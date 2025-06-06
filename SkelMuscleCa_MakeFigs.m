@@ -138,7 +138,7 @@ SSPhosAccum = false; % whether phosphate accumulation is allowed in SS estimatio
 [Time_withSOCE,Y_withSOCE,fluxes,currents,maxCrossBridge] =...
     computeSol(pPSO, [], tSol, 1, 100, phosphateAccum, geomParam, SSPhosAccum);
 
-%% Fig 3A plots
+%% Fig 3 plots
 figure
 subplot(4,1,1)
 plot(Time_withSOCE, currents(:,13+13)/1000)
@@ -197,7 +197,7 @@ prettyGraph
 
 %% Dissect fluxes for Fig 4B
 % note that plots are split between positive and negative fluxes to allow
-% log y axis for each case
+% log y axis for each case (subplots 3 and 5 have flipped y axes)
 % fluxes in µM/s = [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA,...
 %                   LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR];% 
 figure
@@ -397,7 +397,7 @@ pPSO(100) = 0.1*pSol(100)*p0(100); % ion diffusion
 phosphateAccum = true; 
 
 % test 1 s of stimulus here
-tSol = [0, 1];
+tSol = [0, 1];sub
 SSPhosAccum = false;
 [Time_withSOCE,Y_withSOCE,~,~,maxCrossBridge, yinits] =...
     computeSol(pPSO, [], tSol, 1, 100, phosphateAccum, geomParam, SSPhosAccum);
@@ -528,8 +528,8 @@ prettyGraph
 
 %% test range of frequencies for SOCE vs no SOCE - Fig 6
 tSol = [0, 0.5];
-freq = 1:20:141;
-inclAltPhos = true; % whether to include additional test with 150% resting phosphate in SOCE KOs
+freq = [20];%[1;25;50;75;100];%;125;150;175;200;250];
+inclAltPhos = false; % whether to include additional test with 150% resting phosphate in SOCE KOs
 peakForce = zeros(2+inclAltPhos, length(freq));
 endPeakRatio = zeros(2+inclAltPhos, length(freq));
 pPSO(12) = 1*p0(12); % set cref ratio
@@ -741,12 +741,17 @@ for k = 1:length(exerciseNames)
     turboMap = colormap('turbo');
     colormap(turboMap(10:240,:))
     curFile = sprintf('Data/sweepSOCE_1.0phosdeg_1.0Trop_%s.mat',exercise);
-    load(curFile,'results','freq','soceFactor','crefFactor')
+    load(curFile,'results','freq','soceFactor','crefFactor','tLims')
     maxCrossBridge = results{freq==freqVals(k)}{1};
     dynCell = results{freq==freqVals(k)}{end};
     finalForceVals = zeros(size(dynCell));
+    if contains(exercise,'RUNNING')
+        testIdx = find(tLims<20,1,'last');
+    else
+        testIdx = length(dynCell{1});
+    end
     for idx = 1:length(finalForceVals(:))
-        finalForceVals(idx) = mean(dynCell{idx}(end));
+        finalForceVals(idx) = mean(dynCell{idx}(testIdx));
     end
     surf(log10(soceFactor), log10(crefFactor), finalForceVals./maxCrossBridge, 'FaceColor', 'interp')
     xlabel('SOCE flux')
@@ -775,7 +780,11 @@ for k = 1:length(exerciseNames)
         dynCell = results{freq==freqVals(k)}{end};
         maxCrossBridge = results{freq==freqVals(k)}{1};
         finalForceVals = zeros(size(dynCell));
-        testIdx = find(tLims<=20,1,'last');%round(1.0*length(dynCell{1}));
+        if contains(exercise,'RUNNING')
+            testIdx = find(tLims<20,1,'last');
+        else
+            testIdx = length(dynCell{1});
+        end
         for idx = 1:length(finalForceVals(:))
             finalForceVals(idx) = mean(dynCell{idx}(testIdx));
         end
@@ -783,13 +792,13 @@ for k = 1:length(exerciseNames)
         xlabel('SOCE flux')
         ylabel('cref')
         if contains(exercise,'RUNNING') && phosDegFactor(i)==1
-            clim([0.11 0.17])
+            clim([0.115 0.17])
         elseif contains(exercise,'RUNNING') && phosDegFactor(i)==5
             clim([0.26 0.38])
         elseif contains(exercise,'RESISTANCE') && phosDegFactor(i)==1
-            clim([0.025 0.15])
+            clim([0.015 0.105])
         elseif contains(exercise,'RESISTANCE') && phosDegFactor(i)==5
-            clim([0.05 0.35])
+            clim([0.07 0.36])
         end
         colorbar
         view([0 90])
@@ -869,4 +878,32 @@ function [t,y,fluxes,currents,maxCrossBridge,yinits] = ...
     % compute time-dependent solution
     [t,y,~,fluxes,currents] = SkelMuscleCa_dydt(tSol, freq, yinf, pPSO,...
         tic, expt, phosphateAccum, geomParam);
+end
+
+function [tMax,yMax] = getMaxes(t, y, freq)
+    % pull out maxes over each time interval specified by 1/freq
+    % Inputs:
+    %   - t: time vector
+    %   - y: data vector
+    %   - freq: frequency of characteristic events (time intervals sliced
+    %   into chunks of width 1/freq)
+    %
+    % Outputs:
+    %   - tMax: vector of t values at edges of each interval. Final
+    %   interval is defined as [tMax(end), t(end)]
+    %   - yMax: maximum y values over each interval, where yMax(i) is
+    %   assessed over the range of times [tMax(i), tMax(i+1)]
+
+    tMax = min(t):1/freq:max(t);
+    yMax = zeros(size(tMax));
+    if max(t) > tMax(end)+0.1/freq
+        tMax = [tMax, max(t)];
+    else
+        yMax = yMax(1:end-1);
+    end
+    for i = 1:length(yMax)
+        curLogic = t > tMax(i) & t <= tMax(i+1);
+        yMax(i) = max(y(curLogic));
+    end
+    tMax = tMax(1:end-1);
 end
