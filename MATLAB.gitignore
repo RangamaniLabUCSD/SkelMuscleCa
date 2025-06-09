@@ -30,5 +30,5 @@ codegen/
 # Octave session info
 octave-workspace
 
-# custom - ignore archive data
+# custom - ignore archive folder if present
 archive/

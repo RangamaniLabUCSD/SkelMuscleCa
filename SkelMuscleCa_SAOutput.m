@@ -5,20 +5,16 @@ function QOI = SkelMuscleCa_SAOutput(param)
 % Input:
 %   param is the list of variable parameters
 
-load p0Struct.mat p0Struct
+load Data/p0Struct.mat p0Struct
 parameters = p0Struct.data;
-% load PSO_25-Apr-2024.mat yinit
-
-parameters(106) = 700;
 
 totSize = size(param,1);
-QOI = zeros(size(param,1),14*4+2);
+QOI = zeros(size(param,1),14*3+1);
 parpool(50);
 parfor (i = 1 : length(param(:,1)))
     pVec = param(i,:)'.*parameters;
-    [objVal1, qoiList] = SkelMuscleObj(pVec); % objVal is a scalar, qoiList is a vector of length 14*4
-    objVal2 = SkelMuscleObj2(pVec);
-    QOI(i,:) = [qoiList, objVal1, objVal2]; % 14*4 + 2 in length
+    [objVal1, qoiList] = SkelMuscleObj(pVec); % objVal is a scalar, qoiList is a vector of length 14*3
+    QOI(i,:) = [qoiList, objVal1]; % 14*3 + 1 in length
     fprintf('Session %d of %d \n',i,totSize);
 end
 end

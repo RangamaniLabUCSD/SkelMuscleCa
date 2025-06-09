@@ -1,24 +1,48 @@
-function [Time,Y,currtime,fluxes,currents,ySSFinal] = SkelMuscleCa_dydt(tSpan,freq, yinit, p,StartTimer,expt,phosphateAccum,varargin)
-% input:
+function [Time,Y,currtime,fluxes,currents,ySSFinal] =... 
+    SkelMuscleCa_dydt(tSpan,freq, yinit, p,StartTimer,expt,phosphateAccum,varargin)
+% inputs:
 %     - tSpan is a vector of start and stop times
 %       freq is a vector of test frequencies
 %     - yinit is a vector of initial conditions for the state variables
 %     - p is a vector of selected parameters to test
 %     - StartTimer starts counting run time
-%     - expt is the experimental value used for calculation
+%     - expt is the experimental value used for calculation. Options:
+%           (-2): estimation, Rincon et al 2021, Fig 1B calcium data (5 peaks 100 Hz, IIb muscle)
+%           (-3): estimation, Baylor and Hollingworth 2003, Fig 2A (fast twitch curve)
+%           (-8): estimation, Miranda et al 2020, Fig 2B (WT) membrane voltage data
+%           (1): Standard conditions with SOCE
+%           (2): Standard conditions without SOCE
+%           (3): Exercise test with SOCE
+%           (4): Exercise test without SOCE
+%           (10): Crossbridge-only test
+%         In cases (3) and (4), expt may be a vector with three elements,
+%         [expt_n, cycle_time, stim_time], where expt_n is 3 or 4,
+%         cycle_time is the total time per repitition/stride and stim_time
+%         is the time of activation for each repitition/stride. Default
+%         cycle_time and stim_time if not specified are 6 s and 3 s.
 %     - phosphateAccum is a logical variable determining if phosphate
 %       accumulation is accounted for
+% optional inputs (stored in varargin):
+%     - geomParam (varargin{1}): vector with stored geometric parameters.
+%     If not provided, geomParam is assigned default values (see code
+%     below)
 %
-% output:
+% outputs:
 %     - T is the vector of times
 %     - Y is the vector of state variables
 %     - currtime is the total runtime
 %     - fluxes: calcium fluxes at each time point, each row consists:
-%            [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, LumpedJ_SERCA, J_CaLeak_SR]
-%            in units of µM/s (in terms of myoplasmic conc)
+%            [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, 
+%             LumpedJ_SERCA, J_CaLeak_SR, Jhydtot, total calcium flux]
+%            in units of µM/s for junctional myoplasm, then the same 
+%            entities for the bulk myoplasm
 %     - currents: Ionic and total current at each time point, each row consists of:
 %            [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, I_NCX_N,
 %             I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL] in units of pA
+%             for the T-tubules and then the same entities for the SL
+%     - ySSFinal: Only returns in case of steady-state (SS) estimation -
+%       variable values associated with minimum dydt over tested simulation
+%       (handles cases of oscillatory y)
 % -------------------------------------------------------------------------
 
 % first load geometric parameters if they are provided as an optional arg
@@ -38,11 +62,7 @@ if length(expt) > 1
         error('Unrecognized extra expt arguments')
     end
 elseif any(expt == [3,4])
-    exerciseParam = [2.5, 0.5];
-end
-
-if length(p) == 105
-    p(106) = 700;
+    exerciseParam = [6, 3];
 end
         
 % each compartment has junctional/terminal portion and bulk portion
@@ -60,10 +80,6 @@ juncLocLogic = true(1,31);
 juncLocLogic(17:21) = false; % cross bridges
 bulkLocLogic = true(1,31);
 bulkLocLogic([1,4,27:30]) = false; % SOCE, wRyR, extracell ions
-% yinit(sum(juncLocLogic(1:24))) = p(74);
-% yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:24))) = p(74);
-% yinit(sum(juncLocLogic(1:26))) = p(75);
-% yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:26))) = p(75);
 
 % ode15s settings
 % pull out non-negative variables (everything except voltage)
@@ -83,13 +99,13 @@ if expt < 0 % then corresponds to a case of estimation
     %Expt = {[R_t R_C],[R_MP_t R_MP_C] [HB_t HB_C], [H_t H_C],[HB_MP_t HB_MP_C]
             %[K_t K_V], [B_t B_V] , [M_t M_V], [W_t W_V], [MJ_t MJ_V],};
     Ca_o_exp = [1000, 1000, 2000, 2000, 2000,...
-                2500, 1800, 5000, 2000, 2000, 1300];                                      %mM
+                2500, 1800, 5000, 2000, 2000, 1300];                                      %uM
     Na_o_exp = [138100, 138100, 150000, 150000, 150000,...
-                 143800, 118240, 140000, 151000, 151000, 147000];                           %mM
+                 143800, 118240, 140000, 151000, 151000, 147000];                           %uM
     K_o_exp = [3900, 3900, 2000, 2000, 2000,...
-               5000, 5330, 4000, 5000, 5000, 4000];                               %mM
+               5000, 5330, 4000, 5000, 5000, 4000];                               %uM
     Cl_o_exp = [143700, 143700, 158000, 158000, 158000,...
-                124000, 126170, 157000, 146000, 146000, 127400];                           %mM
+                124000, 126170, 157000, 146000, 146000, 127400];                           %uM
     Temp = [(273.15+22),(273.15+22),(273.15+20),(273.15+22),(273.15+22),...
             (273.15+26),(273.15+22),(273.15+22),(273.15+35),(273.15+22),(273.15+30)]; %K
     T = Temp(expt);        %K
@@ -134,7 +150,7 @@ if freq == 0
 else
     ssEst = false;
 end
-if ssEst
+if ssEst % find values with min dydt (handles cases of oscillatory y)
     StartTimer = tic;
     tSS = Time(Time > Time(end)/2);
     ySS = Y(Time > Time(end)/2, :);
@@ -156,9 +172,9 @@ end
 % ode rate
     function [dydt, fluxes, currents] = f(t,y,p,freq)
         currtime = toc(StartTimer);
-        % if currtime > 120
-        %     error('too long to compute!')
-        % end
+        if isEst && currtime > 120
+            error('too long to compute!') % catches cases of bad parameters that get stuck in long integration
+        end
 
         %% State Variables - junctional and bulk
         Ca_EC_cur = Ca_EC;
@@ -223,7 +239,7 @@ end
         
         %% define diffusive flux rates
         D_ionMyo = 1*p(100);
-        D_ionSR = 1*p(100); % slower maybe?
+        D_ionSR = 1*p(100); 
         D_ionEC = 1000;%10*p(100);
         D_ATP = p(101);
         D_parv = p(102);
@@ -249,15 +265,10 @@ end
         %           LumpedJ_SERCA, J_CaLeak_SR];
         % currents = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, 
         %             I_NCX_N, I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL];
-        if false%freq ~= 0
-            soceRamp = 10*(1-exp(-t));
-        else
-            soceRamp = 0;
-        end
         juncFluxFlags = [1, 1, 1, 1, 1, 1, 0.1, 1];
-        bulkFluxFlags = [soceRamp, 1, 1, 0, 1, 0, 1, 1];
+        bulkFluxFlags = [0, 1, 1, 0, 1, 0, 1, 1];
         juncCurrentFlags = [1, 0.1, 1, 0.45, 1, 1, 1, 0.1, 0.1, 0.1, 1, 1, 0];
-        bulkCurrentFlags = [1, 1. , 0, 1.  , 1, 1, 1, 1.0, 1.0 , 1. , 1, soceRamp, 1];
+        bulkCurrentFlags = [1, 1. , 0, 1.  , 1, 1, 1, 1.0, 1.0 , 1. , 1, 0, 1];
         fluxFlags = {juncFluxFlags, bulkFluxFlags};
         currentFlags = {juncCurrentFlags, bulkCurrentFlags};
         varLogic = {juncLocLogic, bulkLocLogic};
@@ -532,11 +543,6 @@ end
                 else
                     g_SOCE = 0; % Expt 2,4,6,8 have no SOCE.
                 end
-                % if freq == 0
-                %     g_SOCE = 0.1*g_SOCE;
-                % else
-                %     g_SOCE = (0.1 + 0.9*(1 - exp(-t)))*g_SOCE;
-                % end
                 %Expt 1,2 are provided cont stimulus.
                 if any(expt == [1,2])
                     continuousStim = true;
@@ -634,7 +640,6 @@ end
     
             %Crossbridge Cycling (Calcium and Troponin Binding Process)
             %Calcium system
-            otherTrop = false;
             if k == 1
                 Trop = 0;
                 D_1 = 0;
@@ -644,24 +649,12 @@ end
                 k_onTrop1_D = 0;
                 k_offTrop1_D = 0;
             else
-                if otherTrop
-                    k_onTrop2_D = k_onTrop2;
-                    k_offTrop2_D = 0.2*k_offTrop2;
-                    k_onTrop1_D = k_onTrop1;
-                    k_offTrop1_D = 0.2*k_offTrop1;
-                    D_1 = D_2 * k_offTrop2_D/(k_onTrop2_D + 0.15*1000);
-                    D_0 = D_1 * k_offTrop1_D/(k_onTrop1_D + 0.15*1000);
-                else
-                    k_onTrop2_D = 0;
-                    k_offTrop2_D = 0;
-                    k_onTrop1_D = 0;
-                    k_offTrop1_D = 0;
-                    D_1 = 0;
-                    D_0 = 0;
-                end
-                % if Post_Pow > 0.2
-                %     fprintf('pause and check\r\n')
-                % end
+                k_onTrop2_D = 0;
+                k_offTrop2_D = 0;
+                k_onTrop1_D = 0;
+                k_offTrop1_D = 0;
+                D_1 = 0;
+                D_0 = 0;
                 Trop = Trop_tot - CaTrop - CaCaTrop - D_2 - Pre_Pow - Post_Pow - D_1 - D_0;
             end
             dCT = k_onTrop1*c_i*Trop - k_offTrop1*CaTrop - k_onTrop2*c_i*CaTrop + k_offTrop2*CaCaTrop + 0.15*1000*D_1; % Calcium buffering with Troponin
@@ -698,17 +691,11 @@ end
                     tMax = 0.07;
                 elseif expt == 6
                     tMax = 0.07;
-                    ClampCurrent = ClampCurrent - 5000; % higher current for this expt
                 elseif expt == 11
                     tMax = 0.33;
                 else
                     tMax = 0.001;
                 end
-            end
-            if freq == 0
-                resting = true;
-            else
-                resting = false;
             end
 
             if (freq > 0 && t > 0 && t < tMax)
@@ -724,8 +711,6 @@ end
                         if (mod(timeInCurrentPeriod,1/freq) < pulsewidth)
                             I_SL = - ClampCurrent;
                         end
-                    else
-                        resting = true;
                     end
                 elseif any(expt == [5,6]) % Prescribed stimulus - 3 x 60s with 120s rest in between
                     if (t > 0 && t <= 60) || (t > 180 && t <= 240) || (t > 360  && t <= 420)
@@ -740,23 +725,13 @@ end
             PC_tot = p_i_SR * c_SR;
             kP = kP*volFactor;
             
-            % dPiCa = PP*(Ap * (PC_tot) - 1e6*Bp * PiCa_SR);
-            % dPi_SR = kP*(p_i_Myo - p_i_SR) - dPiCa;
-            % dPi_SR = kP*(p_i_Myo - p_i_SR)  - Ap* (PC_tot)*(PC_tot -PP) + 1e12*Bp*PiCa_SR;
             if PC_tot >= PP && freq ~= 0
-                % if freq == 0
-                %     warning('this is bad')
-                % end
                 dPi_SR = kP*(p_i_Myo - p_i_SR)*SRMFrac/vol_SR  - Ap* (PC_tot)*(PC_tot -PP);
             else
                 dPi_SR = kP*(p_i_Myo - p_i_SR)*SRMFrac/vol_SR  + Bp* PiCa_SR*(PP - PC_tot) ;
             end
     
             %Calcium-Phophate Precipitate (SR)
-            % dPiCa = Ap * (PC_tot)*(PC_tot - PP) - 1e12*Bp*PiCa_SR;
-            % if t > 1000
-            %     fprintf('pause')
-            % end
             if PC_tot >= PP && freq ~= 0
                 dPiCa = Ap * (PC_tot)*(PC_tot - PP);
             else
@@ -768,8 +743,7 @@ end
     
             % Buffering with CSQ
             k_onCSQ = k_offCSQ/K_CSQ;
-            dCSQ = k_offCSQ*(B_CSQ - CSQ) - k_onCSQ * CSQ * c_SR; 
-            % f_SR = 1/(1 + B_SRtot*K_SRBuffer./((K_SRBuffer+c_SR).^2));
+            dCSQ = k_offCSQ*(B_CSQ - CSQ) - k_onCSQ * CSQ * c_SR;
 
             I_ionic = I_CaLeak_SL + I_Cl + I_DHPR + I_K_DR + I_K_IR + I_NCX_C...
                 + I_NCX_N + I_NKX_K + I_NKX_N + I_Na + I_PMCA + I_SOCE;
@@ -779,9 +753,9 @@ end
                 (k_onTrop1_D*c_i*D_0 - k_offTrop1_D*D_1 + k_onTrop2_D*c_i*D_1 - k_offTrop2_D*D_2);
             
             dPiCa = dPiCa*phosphateAccum;
-            NaStim = false;
+            NaStim = false; % account for sodium fluxes due to applied current
             if NaStim
-                J_NaStim = 1e9*I_SL/F;
+                J_NaStim = 1e9*I_SL/F; %#ok<UNRCH>
                 if k == 2 % bulk
                     NaBulkIdx = sum(juncLocLogic(:)) + sum(bulkLocLogic(1:6));
                     J_NaStim = J_NaStim + (yinit(NaBulkIdx) - Na_i) * D_ionMyo*(SA_JBmyo/vol_myo) / diffusion_length;
@@ -855,7 +829,7 @@ end
             fluxes(k,6:8) = fluxes(k,6:8) * KMOLE / vol_myo;
             currents(k,:) = [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C,... 
                 I_NCX_N, I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL];
-            currents(k,1:end-1) = SA_SL * currents(k,1:end-1);
+            currents(k,1:end-1) = SA_SL * currents(k,1:end-1); % convert to pA
 
         end
         if all(Rmag < 0.00001) && freq==0

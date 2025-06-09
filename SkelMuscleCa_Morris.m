@@ -1,11 +1,10 @@
-clc 
-clearvars
+%% Script for running Morris analysis (uqlab must be in the MATLAB path)
 rng(100,'twister')
 uqlab
 delete(gcp('nocreate'))
 ModelOpts.mFile = 'SkelMuscleCa_SAOutput';
 myModel = uq_createModel(ModelOpts);
-load p0Struct.mat p0Struct
+load Data/p0Struct.mat p0Struct
 paramNames = p0Struct.names;
 numParam = length(paramNames);
 starttimer = tic;
