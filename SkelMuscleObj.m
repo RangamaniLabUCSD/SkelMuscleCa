@@ -14,14 +14,15 @@ function [objVal, qoiList, simSaved] = SkelMuscleObj(pVec, varargin)
 %   - objVal: value of objective function (see paper for expression)
 %   - qoiList: QOIs over each experiment tested. Consists of appended iterations
 %     of the following set of QOIs for each experiment:
-%       *ssQOI:
-%       *MaxCaF:
-%       *MaxVF:
-%       *MaxPost:
-%       *AvgF:
-%       *AvgPost:
-%       *AvgVolt:
-%       *VoltWidth:
+%       *ssQOI: steady state values [CaSR, SLVolt, Na+, Cl-, Ca2+, K+, post powerstroke cross bridges]
+%       *MaxCa: Maximum value of myoplasmic Ca2+
+%       *MaxV: Maximum SL voltage 
+%       *MaxPost: Maximum density of post powerstroke cross bridges
+%       *AvgCa: Average value of myoplasmic Ca2+
+%       *AvgPost: Average density of post powerstroke cross bridges
+%       *AvgVolt: Average SL voltage
+%       *VoltWidth: Width of action potentials (defined from when SL
+%       voltage first surpasses -60 mV to when it returns to -60 mV)
 %   - simSaved: cell vector containing t and y for each experiment tested
 %
 % Note that experiments used in estimation are assigned numbers 1-11, but
@@ -37,7 +38,7 @@ function [objVal, qoiList, simSaved] = SkelMuscleObj(pVec, varargin)
 if isempty(varargin)
     Createplot = false;
     saveProgress = false;
-elseif length(varargin)==1 %#ok<ISCL>
+elseif length(varargin)==1
     Createplot = varargin{1};
     saveProgress = false;
 elseif length(varargin)==2
@@ -76,46 +77,15 @@ Expt_t = cell(1,9);
 CompInterp = cell(1,9);
 InterpComp_base = cell(1,9);
 
-yinit = [
-    0.0122; 	% yinit(1) is the initial condition for 'SOCEProb'
-    1500.0;		% yinit(2) is the initial condition for 'c_SR'
-    0.9983;		% yinit(3) is the initial condition for 'h_K'
-    0.9091;		% yinit(4) is the initial condition for 'w_RyR'
-    -88.0;		% yinit(5) is the initial condition for 'Voltage_PM'
-    14700.0;	% yinit(6) is the initial condition for 'Na_i'
-    5830.0;		% yinit(7) is the initial condition for 'Cl_i'
-    0.1;		% yinit(8) is the initial condition for 'c_i'
-    0.003;		% yinit(9) is the initial condition for 'n'
-    0.0128;		% yinit(10) is the initial condition for 'm'
-    0.8051;		% yinit(11) is the initial condition for 'h'
-    0.8487;		% yinit(12) is the initial condition for 'S'
-    154500.0;	% yinit(13) is the initial condition for 'K_i'
-    0;%387;        % yinit(14) is the initial condition for 'CaParv'
-    0;%1020;       % yinit(15) is the initial condition for 'MgParv'
-    0.3632;     % yinit(16) is the inital consition for 'CATP'
-    0;%10.004;     % yinit(17) is the initial condition for 'CaTrop'
-    0;	    	% yinit(18) is the initial condition for 'CaCaTrop'
-    0;	    	% yinit(19) is the initial condition for 'D_2'
-    0;	    	% yinit(20) is the initial condition for 'Pre_Pow'
-    0;	    	% yinit(21) is the initial condition for 'Post_Pow'
-    0;	    	% yinit(22) is the initial condition for 'MgATP'
-    8000;       % yinit(23) is the initial condition for 'ATP'
-    pVec(74);       % yinit(24) is the initial condition for 'p_i_SR'
-    0;          % yinit(25) is the initial condition for 'PiCa'
-    pVec(75);       % yinit(26) is the initial condition for 'Pi_Myo'
-    1300;        % c_o (µM)
-    147000.0;   % Na_o (µM)
-    4000.0;      % K_o (µM)
-    128000.0;   % Cl_o (µM)
-    15000;      % CSQ
-    ];
-
+% load in initial condition starting estimate
+load Data/yinit0.mat yinit0
+yinit0([24,26]) = pVec(74:75);
 
 juncLocLogic = true(1,31);
 juncLocLogic(17:21) = false; % cross bridges
 bulkLocLogic = true(1,31);
 bulkLocLogic([1,4,27:30]) = false; % SOCE, wRyR, extracell ions
-yinit = [yinit(juncLocLogic); yinit(bulkLocLogic)];
+yinit = [yinit0(juncLocLogic); yinit0(bulkLocLogic)];
 
 % save indices for later
 totIdx = sum(juncLocLogic) + sum(bulkLocLogic);
@@ -124,7 +94,6 @@ cSRBulkIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:2));
 ciJuncIdx = sum(juncLocLogic(1:8));
 ciBulkIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:8));
 forceIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:21));
-TTVoltIdx = sum(juncLocLogic(1:5));
 SLVoltIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:5));
 
 tSS = 0:1000;
@@ -132,7 +101,7 @@ load Data/Exptdata.mat Expt
 freq = [100, 100, 67, 67,67,60, 60, 60, 60, 67, 15];
 T_max = [0.03 0.1 0.05 0.045 0.08 0.025 0.006 0.012 0.002, 0.08, 0.32];
 if VOnly
-    expt_n = [8];
+    expt_n = 8;
 else
     expt_n = [3,2,8];
 end
@@ -254,10 +223,10 @@ for n_index = 1 :length(expt_n)
             warning("ode15s returned complex numbers!\n")
             y = real(y);
         end
-        MaxCaF = max(CaSol); % Maximum [Ca2+] conc
-        MaxVF = max(VSol); % Maximum Voltage
+        MaxCa = max(CaSol); % Maximum [Ca2+] conc
+        MaxV = max(VSol); % Maximum Voltage
         MaxPost = max(y(:,forceIdx)); % Maximum Force
-        AvgF = trapz(t,CaSol) / (t(end)-t(1)); % Area under curve for Calcium
+        AvgCa = trapz(t,CaSol) / (t(end)-t(1)); % Area under curve for Calcium
         AvgPost = trapz(t,y(:,forceIdx)) / (t(end)-t(1)); % Area under curve for Force
         AvgVolt = trapz(t,VSol) / (t(end)-t(1)); % Area under curve for Voltage
  
@@ -278,8 +247,8 @@ for n_index = 1 :length(expt_n)
             end
         end
 
-        qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, MaxCaF, MaxVF, MaxPost, ...
-                                                  AvgF, AvgPost, AvgVolt, VoltWidth] ;
+        qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, MaxCa, MaxV, MaxPost, ...
+                                                  AvgCa, AvgPost, AvgVolt, VoltWidth] ;
     catch
         qoiList((n_index-1)*14+1:(n_index*14)) = [ssQOI, zeros(1,7)];
         fprintf('error in dynamics comp \n');
@@ -343,7 +312,6 @@ if Createplot
             fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
             xlabel('Time (s)');
             ylabel('Membrane Potential (mV)');
-            % title('V_{SL} for expt - '+ expt_title(i));
             prettyGraph
         end
         legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')
@@ -377,7 +345,6 @@ if Createplot
             fill(Time_Comp,V_Comp, 'r', 'LineStyle', 'none', 'FaceAlpha', 0.2)       %'color',[0.00,0.00,1.00]
             xlabel('Time (s)');
             ylabel('Membrane Potential (mV)');
-            % title('V_{SL} for expt - '+ expt_title(i));
             prettyGraph
         end
         legend('Calibrated','Pre-Calibrated','Experiment', '95% Confidence Interval')

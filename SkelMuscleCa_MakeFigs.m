@@ -122,12 +122,7 @@ diffusion_length = pPSO(99);
 vol_myoJ = SA_TT*diffusion_length;
 JFrac = vol_myoJ / vol_myo;
 BFrac = 1 - JFrac;
-vol_SR = volFraction_SR*vol_Fiber;
 SRJ_occupancy = 0.5;
-SA_SRJ = SA_TT * SRJ_occupancy;
-vol_SRJ = SA_SRJ*diffusion_length;
-JSRFrac = vol_SRJ / vol_SR;
-BSRFrac = 1 - JSRFrac;
 geomParam = [vol_SA_ratio, volFraction_myo, volFraction_SR,...
              volFraction_TT, R_fiber, vol_SA_SR, SRJ_occupancy];
 
@@ -397,7 +392,7 @@ pPSO(100) = 0.1*pSol(100)*p0(100); % ion diffusion
 phosphateAccum = true; 
 
 % test 1 s of stimulus here
-tSol = [0, 1];sub
+tSol = [0, 1];
 SSPhosAccum = false;
 [Time_withSOCE,Y_withSOCE,~,~,maxCrossBridge, yinits] =...
     computeSol(pPSO, [], tSol, 1, 100, phosphateAccum, geomParam, SSPhosAccum);
@@ -492,7 +487,6 @@ legend('tot','NKX','SERCA','PMCA','XB','baseline')
 pPSO(12) = 1*p0(12); % set cref ratio
 pPSO(95) = 20*pSol(95)*p0(95); % gSOCE
 pPSO(100) = 0.1*pSol(100)*p0(100); % ion diffusion
-pPSO(59) = 0.1*pSol(59)*p0(59); % kon1 (trop binding)
 tSol = [0, 1];
 [tWithSOCE,yWithSOCE,~,~,maxCrossBridge,yinits] = computeSol(pPSO, [], tSol, 1, 100, true);
 pPSO(12) = pPSO(12)*yinits{1}(2); % define cref in terms of resting SR calcium without SOCE
@@ -528,8 +522,8 @@ prettyGraph
 
 %% test range of frequencies for SOCE vs no SOCE - Fig 6
 tSol = [0, 0.5];
-freq = [20];%[1;25;50;75;100];%;125;150;175;200;250];
-inclAltPhos = false; % whether to include additional test with 150% resting phosphate in SOCE KOs
+freq = 5:5:200;
+inclAltPhos = true; % whether to include additional test with 150% resting phosphate in SOCE KOs
 peakForce = zeros(2+inclAltPhos, length(freq));
 endPeakRatio = zeros(2+inclAltPhos, length(freq));
 pPSO(12) = 1*p0(12); % set cref ratio
@@ -541,9 +535,7 @@ if inclAltPhos
 end
 phosphateAccum = true;
 SSPhosAccum = false;
-figure
 for i = 1:length(freq)
-    % figure
     % expt 1: HIIT stim, with SOCE, expt 2: HIIT stim, no SOCE
     if i == 1
         [Time_withSOCE,Y_withSOCE,fluxes,currents,maxCrossBridge, yinits] =...
@@ -568,31 +560,34 @@ for i = 1:length(freq)
     end
    
     % create plots
-    colors = colororder;
-    subplot(3,1,1)
-    % final entry in color spec gives the opacity
-    plot(Time_noSOCE, Y_noSOCE(:,8)*JFrac + Y_noSOCE(:,32)*BFrac)
-    hold on
-    plot(Time_withSOCE, Y_withSOCE(:,8)*JFrac + Y_withSOCE(:,32)*BFrac)
-    ylabel('Myo calcium (µM)')
-    % title('Cytosolic calcium')
-    legend('No SOCE', '20x SOCE')
-    prettyGraph
-    subplot(3,1,2)
-    plot(Time_noSOCE, Y_noSOCE(:,2))
-    hold on
-    plot(Time_withSOCE, Y_withSOCE(:,2))
-    ylabel('SR calcium (µM)')
-    prettyGraph
-    % title('SR calcium')
-    subplot(3,1,3)
-    plot(Time_noSOCE, Y_noSOCE(:,crossbridgeIdx)/maxCrossBridge)
-    hold on
-    plot(Time_withSOCE, Y_withSOCE(:,crossbridgeIdx)/maxCrossBridge)
-    xlabel('Time (s)')
-    ylabel('Rel force')
-    prettyGraph
-    drawnow
+    if any(freq(i)==[20, 80])
+        figure
+        colors = colororder;
+        subplot(3,1,1)
+        % final entry in color spec gives the opacity
+        plot(Time_noSOCE, Y_noSOCE(:,8)*JFrac + Y_noSOCE(:,32)*BFrac)
+        hold on
+        plot(Time_withSOCE, Y_withSOCE(:,8)*JFrac + Y_withSOCE(:,32)*BFrac)
+        ylabel('Myo calcium (µM)')
+        % title('Cytosolic calcium')
+        legend('No SOCE', '20x SOCE')
+        prettyGraph
+        subplot(3,1,2)
+        plot(Time_noSOCE, Y_noSOCE(:,2))
+        hold on
+        plot(Time_withSOCE, Y_withSOCE(:,2))
+        ylabel('SR calcium (µM)')
+        prettyGraph
+        % title('SR calcium')
+        subplot(3,1,3)
+        plot(Time_noSOCE, Y_noSOCE(:,crossbridgeIdx)/maxCrossBridge)
+        hold on
+        plot(Time_withSOCE, Y_withSOCE(:,crossbridgeIdx)/maxCrossBridge)
+        xlabel('Time (s)')
+        ylabel('Rel force')
+        prettyGraph
+        drawnow
+    end
     peakForce(1,i) = max(Y_withSOCE(:,crossbridgeIdx));
     peakForce(2,i) = max(Y_noSOCE(:,crossbridgeIdx));
     endPeakRatio(1,i) = Y_withSOCE(end,crossbridgeIdx)/peakForce(1,i);
@@ -601,9 +596,10 @@ for i = 1:length(freq)
         peakForce(3,i) = max(Y_noSOCEAlt(:,crossbridgeIdx));
         endPeakRatio(3,i) = Y_noSOCEAlt(end,crossbridgeIdx)/peakForce(3,i);
     end
+    fprintf('Done with freq = %.2f Hz\n', freq(i))
 end
 
-%% plot and compare with exp
+%% plot and compare freq-dependent behavior with exp
 freqExp = [1;25;50;75;100;125;150;175;200;250];
 maxForceExpMean_withSOCE = [0.239024373; 0.321951196; 0.595121908; 0.824390184; 0.951219443;...
                             0.999999927; 0.999999927; 0.975609685; 0.946341394; 0.907317007];
@@ -807,13 +803,48 @@ for k = 1:length(exerciseNames)
     set(gcf,'Renderer','painters')
 end
 
-% define utility function to compute solution for different conditions
 function [t,y,fluxes,currents,maxCrossBridge,yinits] = ...
     computeSol(pPSO, yinit, tSol, expt, freq, phosphateAccum, varargin)
+    % Utility function to compute solution for different conditions and
+    % parameter sets    
     % Inputs:
-    %   - pPSO:
-    %   - yinit: 
+    %   - pPSO: vector of parameters (not normalized)
+    %   - yinit: vector of initial values for all 51 variables (if
+    %   previously solved for), otherwise empty and solved for here
+    %   - tSol: vector with start time and end time for simulation
+    %   - expt: Scalar with the expt number or: 
+    %           [expt_n, cycle_time, stim_time], where expt_n is 3 or 4,
+    %           cycle_time is the total time per repitition/stride and stim_time
+    %           is the time of activation for each repitition/stride.
+    %   - freq: Freqency of stimulus in Hz
+    %   - phosphateAccum: logical variable determining if phosphate
+    %       accumulation is accounted for
+    % Optional inputs (stored in varargin):
+    %   - geomParam (varargin{1}): vector with stored geometric parameters.
+    %       If not provided, geomParam is assigned default values (see code
+    %       below)
+    %   - SSPhosAccum (varargin{2}): whether phosphate is allowed to
+    %       accumulate at steady state (default is false)
     % Outputs:
+    %   - t is the vector of times
+    %   - y is the vector of state variables
+    %   - fluxes: calcium fluxes at each time point, each row consists:
+    %        [J_SOCE, J_CaLeak_SL , J_NCX_C, J_DHPR, J_PMCA, LumpedJ_RyR, 
+    %         LumpedJ_SERCA, J_CaLeak_SR, Jhydtot, total calcium flux]
+    %        in units of µM/s for junctional myoplasm, then the same 
+    %        entities for the bulk myoplasm
+    %   - currents: Ionic and total current at each time point, each row consists of:
+    %        [I_CaLeak_SL, I_Cl, I_DHPR, I_K_DR, I_K_IR, I_NCX_C, I_NCX_N,
+    %         I_NKX_K, I_NKX_N, I_Na, I_PMCA, I_SOCE, I_SL] in units of pA
+    %         for the T-tubules and then the same entities for the SL
+    %   - maxCrossBridge: post power stroke cross bridge density at
+    %     saturating calcium concentration for these parameters
+    %   - yinits: Cell vector with each entry a vector containing the initial values
+    %     for all 51 state variables in the model.
+    %     Cell length 1 if only SOCE-free condition is tested, or if
+    %     initial condition is provided.
+    %     Otherwise first cell entry is for case without SOCE and second
+    %     entry is for case with SOCE.
 
     if isscalar(varargin) % length 1, that is
         geomParam = varargin{1};
@@ -847,7 +878,7 @@ function [t,y,fluxes,currents,maxCrossBridge,yinits] = ...
         [~,~,~,~,~,ySSFinal_noSOCE] = SkelMuscleCa_dydt([0 1000],0, yinit,...
             pPSO0, tic, 2, SSPhosAccum, geomParam);
         pPSO(12) = pPSO(12)*ySSFinal_noSOCE(2); % set c_ref according to SS c_SR
-        if any(expt(1) == [2,8]) || pPSO(95) == 0
+        if any(expt(1) == [2,4]) || pPSO(95) == 0
             yinf = ySSFinal_noSOCE;
             yinits = {yinf};
         else

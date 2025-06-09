@@ -1,5 +1,4 @@
-clc 
-clearvars
+%% Script for running Morris analysis (uqlab must be in the MATLAB path)
 rng(100,'twister')
 uqlab
 delete(gcp('nocreate'))
