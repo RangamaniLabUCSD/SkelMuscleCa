@@ -32,3 +32,5 @@ octave-workspace
 
 # custom - ignore archive folder if present
 archive/
+pSol_mito/
+pSol_fullWithMito/
