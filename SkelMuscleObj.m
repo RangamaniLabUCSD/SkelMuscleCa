@@ -77,10 +77,8 @@ if length(pVec) < 106 || max(pVec) < 1000
         VOnly = true;
     else % then fitting to both calcium and voltage
         highSensIdx = 1:106;
-        VOnlyIdx = [1,3,5,8,9,11,13,14,16,18,22,23,24,25,26,28,33,40,46,76,77,79,80,81,82];
-        % VOnlyIdx = [1,4,5,6,9,11,13,14,16,18,19,22,23,24,25,26,30,33,40,47,76,77,79,80,81,82,98];
-        % VOnlyIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
-        VOnlyStruct = load('Data/pVec_VOnlyNew.mat', 'pVec');
+        VOnlyIdx = [1,3,4,5,8,9,11,13,14,16,18,19,22,23,24,25,26,28,33,40,62,77,79,80,81,82,99];
+        VOnlyStruct = load('Data/pVec_VOnly_withMito.mat', 'pVec');
         pVecVOnly = VOnlyStruct.pVec;
         pVecVOnly = pVecVOnly(:); % be sure it is a column vector
         [VOnlyOnly,onlyIdx] = setdiff(VOnlyIdx, highSensIdx); % non overlapping indices

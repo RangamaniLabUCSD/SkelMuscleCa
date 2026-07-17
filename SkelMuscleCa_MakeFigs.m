@@ -4,22 +4,7 @@
 % force and fatigue during exercise"
 
 %% Plot results of estimation
-load pSol_fullWithMito/PSO_14-Jul-2026_withMito.mat pSol
-% pSol([46,76]) = 1;
-% pSol(95) = 2;
-% load pSol_fullWithMito/pBest_withMito_Jul14.mat pVec
-% load pSol_fullWithMito/pBest_withMito_VOnly.mat pVec
-% load pSol_fullWithMito/PSO_05-Jul-2026_withMito_VOnly.mat pSol
-% highSensIdx = [1,3,4,5,8,9,11,13,14,16,18,19,22,23,24,25,26,28,33,40,62,77,79,80,81,82,99];
-% highSensIdxPrev = [1,3,5,8,9,11,13,14,16,18,22,23,24,25,26,28,33,40,46,76,77,79,80,81,82];
-% pSolNew = ones(106,1);
-% pSolNew(highSensIdxPrev) = pSol;
-% pSolNew = pSolNew(highSensIdx);
-% pSol = pVec;
-% load PSO_24-Jun-2026_newRange.mat pSol
-% load Data/pSol_allParam.mat pSol
-% pSol(72) = 0; % no phosphate deg
-% pSol(12) = 1;
+load Data/pSol_allParam_withMito.mat pSol
 pSol = [pSol, 1, 1, 1];
 tic
 SkelMuscleObj(pSol, true, '', true)
@@ -31,7 +16,7 @@ catch
     error('must first add UQLab to path before starting this section of code')
 end
 % load Data/MorrisResults.mat MorrisAnalysis
-load MorrisResults_4e4_12-Jul-2026.mat MorrisAnalysis
+load Data/MorrisResults.mat MorrisAnalysis
 graph_names = {"Steady State SR Calcium", "SS Voltage_{PM}", "SS Sodium Ion",...
     "SS Chlorine Ion","SS Myoplasmic Calcium","SS Potassium Ion","SS Force",...
     "Max Calcium Myo","Max Voltage","Max Force","Avg Myo Calcium","Avg Force",...
@@ -113,9 +98,8 @@ load Data/p0Struct.mat p0Struct % load in default parameter values
 % load Data/pSol_allParam.mat pSol
 % load pSol_fullWithMito/pBest_withMito_Jul14.mat pVec
 % pSol = pVec;
-load pSol_fullWithMito/PSO_14-Jul-2026_withMito.mat pSol
+load Data/pSol_allParam_withMito.mat pSol
 p0 = p0Struct.data;
-% load Data/pSol_allParam.mat pSol
 pSol(91) = 0; % no DHPR flux
 % pSol = pVec(1:106);
 pSol(12) = 1; % Keep cref at default value

@@ -130,12 +130,8 @@ else
     K_EC = 4000.0;
     Cl_EC = 128000.0;
 end
-% load Data/pMito.mat pMito
-% load Data/pMitoNew.mat pMito
-% load pSol_fullWithMito/bestMitoParam.mat mitoParams
-% pMito = mitoParams;
-mitoStruct = load('PSOMito_11-Jul-2026.mat', 'pSol');
-pMito = mitoStruct.pSol;
+mitoStruct = load('Data/pMito.mat', 'pMito');
+pMito = mitoStruct.pMito;
 yinit(sum(juncLocLogic(1:38))) = yinit(sum(juncLocLogic(1:33)))*yinit(sum(juncLocLogic(1:35)))/(500*pMito(1));
 yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:38))) = yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:33)))...
     *yinit(sum(juncLocLogic)+sum(bulkLocLogic(1:35)))/(500*pMito(1));

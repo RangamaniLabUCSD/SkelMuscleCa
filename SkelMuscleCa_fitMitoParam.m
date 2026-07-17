@@ -85,8 +85,7 @@ end
 legend('Pi = 1 µM', 'Pi = 10 µM', 'Pi = 100 µM', 'Pi = 1000 µM')
 
 %% plot fit
-load PSOMito_11-Jul-2026.mat pSol
-pMito = pSol;
+load Data/pMito.mat pMito
 % load pSol_fullWithMito/pBestMito_Jul11.mat mitoParams
 % pMito = mitoParams;
 % pMito(40) = 2.0;
@@ -97,8 +96,8 @@ phosVals = [0,1,10,100,1000];
 figure
 % yinit = [0.1; 10000; 1000; 50; 150]; % Pi might be closer to 5000 in mito
 yinit = [0.1; 10000; 0; 50; 150; 0.0]; % Pi might be closer to 5000 in mito
-yinit(7) = pSol(38)*15000 - yinit(2);
-yinit(8) = pSol(39)*250 - yinit(4);
+yinit(7) = pMito(38)*15000 - yinit(2);
+yinit(8) = pMito(39)*250 - yinit(4);
 % initOpts = optimoptions("fsolve", 'MaxFunctionEvaluations', 10000);
 % ySSfun = @(y0) (mito_dyn(0.0, y0, [tTest', 0.1*ones(size(tTest))', 5000*ones(size(tTest))', 100*ones(size(tTest))', 1000.0*0.1*ones(size(tTest))']));
 % yinit = fsolve(ySSfun, yinit);
