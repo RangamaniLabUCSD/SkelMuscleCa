@@ -7,6 +7,9 @@ function QOI = SkelMuscleCa_SAOutput(param)
 
 load Data/p0Struct.mat p0Struct
 parameters = p0Struct.data;
+if length(param) > length(parameters)
+    parameters = [parameters;1;1;1;1;1;1];
+end
 
 totSize = size(param,1);
 QOI = zeros(size(param,1),14*3+1);

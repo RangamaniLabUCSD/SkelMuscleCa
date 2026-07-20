@@ -35,6 +35,11 @@ function [objVal, qoiList, simSaved] = SkelMuscleObj(pVec, varargin)
 % Each of these experiments has associated data stored in
 % Data/Exptdata.mat, extracted from original papers using PlotDigitizer
 
+if length(pVec)>=109
+    withMito = true;
+else
+    withMito = false;
+end
 if isempty(varargin)
     Createplot = false;
     saveProgress = false;
@@ -46,28 +51,55 @@ elseif length(varargin)==2
     progressPath = varargin{2};
     if isfolder(progressPath)
         saveProgress = true;
+    else
+        saveProgress = false;
     end
+elseif length(varargin)==3
+    Createplot = varargin{1};
+    progressPath = varargin{2};
+    if isfolder(progressPath)
+        saveProgress = true;
+    else
+        saveProgress = false;
+    end
+    withMito = varargin{3};
 end
 
 VOnly = false;
 if length(pVec) < 106 || max(pVec) < 1000
     load Data/p0Struct.mat p0Struct
     p0 = p0Struct.data;
-    if length(pVec) == 28 % then fitting to voltage only
-        highSensIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
+    if length(pVec) == 27 % then fitting to voltage only
+        highSensIdx = [1,3,4,5,8,9,11,13,14,16,18,19,22,23,24,25,26,28,33,40,62,77,79,80,81,82,99];
+        % highSensIdx = [1,3,5,8,9,11,13,14,16,18,22,23,24,25,26,28,33,40,46,76,77,79,80,81,82];
+        % highSensIdx = [1,4,5,6,9,11,13,14,16,18,19,22,23,24,25,26,30,33,40,47,76,77,79,80,81,82,98];
+        % highSensIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
         VOnly = true;
     else % then fitting to both calcium and voltage
         highSensIdx = 1:106;
-        VOnlyIdx = [1,3,4,5,6,8,9,11,13,14,16,18,19,22,23,24,25,26,28,30,33,40,76,77,79,80,81,82];
-        VOnlyStruct = load('Data/pVec_VOnly.mat', 'pVec');
+        VOnlyIdx = [1,3,4,5,8,9,11,13,14,16,18,19,22,23,24,25,26,28,33,40,62,77,79,80,81,82,99];
+        VOnlyStruct = load('Data/pVec_VOnly_withMito.mat', 'pVec');
         pVecVOnly = VOnlyStruct.pVec;
         pVecVOnly = pVecVOnly(:); % be sure it is a column vector
         [VOnlyOnly,onlyIdx] = setdiff(VOnlyIdx, highSensIdx); % non overlapping indices
         p0(VOnlyOnly) = pVecVOnly(onlyIdx).*p0(VOnlyOnly); % set p0 according to previous estimation
     end
-    pRef = ones(106,1);
-    pRef(highSensIdx) = pVec;
-    pVec = pRef(:) .* p0(:);
+    
+    if withMito
+        pRef = ones(106,1);
+        pRef(highSensIdx) = pVec(1:length(highSensIdx));
+        if length(highSensIdx) == length(pVec)
+            geomVals = [1,1,1]';
+        else
+            geomVals = pVec(length(highSensIdx)+1:length(highSensIdx)+3);
+        end
+        pVec = pRef(:) .* p0(:);
+        pVec = [pVec; geomVals(:)];
+    else
+        pRef = ones(106,1);
+        pRef(highSensIdx) = pVec;
+        pVec = pRef(:) .* p0(:);
+    end
 end
 pVec(91) = 0;
 
@@ -80,11 +112,28 @@ InterpComp_base = cell(1,9);
 % load in initial condition starting estimate
 load Data/yinit0.mat yinit0
 yinit0([24,26]) = pVec(74:75);
+if withMito
+    yinit0(23) = pVec(106);
+    % yinit(16) = 1000;
+    % yinit(22) = 1000;
+    if length(pVec) == 112
+        yinit0 = [yinit0; pVec(110)*100; 0.1; pVec(111)*5000; pVec(112)*5000; 50; 150; 0.0; 0; 0];
+    else
+        yinit0 = [yinit0; 100; 0.1; 5000; 5000; 50; 150; 0.0; 0; 0];
+    end
+end
 
 juncLocLogic = true(1,31);
 juncLocLogic(17:21) = false; % cross bridges
 bulkLocLogic = true(1,31);
 bulkLocLogic([1,4,27:30]) = false; % SOCE, wRyR, extracell ions
+if withMito
+    juncLocLogic = [juncLocLogic, true(1,9)];
+    bulkLocLogic = [bulkLocLogic, true(1,9)];
+    tSS = 0:5:5000;
+else
+    tSS = 0:1000;
+end
 yinit = [yinit0(juncLocLogic); yinit0(bulkLocLogic)];
 
 % save indices for later
@@ -96,10 +145,10 @@ ciBulkIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:8));
 forceIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:21));
 SLVoltIdx = sum(juncLocLogic) + sum(bulkLocLogic(1:5));
 
-tSS = 0:1000;
 load Data/Exptdata.mat Expt
 freq = [100, 100, 67, 67,67,60, 60, 60, 60, 67, 15];
 T_max = [0.03 0.1 0.05 0.045 0.08 0.025 0.006 0.012 0.002, 0.08, 0.32];
+% T_max = [0.03 0.1 0.05 0.045 0.08 0.025 0.006 0.1 0.002, 0.08, 0.32];
 if VOnly
     expt_n = 8;
 else
@@ -114,10 +163,17 @@ for m_index = 1 :length(expt_n) %:9
     if m < 6 % calcium cases assume baseline 0.1 uM
         Expt{m}(:,2) = Expt{m}(:,2) + 0.1;
     end
-    InterpExpt{m} = interp1(Expt_t{m},Expt{m}(:,2),0:0.0001:T_max(m));
+    if T_max(m) > max(Expt_t{m})
+        InterpExpt{m} = zeros(size(0:0.0001:T_max(m)));
+        maxIdx = floor(max(Expt_t{m})/.0001) + 1;
+        InterpExpt{m}(1:maxIdx) = interp1(Expt_t{m},Expt{m}(:,2),0:0.0001:max(Expt_t{m}));
+        InterpExpt{m}(maxIdx+1:end) = InterpExpt{m}(maxIdx);
+    else
+        InterpExpt{m} = interp1(Expt_t{m},Expt{m}(:,2),0:0.0001:T_max(m));
+    end
 end
 
-qoiList = zeros([1,14*4]);
+qoiList = zeros([1,14*3]);
 simSaved = cell(8,1);
 phosphateAccum = true;
 
@@ -145,7 +201,12 @@ for n_index = 1 :length(expt_n)
     try
         pVec0 = pVec;
         pVec0(95) = 0; % set SOCE flux to zero
-        [~,ySS] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic,n,false);%phosphateAccum);
+        if withMito
+            geomParam = [0.01, 0.95, 0.05, 0.003, 20, 1/10, 0.5, 0.05*pVec(107), 0.05*pVec(108), 3.002e-3*pVec(109)];
+            [~,ySS] = SkelMuscleCa_dydt_withMito(tSS, 0, yinit, pVec0,tic,n,false,geomParam);%phosphateAccum);
+        else
+            [~,ySS] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic,n,false);%phosphateAccum);
+        end
         if size(ySS,1) < length(tSS) || any(isnan(ySS(:)))
             cSR0 = yinit(cSRBulkIdx);
         else
@@ -158,7 +219,11 @@ for n_index = 1 :length(expt_n)
         % pVec(12) is cratio (default value of 0.25)
         pVecCur = pVec;
         pVecCur(12) = pVecCur(12) * cSR0;
-        [~,ySS,~,~,~,ySSFinal] = SkelMuscleCa_dydt(tSS, 0, yinit, pVecCur, tic, n, false);
+        if withMito
+            [~,ySS,~,~,~,ySSFinal] = SkelMuscleCa_dydt_withMito(tSS, 0, yinit, pVecCur, tic, n, false,geomParam);
+        else
+            [~,ySS,~,~,~,ySSFinal] = SkelMuscleCa_dydt(tSS, 0, yinit, pVecCur, tic, n, false);
+        end
         if size(ySS,1) < length(tSS) || any(isnan(ySS(:)))
             yinf = yinit;
             simSaved{abs(n)} = zeros(1,totIdx);
@@ -168,15 +233,23 @@ for n_index = 1 :length(expt_n)
     catch
         yinf = yinit';
         fprintf('error in SS computation \n');
+        if withMito
+            objVal = 1e6;
+            return
+        end
     end
     ssQOI = [yinf(cSRBulkIdx), yinf(SLVoltIdx), yinf(sum(juncLocLogic(1:6))),...
              yinf(sum(juncLocLogic(1:7))), yinf(sum(juncLocLogic(1:8))),...
-             yinf(sum(juncLocLogic(1:13))), yinf(forceIdx)];
+             yinf(sum(juncLocLogic(1:13))), yinf(forceIdx)]; % cSRSS, SLVoltSS, NaSS, ClSS, CaSS, KSS, FSS
 
     %% Calculate Dynamics
     t = 0:0.0001:T_max(abs(n));
     try
-        [~,y] = SkelMuscleCa_dydt(t, freq(abs(n)), yinf, pVecCur, tic, n, phosphateAccum);
+        if withMito
+            [~,y] = SkelMuscleCa_dydt_withMito(t, freq(abs(n)), yinf, pVecCur, tic, n, phosphateAccum,geomParam);
+        else
+            [~,y] = SkelMuscleCa_dydt(t, freq(abs(n)), yinf, pVecCur, tic, n, phosphateAccum);
+        end
         if size(y,1) < length(t)
             ySim = y;
             y = zeros(length(t), size(ySim,2));
@@ -194,11 +267,26 @@ for n_index = 1 :length(expt_n)
             p0 = p0Struct.data;
             pVec0 = p0;
             pVec0(95) = 0; % set SOCE flux to zero
-            [~,ySS_baseinit] = SkelMuscleCa_dydt(tSS, 0, yinit, pVec0,tic, n, phosphateAccum);
+            yinit0Control = yinit0;
+            yinit0Control(23) = pVec0(106);
+            yinit0Control = [yinit0Control; 100; 0.1; 5000; 0; 50; 150; 0.0];
+            yinitControl = [yinit0Control(juncLocLogic); yinit0Control(bulkLocLogic)];
+            % pVec0(91) = 0;
+            if withMito
+                geomParam0 = [0.01, 0.95, 0.05, 0.003, 20, 1/10, 0.5, 0.05, 0.05, 3.002e-3];
+                [~,ySS_baseinit] = SkelMuscleCa_dydt_withMito(tSS, 0, yinitControl, pVec0,tic, n, false,geomParam0);
+            else
+                [~,ySS_baseinit] = SkelMuscleCa_dydt(tSS, 0, yinitControl, pVec0,tic, n, false);
+            end
             cSR0 = ySS_baseinit(end,cSRBulkIdx);
             p0(12) = p0(12) * cSR0;
-            [~,ySS_base] = SkelMuscleCa_dydt(tSS, 0, yinit, p0, tic, n, phosphateAccum);
-            [~,Y_base] = SkelMuscleCa_dydt(t,freq(abs(n)), ySS_base(end,:), p0, tic, n, phosphateAccum);
+            if withMito
+                [~,ySS_base] = SkelMuscleCa_dydt_withMito(tSS, 0, yinitControl, p0, tic, n, false,geomParam0);
+                [~,Y_base] = SkelMuscleCa_dydt_withMito(t,freq(abs(n)), ySS_base(end,:), p0, tic, n, phosphateAccum,geomParam0);
+            else
+                [~,ySS_base] = SkelMuscleCa_dydt(tSS, 0, yinitControl, p0, tic, n, false);
+                [~,Y_base] = SkelMuscleCa_dydt(t,freq(abs(n)), ySS_base(end,:), p0, tic, n, phosphateAccum);
+            end
         end
         
         CaSol = y(:,ciJuncIdx)*JFrac + y(:,ciBulkIdx)*BFrac;

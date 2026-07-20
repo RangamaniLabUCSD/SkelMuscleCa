@@ -206,7 +206,8 @@ end
         R_fiber = geomParam(5); %20 µm
         vol_SA_SR = geomParam(6); %1/10;
         SRJ_occupancy = geomParam(7); %0.5;
-
+        
+        % volFraction_myo = 1 - volFraction_SR - volFraction_TT; % correct volFraction_myo for consistency
         vol_Fiber = pi * (R_fiber ^ 2) * L_fiber;
         vol_myo = volFraction_myo * vol_Fiber;
         SA_SL = 2 * pi * R_fiber * L_fiber;
